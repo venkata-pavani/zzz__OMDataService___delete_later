@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="OMSDataService.EF\**" />
+    <Content Remove="OMSDataService.EF\**" />
+    <EmbeddedResource Remove="OMSDataService.EF\**" />
+    <None Remove="OMSDataService.EF\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="5.2.0" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="AutoMapper" Version="9.0.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.4.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OMSDataService.DataInterfaces\OMSDataService.DataInterfaces.csproj" />
+    <ProjectReference Include="..\OMSDataService.DomainObjects\OMSDataService.DomainObjects.csproj" />
+    <ProjectReference Include="..\OMSDataService.EntityMapper\OMSDataService.EntityMapper.csproj" />
+    <ProjectReference Include="..\OMSDataService.IocMapper\OMSDataService.IocMapper.csproj" />
+  </ItemGroup>
+
+
+</Project>

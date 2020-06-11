@@ -1,0 +1,26 @@
+2020-06-09 09:00:02.854 -05:00 [ERR] GetLocations failed: {ex.message}
+System.Exception: Exception of type 'System.Exception' was thrown.
+   at OMSDataService.DataRepositories.TypeRepository.GetLocations() in C:\Users\john\source\repos\OMSDataService\OMSDataService.DataRepositories\TypeRepository.cs:line 28
+   at OMSDataService.Controllers.TypeController.GetLocations() in C:\Users\john\source\repos\OMSDataService\OMSDataService\Controllers\TypeController.cs:line 32
+2020-06-09 09:43:19.254 -05:00 [ERR] GetOfferTypes failed: {ex.message}
+Microsoft.Data.SqlClient.SqlException (0x80131904): Invalid column name 'OfferTypeDescription'.
+Invalid column name 'OfferTypeDescription'.
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__164_0(Task`1 result)
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+   at System.Threading.Tasks.Task.<>c.<.cctor>b__274_0(Object obj)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(DbContext _, Boolean result, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at OMSDataService.DataRepositories.TypeRepository.GetOfferTypes() in C:\Users\john\source\repos\OMSDataService\OMSDataService.DataRepositories\TypeRepository.cs:line 90
+   at OMSDataService.Controllers.TypeController.GetOfferTypes() in C:\Users\john\source\repos\OMSDataService\OMSDataService\Controllers\TypeController.cs:line 151
+ClientConnectionId:3f944996-83b3-40c1-ac05-50dce647eb3f
+Error Number:207,State:1,Class:16

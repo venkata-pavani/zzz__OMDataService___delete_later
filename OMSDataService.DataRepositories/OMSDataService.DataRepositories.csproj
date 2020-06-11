@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OMSDataService.DataInterfaces\OMSDataService.DataInterfaces.csproj" />
+    <ProjectReference Include="..\OMSDataService.DomainObjects\OMSDataService.DomainObjects.csproj" />
+    <ProjectReference Include="..\OMSDataService\OMSDataService.EF\OMSDataService.EF.csproj" />
+  </ItemGroup>
+
+</Project>
