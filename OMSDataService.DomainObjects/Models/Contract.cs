@@ -12,8 +12,9 @@ namespace OMSDataService.DomainObjects.Models
         public int ContractStatusID { get; set; }
         public int ContractTransactionTypeID { get; set; }
         public string ContractNumber { get; set; }
+        public DateTime ContractDate { get; set; }
         public int? AccountID { get; set; }
-        public int FacilityID { get; set; }
+        public int LocationID { get; set; }
         public int? CropYearID { get; set; }
         public decimal? Quantity { get; set; }
         public string RemarksToAccount { get; set; }

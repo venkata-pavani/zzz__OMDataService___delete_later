@@ -55,21 +55,21 @@ namespace OMSDataService.DataRepositories
                     .ToListAsync();
 
             return list;
-        }
-
-        public async Task<List<Customer>> GetCustomers()
-        {
-            var list = await _context.Customers
-                .OrderBy(x => x.CustomerName)
-                    .ToListAsync();
-
-            return list;
-        }
+        }       
 
         public async Task<List<Month>> GetMonths()
         {
             var list = await _context.Months
                 .OrderBy(x => x.MonthID)
+                    .ToListAsync();
+
+            return list;
+        }
+
+        public async Task<List<OfferDurationType>> GetOfferDurationTypes()
+        {
+            var list = await _context.OfferDurationTypes
+                .OrderBy(x => x.Description)
                     .ToListAsync();
 
             return list;
@@ -98,6 +98,24 @@ namespace OMSDataService.DataRepositories
         {
             var list = await _context.UnitsOfMeasure
                 .OrderBy(x => x.UOM)
+                    .ToListAsync();
+
+            return list;
+        }
+
+        public async Task<List<Account>> GetAccounts()
+        {
+            var list = await _context.Accounts
+                .OrderBy(x => x.AccountName)
+                    .ToListAsync();
+
+            return list;
+        }
+
+        public async Task<List<AccountType>> GetAccountTypes()
+        {
+            var list = await _context.AccountTypes
+                .OrderBy(x => x.AccountTypeDescription)
                     .ToListAsync();
 
             return list;

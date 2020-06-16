@@ -14,15 +14,20 @@ namespace OMSDataService.DataInterfaces
         Task<List<ContractTransactionType>> GetContractTransactionTypes();
 
         Task<List<ContractType>> GetContractTypes();
-
-        Task<List<Customer>> GetCustomers();
+        
 
         Task<List<Month>> GetMonths();
+
+        Task<List<OfferDurationType>> GetOfferDurationTypes();
 
         Task<List<OfferPriceType>> GetOfferPriceTypes();
 
         Task<List<OfferType>> GetOfferTypes();
 
         Task<List<UnitOfMeasure>> GetUnitsOfMeasure();
+
+        Task<List<Account>> GetAccounts();
+
+        Task<List<AccountType>> GetAccountTypes();
     }
 }

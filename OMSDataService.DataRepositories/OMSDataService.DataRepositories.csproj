@@ -11,7 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\OMSDataService.DataInterfaces\OMSDataService.DataInterfaces.csproj" />
     <ProjectReference Include="..\OMSDataService.DomainObjects\OMSDataService.DomainObjects.csproj" />
-    <ProjectReference Include="..\OMSDataService\OMSDataService.EF\OMSDataService.EF.csproj" />
+    <ProjectReference Include="..\OMSDataService.EF\OMSDataService.EF.csproj" />
   </ItemGroup>
 
 </Project>
