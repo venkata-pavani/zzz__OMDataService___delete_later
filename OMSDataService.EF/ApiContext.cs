@@ -20,6 +20,10 @@ namespace OMSDataService.EF
 
         public DbSet<Advisor> Advisors { get; set; }
 
+        public DbSet<Account> Accounts { get; set; }
+
+        public DbSet<AccountType> AccountTypes { get; set; }
+
         public DbSet<Company> Companies { get; set; }
 
         public DbSet<ContractDetail> ContractDetails { get; set; }
@@ -32,13 +36,13 @@ namespace OMSDataService.EF
 
         public DbSet<Exchange> Exchanges { get; set; }
 
-        public DbSet<MarketZone> MarketZones { get; set; }
-
-        public DbSet<Customer> Customers { get; set; }
+        public DbSet<MarketZone> MarketZones { get; set; }      
 
         public DbSet<Month> Months { get; set; }
 
         public DbSet<OfferPriceType> OfferPriceTypes { get; set; }
+
+        public DbSet<OfferDurationType> OfferDurationTypes { get; set; }
 
         public DbSet<OfferType> OfferTypes { get; set; }
 

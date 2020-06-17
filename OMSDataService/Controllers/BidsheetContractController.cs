@@ -75,7 +75,6 @@ namespace OMSDataService.Controllers
             }
         }
 
-
         [ActionName("AddBidsheet")]
         [HttpPost]
         public IActionResult AddBidsheet([FromBody] Bidsheet item)
@@ -94,6 +93,21 @@ namespace OMSDataService.Controllers
             }
         }
 
-
+        [ActionName("SearchBidsheets")]
+        [HttpGet]
+        public async Task<IActionResult> SearchBidsheets(int? locationId, int? commodityId, bool active)
+        {
+            try
+            {
+                var list = await _repo.SearchBidsheets(locationId, commodityId, active);
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "SearchBidsheets failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
     }
 }

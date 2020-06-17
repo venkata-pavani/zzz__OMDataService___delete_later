@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OMSDataService.DomainObjects\OMSDataService.DomainObjects.csproj" />
+    <ProjectReference Include="..\OMSDataService.DomainObjects\OMSDataService.DomainObjects.csproj" />  
   </ItemGroup>
 
 </Project>

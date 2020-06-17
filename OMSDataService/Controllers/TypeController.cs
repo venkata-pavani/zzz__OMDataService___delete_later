@@ -90,23 +90,7 @@ namespace OMSDataService.Controllers
                 return BadRequest(returnResult);
             }
         }
-
-        [ActionName("GetCustomers")]
-        [HttpGet]
-        public async Task<IActionResult> GetCustomers()
-        {
-            try
-            {
-                var list = await _repo.GetCustomers();
-                return Ok(list);
-            }
-            catch (Exception ex)
-            {
-                _logger.Write(LogEventLevel.Error, ex, "GetCustomers failed: {ex.message}");
-                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
-                return BadRequest(returnResult);
-            }
-        }
+                
 
         [ActionName("GetMonths")]
         [HttpGet]
@@ -120,6 +104,23 @@ namespace OMSDataService.Controllers
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetMonths failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetOfferDurationTypes")]
+        [HttpGet]
+        public async Task<IActionResult> GetOfferDurationTypes()
+        {
+            try
+            {
+                var list = await _repo.GetOfferDurationTypes();
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetOfferDurationTypes failed: {ex.message}");
                 var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
                 return BadRequest(returnResult);
             }
@@ -171,6 +172,40 @@ namespace OMSDataService.Controllers
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetUnitsOfMeasure failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetAccounts")]
+        [HttpGet]
+        public async Task<IActionResult> GetAccounts()
+        {
+            try
+            {
+                var list = await _repo.GetAccounts();
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetAccounts failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetAccountTypes")]
+        [HttpGet]
+        public async Task<IActionResult> GetAccountTypes()
+        {
+            try
+            {
+                var list = await _repo.GetAccountTypes();
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetAccountTypes failed: {ex.message}");
                 var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
                 return BadRequest(returnResult);
             }
