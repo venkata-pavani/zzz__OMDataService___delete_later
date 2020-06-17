@@ -78,7 +78,11 @@ namespace OMSDataService.DataRepositories
                                  Symbol = c.TickerSymbol,
                                  OptionMonthCode = m.MonthCode,
                                  OptionYear = b.OptionYear
-                             }).ToListAsync();
+                             }).OrderBy(b => b.FacilityName)
+                               .ThenBy(b => b.CommodityName)
+                               .ThenBy(b => b.DeliveryBeginDate)
+                               .ThenBy(b => b.DeliveryEndDate)
+                               .ToListAsync();
 
             var url = "https://ondemand.websol.barchart.com/getQuote.json?apikey=061bdbf8ef8efcf5da6e335be86fa8de&symbols=";
 
