@@ -1,0 +1,16 @@
+2020-06-16 11:48:10.721 -10:00 [ERR] SearchBidsheets failed: {ex.message}
+System.Text.Json.JsonException: The JSON value could not be converted to System.Decimal. Path: $.results[0].unitCode | LineNumber: 0 | BytePositionInLine: 275.
+ ---> System.InvalidOperationException: Cannot get the value of a token type 'String' as a number.
+   at System.Text.Json.Utf8JsonReader.TryGetDecimal(Decimal& value)
+   at System.Text.Json.Utf8JsonReader.GetDecimal()
+   at System.Text.Json.Serialization.Converters.JsonConverterDecimal.Read(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options)
+   at System.Text.Json.JsonPropertyInfoNotNullable`4.OnRead(ReadStack& state, Utf8JsonReader& reader)
+   at System.Text.Json.JsonPropertyInfo.Read(JsonTokenType tokenType, ReadStack& state, Utf8JsonReader& reader)
+   at System.Text.Json.JsonSerializer.ReadCore(JsonSerializerOptions options, Utf8JsonReader& reader, ReadStack& readStack)
+   --- End of inner exception stack trace ---
+   at System.Text.Json.ThrowHelper.ReThrowWithPath(ReadStack& readStack, Utf8JsonReader& reader, Exception ex)
+   at System.Text.Json.JsonSerializer.ReadCore(JsonSerializerOptions options, Utf8JsonReader& reader, ReadStack& readStack)
+   at System.Text.Json.JsonSerializer.ReadCore(Type returnType, JsonSerializerOptions options, Utf8JsonReader& reader)
+   at System.Text.Json.JsonSerializer.Deserialize(String json, Type returnType, JsonSerializerOptions options)
+   at OMSDataService.DataRepositories.BidsheetRepository.SearchBidsheets(Nullable`1 locationId, Nullable`1 commodityId, Boolean active) in /Users/errol/Development/NOTRS/Projects/Kaapa/OMDataService/OMSDataService.DataRepositories/BidsheetRepository.cs:line 89
+   at OMSDataService.Controllers.BidsheetController.SearchBidsheets(Nullable`1 locationId, Nullable`1 commodityId, Boolean active) in /Users/errol/Development/NOTRS/Projects/Kaapa/OMDataService/OMSDataService/Controllers/BidsheetContractController.cs:line 102
