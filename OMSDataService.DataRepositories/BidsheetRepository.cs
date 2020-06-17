@@ -61,6 +61,7 @@ namespace OMSDataService.DataRepositories
                              where (b.IsActive == active) &&
                              (locationId == null || b.FacilityID == locationId.Value) &&
                              (commodityId == null || b.CommodityID == commodityId.Value)
+                             orderby l.LocationName, c.CommodityName, b.DeliveryBeginDate, b.DeliveryEndDate
                              select new BidsheetSearchResult
                              {
                                  Basis = b.Basis,
@@ -78,11 +79,7 @@ namespace OMSDataService.DataRepositories
                                  Symbol = c.TickerSymbol,
                                  OptionMonthCode = m.MonthCode,
                                  OptionYear = b.OptionYear
-                             }).OrderBy(b => b.FacilityName)
-                               .ThenBy(b => b.CommodityName)
-                               .ThenBy(b => b.DeliveryBeginDate)
-                               .ThenBy(b => b.DeliveryEndDate)
-                               .ToListAsync();
+                             }).ToListAsync();
 
             var url = "https://ondemand.websol.barchart.com/getQuote.json?apikey=061bdbf8ef8efcf5da6e335be86fa8de&symbols=";
 
