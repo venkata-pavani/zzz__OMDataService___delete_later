@@ -66,19 +66,16 @@ namespace OMSDataService.DataRepositories
                              {
                                  Basis = b.Basis,
                                  BidsheetID = b.BidsheetID,
-                                 //CashPrice = 3.15M,
                                  CommodityName = c.CommodityName,
                                  DeliveryBeginDate = b.DeliveryBeginDate.ToShortDateString(),
                                  DeliveryEndDate = b.DeliveryEndDate.ToShortDateString(),
                                  FacilityName = l.LocationName,
                                  FutureMonthYear = m.MonthName + " " + b.OptionYear,
-                                 //FuturesChange = -1.34M,
-                                 //FuturesPrice = 9.34M,
                                  HasOffers = false,
-                                 //Quantity = 3432.34M,
                                  Symbol = c.TickerSymbol,
                                  OptionMonthCode = m.MonthCode,
-                                 OptionYear = b.OptionYear
+                                 OptionYear = b.OptionYear,
+                                 TickConversion = c.TickConversion
                              }).ToListAsync();
 
             var url = "https://ondemand.websol.barchart.com/getQuote.json?apikey=061bdbf8ef8efcf5da6e335be86fa8de&symbols=";
@@ -117,9 +114,9 @@ namespace OMSDataService.DataRepositories
 
                             if (quote != null)
                             {
-                                bidsheet.FuturesPrice = quote.lastPrice;
+                                bidsheet.FuturesPrice = quote.lastPrice * bidsheet.TickConversion.Value;
                                 bidsheet.FuturesChange = quote.netChange;
-                                bidsheet.CashPrice = quote.lastPrice - bidsheet.Basis;
+                                bidsheet.CashPrice = bidsheet.FuturesPrice + bidsheet.Basis;
                             }
                         }
                     }

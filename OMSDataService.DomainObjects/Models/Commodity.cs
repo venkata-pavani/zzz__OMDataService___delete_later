@@ -12,6 +12,9 @@ namespace OMSDataService.DomainObjects.Models
         public string CommodityName { get; set; }
         public string CommodityCode { get; set; }
         public string TickerSymbol { get; set; }
+        public decimal? TickConversion { get; set; }
+        public decimal? ContractConversion { get; set; }
+        public string ColorCode { get; set; }
         public decimal? DailyPriceLimit { get; set; }
         public int? HedgeCommodityID { get; set; }
         public int? ExchangeID { get; set; }

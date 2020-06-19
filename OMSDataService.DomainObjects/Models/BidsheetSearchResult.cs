@@ -20,5 +20,6 @@ namespace OMSDataService.DomainObjects.Models
         public bool HasOffers { get; set; }
         public decimal Quantity { get; set; }
         public string BarchartSymbol { get; set; }
+        public decimal? TickConversion { get; set; }
     }
 }
