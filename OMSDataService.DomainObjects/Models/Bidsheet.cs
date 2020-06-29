@@ -10,7 +10,7 @@ namespace OMSDataService.DomainObjects.Models
     {
         [Key]
         public int BidsheetID { get; set; }
-        public int FacilityID { get; set; }
+        public int LocationID { get; set; }
         public int CommodityID { get; set; }
         public int MonthID { get; set; }
         public int OptionYear { get; set; }

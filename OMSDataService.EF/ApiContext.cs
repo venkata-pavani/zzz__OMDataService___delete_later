@@ -52,6 +52,8 @@ namespace OMSDataService.EF
 
         public DbSet<State> States { get; set; }
 
+        public DbSet<County> Counties { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema(schema: DBGlobals.SchemaName);            

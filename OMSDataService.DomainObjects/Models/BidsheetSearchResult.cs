@@ -5,7 +5,7 @@ namespace OMSDataService.DomainObjects.Models
     public class BidsheetSearchResult
     {
         public int BidsheetID { get; set; }
-        public string FacilityName { get; set; }
+        public string LocationName { get; set; }
         public string CommodityName { get; set; }
         public string Symbol { get; set; }
         public string FutureMonthYear { get; set; }

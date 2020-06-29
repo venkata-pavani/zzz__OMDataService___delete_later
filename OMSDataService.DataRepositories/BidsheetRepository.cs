@@ -55,11 +55,11 @@ namespace OMSDataService.DataRepositories
         public async Task<List<BidsheetSearchResult>> SearchBidsheets(int? locationId, int? commodityId, bool active)
         {
             var bidsheets = await (from b in _context.Bidsheets
-                             join l in _context.Locations on b.FacilityID equals l.LocationID
+                             join l in _context.Locations on b.LocationID equals l.LocationID
                              join c in _context.Commodities on b.CommodityID equals c.CommodityID
                              join m in _context.Months on b.MonthID equals m.MonthID
                              where (b.IsActive == active) &&
-                             (locationId == null || b.FacilityID == locationId.Value) &&
+                             (locationId == null || b.LocationID == locationId.Value) &&
                              (commodityId == null || b.CommodityID == commodityId.Value)
                              orderby l.LocationName, c.CommodityName, b.DeliveryBeginDate, b.DeliveryEndDate
                              select new BidsheetSearchResult
@@ -70,7 +70,7 @@ namespace OMSDataService.DataRepositories
                                  DeliveryBeginDate = b.DeliveryBeginDate.ToShortDateString(),
                                  DeliveryEndDate = b.DeliveryEndDate.ToShortDateString(),
                                  DeliveryPeriod = b.DeliveryPeriod,
-                                 FacilityName = l.LocationName,
+                                 LocationName = l.LocationName,
                                  FutureMonthYear = m.MonthName + " " + b.OptionYear,
                                  HasOffers = false,
                                  Symbol = c.TickerSymbol,
