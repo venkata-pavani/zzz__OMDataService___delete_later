@@ -50,7 +50,7 @@ namespace OMSDataService.EF
 
         public DbSet<User> Users { get; set; }
 
-
+        public DbSet<State> States { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

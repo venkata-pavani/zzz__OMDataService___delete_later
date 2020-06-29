@@ -13,13 +13,14 @@ namespace OMSDataService.DomainObjects.Models
         public string OptionMonthCode { get; set; }
         public string DeliveryBeginDate { get; set; }
         public string DeliveryEndDate { get; set; }
-        public decimal FuturesPrice { get; set; }
-        public decimal FuturesChange { get; set; }
-        public decimal Basis { get; set; }
-        public decimal CashPrice { get; set; }
+        public string FuturesPrice { get; set; }
+        public string FuturesChange { get; set; }
+        public string Basis { get; set; }
+        public string CashPrice { get; set; }
         public bool HasOffers { get; set; }
         public decimal Quantity { get; set; }
         public string BarchartSymbol { get; set; }
         public decimal? TickConversion { get; set; }
+        public string DeliveryPeriod { get; set; }
     }
 }

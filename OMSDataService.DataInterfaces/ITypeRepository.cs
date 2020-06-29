@@ -15,7 +15,6 @@ namespace OMSDataService.DataInterfaces
 
         Task<List<ContractType>> GetContractTypes();
         
-
         Task<List<Month>> GetMonths();
 
         Task<List<OfferDurationType>> GetOfferDurationTypes();
@@ -27,6 +26,8 @@ namespace OMSDataService.DataInterfaces
         Task<List<UnitOfMeasure>> GetUnitsOfMeasure();
 
         Task<List<Account>> GetAccounts();
+
+        Task<List<AccountSearchResult>> SearchAccounts(string accountName, string externalRef);
 
         Task<List<AccountType>> GetAccountTypes();
     }

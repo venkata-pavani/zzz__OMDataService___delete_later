@@ -64,11 +64,12 @@ namespace OMSDataService.DataRepositories
                              orderby l.LocationName, c.CommodityName, b.DeliveryBeginDate, b.DeliveryEndDate
                              select new BidsheetSearchResult
                              {
-                                 Basis = b.Basis,
+                                 Basis = b.Basis.ToString("N4"),
                                  BidsheetID = b.BidsheetID,
                                  CommodityName = c.CommodityName,
                                  DeliveryBeginDate = b.DeliveryBeginDate.ToShortDateString(),
                                  DeliveryEndDate = b.DeliveryEndDate.ToShortDateString(),
+                                 DeliveryPeriod = b.DeliveryPeriod,
                                  FacilityName = l.LocationName,
                                  FutureMonthYear = m.MonthName + " " + b.OptionYear,
                                  HasOffers = false,
@@ -114,9 +115,9 @@ namespace OMSDataService.DataRepositories
 
                             if (quote != null)
                             {
-                                bidsheet.FuturesPrice = quote.lastPrice * bidsheet.TickConversion.Value;
-                                bidsheet.FuturesChange = quote.netChange;
-                                bidsheet.CashPrice = bidsheet.FuturesPrice + bidsheet.Basis;
+                                bidsheet.FuturesPrice = (quote.lastPrice * bidsheet.TickConversion.Value).ToString("N4");
+                                bidsheet.FuturesChange = quote.netChange.ToString("N4");
+                                bidsheet.CashPrice = (quote.lastPrice * bidsheet.TickConversion.Value + decimal.Parse(bidsheet.Basis)).ToString("N4");
                             }
                         }
                     }

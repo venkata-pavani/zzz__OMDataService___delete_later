@@ -194,6 +194,23 @@ namespace OMSDataService.Controllers
             }
         }
 
+        [ActionName("SearchAccounts")]
+        [HttpGet]
+        public async Task<IActionResult> SearchAccounts(string accountName, string externalRef)
+        {
+            try
+            {
+                var list = await _repo.SearchAccounts(accountName, externalRef);
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "SearchAccounts failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
         [ActionName("GetAccountTypes")]
         [HttpGet]
         public async Task<IActionResult> GetAccountTypes()
