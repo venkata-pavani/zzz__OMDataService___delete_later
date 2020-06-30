@@ -1,0 +1,11 @@
+2020-06-30 10:16:21.243 -10:00 [ERR] GetContracts failed: {ex.message}
+System.Data.SqlTypes.SqlNullValueException: Data is Null. This method or property cannot be called on Null values.
+   at Microsoft.Data.SqlClient.SqlBuffer.ThrowIfNull()
+   at Microsoft.Data.SqlClient.SqlBuffer.get_Int32()
+   at Microsoft.Data.SqlClient.SqlDataReader.GetInt32(Int32 i)
+   at lambda_method(Closure , QueryContext , DbDataReader , ResultContext , Int32[] , ResultCoordinator )
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at OMSDataService.DataRepositories.ContractRepository.GetContracts(Int32 accountId) in /Users/errol/Development/NOTRS/Projects/Kaapa/OMDataService/OMSDataService.DataRepositories/ContractRepository.cs:line 27
+   at OMSDataService.Controllers.ContractController.GetContracts(Int32 accountId) in /Users/errol/Development/NOTRS/Projects/Kaapa/OMDataService/OMSDataService/Controllers/ContractController.cs:line 32

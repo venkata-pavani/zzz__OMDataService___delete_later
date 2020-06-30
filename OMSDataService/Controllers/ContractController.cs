@@ -25,11 +25,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetContracts")]
         [HttpGet]
-        public async Task<IActionResult> GetContracts()
+        public async Task<IActionResult> GetContracts(int accountId)
         {
             try
             {
-                var list = await _repo.GetContracts();
+                var list = await _repo.GetContracts(accountId);
                 return Ok(list);
             }
             catch (Exception ex)
