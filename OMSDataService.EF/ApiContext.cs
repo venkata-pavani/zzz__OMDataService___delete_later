@@ -11,7 +11,6 @@ namespace OMSDataService.EF
         public ApiContext(DbContextOptions options)
             : base(options) { }
 
-
         public DbSet<Location> Locations { get; set; }
 
         public DbSet<Commodity> Commodities{ get; set; }
@@ -56,13 +55,11 @@ namespace OMSDataService.EF
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasDefaultSchema(schema: DBGlobals.SchemaName);            
+            modelBuilder.HasDefaultSchema(schema: DBGlobals.SchemaName);
 
-            //modelBuilder.Entity<AaisRate>().HasNoKey(); 
-                       
-
+            modelBuilder.Entity<ContractSearchResult>().HasNoKey();
+           
             base.OnModelCreating(modelBuilder);
         }
-
     }
 }

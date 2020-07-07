@@ -23,17 +23,34 @@ namespace OMSDataService.Controllers
             _logger = logger;
         }
 
-        [ActionName("GetContracts")]
+        [ActionName("GetOffers")]
         [HttpGet]
-        public async Task<IActionResult> GetContracts(int accountId)
+        public async Task<IActionResult> GetOffers(int accountId)
         {
             try
             {
-                var list = await _repo.GetContracts(accountId);
+                var list = await _repo.GetOffers(accountId);
                 return Ok(list);
             }
             catch (Exception ex)
             {
+                _logger.Write(LogEventLevel.Error, ex, "GetOffers failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetContracts")]
+        [HttpGet]
+        public async Task<IActionResult> GetContracts(string accountExternalRef)
+        {
+            try
+            {
+                var list = await _repo.GetContracts(accountExternalRef);
+                return Ok(list);
+            }
+            catch (Exception ex)
+            { 
                 _logger.Write(LogEventLevel.Error, ex, "GetContracts failed: {ex.message}");
                 var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
                 return BadRequest(returnResult);

@@ -7,7 +7,8 @@ namespace OMSDataService.DataInterfaces
 {
     public interface IContractRepository
     {
-        Task<List<ContractSearchResult>> GetContracts(int accountId);
+        Task<List<OfferSearchResult>> GetOffers(int accountId);
+        Task<List<ContractSearchResult>> GetContracts(string accountExternalRef);
         Task<Contract> GetContract(int contractId);
         void AddContract(Contract item);
         void UpdateContract(Contract item);

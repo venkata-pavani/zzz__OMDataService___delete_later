@@ -1,0 +1,109 @@
+2020-06-17 12:48:08.731 -10:00 [ERR] SearchBidsheets failed: {ex.message}
+System.InvalidOperationException: The LINQ expression 'DbSet<Bidsheet>
+    .Join(
+        outer: DbSet<Location>, 
+        inner: b => b.FacilityID, 
+        outerKeySelector: l => l.LocationID, 
+        innerKeySelector: (b, l) => new TransparentIdentifier<Bidsheet, Location>(
+            Outer = b, 
+            Inner = l
+        ))
+    .Join(
+        outer: DbSet<Commodity>, 
+        inner: ti => ti.Outer.CommodityID, 
+        outerKeySelector: c => c.CommodityID, 
+        innerKeySelector: (ti, c) => new TransparentIdentifier<TransparentIdentifier<Bidsheet, Location>, Commodity>(
+            Outer = ti, 
+            Inner = c
+        ))
+    .Join(
+        outer: DbSet<Month>, 
+        inner: ti0 => ti0.Outer.Outer.MonthID, 
+        outerKeySelector: m => m.MonthID, 
+        innerKeySelector: (ti0, m) => new TransparentIdentifier<TransparentIdentifier<TransparentIdentifier<Bidsheet, Location>, Commodity>, Month>(
+            Outer = ti0, 
+            Inner = m
+        ))
+    .Where(ti1 => ti1.Outer.Outer.Outer.IsActive == __active_0 && True && True)
+    .OrderBy(ti1 => ti1.Outer.Outer.Inner.LocationName)
+    .ThenBy(ti1 => ti1.Outer.Inner.CommodityName)
+    .ThenBy(ti1 => ti1.Outer.Outer.Outer.DeliveryBeginDate.ToShortDateString())' could not be translated. Either rewrite the query in a form that can be translated, or switch to client evaluation explicitly by inserting a call to either AsEnumerable(), AsAsyncEnumerable(), ToList(), or ToListAsync(). See https://go.microsoft.com/fwlink/?linkid=2101038 for more information.
+   at Microsoft.EntityFrameworkCore.Query.QueryableMethodTranslatingExpressionVisitor.<VisitMethodCall>g__CheckTranslated|8_0(ShapedQueryExpression translated, <>c__DisplayClass8_0& )
+   at Microsoft.EntityFrameworkCore.Query.QueryableMethodTranslatingExpressionVisitor.VisitMethodCall(MethodCallExpression methodCallExpression)
+   at Microsoft.EntityFrameworkCore.Query.RelationalQueryableMethodTranslatingExpressionVisitor.VisitMethodCall(MethodCallExpression methodCallExpression)
+   at System.Linq.Expressions.MethodCallExpression.Accept(ExpressionVisitor visitor)
+   at System.Linq.Expressions.ExpressionVisitor.Visit(Expression node)
+   at Microsoft.EntityFrameworkCore.Query.QueryableMethodTranslatingExpressionVisitor.VisitMethodCall(MethodCallExpression methodCallExpression)
+   at Microsoft.EntityFrameworkCore.Query.RelationalQueryableMethodTranslatingExpressionVisitor.VisitMethodCall(MethodCallExpression methodCallExpression)
+   at System.Linq.Expressions.MethodCallExpression.Accept(ExpressionVisitor visitor)
+   at System.Linq.Expressions.ExpressionVisitor.Visit(Expression node)
+   at Microsoft.EntityFrameworkCore.Query.QueryableMethodTranslatingExpressionVisitor.VisitMethodCall(MethodCallExpression methodCallExpression)
+   at Microsoft.EntityFrameworkCore.Query.RelationalQueryableMethodTranslatingExpressionVisitor.VisitMethodCall(MethodCallExpression methodCallExpression)
+   at System.Linq.Expressions.MethodCallExpression.Accept(ExpressionVisitor visitor)
+   at System.Linq.Expressions.ExpressionVisitor.Visit(Expression node)
+   at Microsoft.EntityFrameworkCore.Query.QueryCompilationContext.CreateQueryExecutor[TResult](Expression query)
+   at Microsoft.EntityFrameworkCore.Storage.Database.CompileQuery[TResult](Expression query, Boolean async)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.CompileQueryCore[TResult](IDatabase database, Expression query, IModel model, Boolean async)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.<>c__DisplayClass12_0`1.<ExecuteAsync>b__0()
+   at Microsoft.EntityFrameworkCore.Query.Internal.CompiledQueryCache.GetOrAddQueryCore[TFunc](Object cacheKey, Func`1 compiler)
+   at Microsoft.EntityFrameworkCore.Query.Internal.CompiledQueryCache.GetOrAddQuery[TResult](Object cacheKey, Func`1 compiler)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.ExecuteAsync[TResult](Expression query, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryProvider.ExecuteAsync[TResult](Expression expression, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable`1.GetAsyncEnumerator(CancellationToken cancellationToken)
+   at System.Runtime.CompilerServices.ConfiguredCancelableAsyncEnumerable`1.GetAsyncEnumerator()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at OMSDataService.DataRepositories.BidsheetRepository.SearchBidsheets(Nullable`1 locationId, Nullable`1 commodityId, Boolean active) in /Users/errol/Development/NOTRS/Projects/Kaapa/OMDataService/OMSDataService.DataRepositories/BidsheetRepository.cs:line 57
+   at OMSDataService.Controllers.BidsheetController.SearchBidsheets(Nullable`1 locationId, Nullable`1 commodityId, Boolean active) in /Users/errol/Development/NOTRS/Projects/Kaapa/OMDataService/OMSDataService/Controllers/BidsheetContractController.cs:line 102
+2020-06-17 12:48:51.177 -10:00 [ERR] SearchBidsheets failed: {ex.message}
+System.InvalidOperationException: The LINQ expression 'DbSet<Bidsheet>
+    .Join(
+        outer: DbSet<Location>, 
+        inner: b => b.FacilityID, 
+        outerKeySelector: l => l.LocationID, 
+        innerKeySelector: (b, l) => new TransparentIdentifier<Bidsheet, Location>(
+            Outer = b, 
+            Inner = l
+        ))
+    .Join(
+        outer: DbSet<Commodity>, 
+        inner: ti => ti.Outer.CommodityID, 
+        outerKeySelector: c => c.CommodityID, 
+        innerKeySelector: (ti, c) => new TransparentIdentifier<TransparentIdentifier<Bidsheet, Location>, Commodity>(
+            Outer = ti, 
+            Inner = c
+        ))
+    .Join(
+        outer: DbSet<Month>, 
+        inner: ti0 => ti0.Outer.Outer.MonthID, 
+        outerKeySelector: m => m.MonthID, 
+        innerKeySelector: (ti0, m) => new TransparentIdentifier<TransparentIdentifier<TransparentIdentifier<Bidsheet, Location>, Commodity>, Month>(
+            Outer = ti0, 
+            Inner = m
+        ))
+    .Where(ti1 => ti1.Outer.Outer.Outer.IsActive == __active_0 && True && True)
+    .OrderBy(ti1 => ti1.Outer.Outer.Inner.LocationName)
+    .ThenBy(ti1 => ti1.Outer.Inner.CommodityName)
+    .ThenBy(ti1 => ti1.Outer.Outer.Outer.DeliveryBeginDate.ToShortDateString())' could not be translated. Either rewrite the query in a form that can be translated, or switch to client evaluation explicitly by inserting a call to either AsEnumerable(), AsAsyncEnumerable(), ToList(), or ToListAsync(). See https://go.microsoft.com/fwlink/?linkid=2101038 for more information.
+   at Microsoft.EntityFrameworkCore.Query.QueryableMethodTranslatingExpressionVisitor.<VisitMethodCall>g__CheckTranslated|8_0(ShapedQueryExpression translated, <>c__DisplayClass8_0& )
+   at Microsoft.EntityFrameworkCore.Query.QueryableMethodTranslatingExpressionVisitor.VisitMethodCall(MethodCallExpression methodCallExpression)
+   at Microsoft.EntityFrameworkCore.Query.RelationalQueryableMethodTranslatingExpressionVisitor.VisitMethodCall(MethodCallExpression methodCallExpression)
+   at System.Linq.Expressions.MethodCallExpression.Accept(ExpressionVisitor visitor)
+   at Microsoft.EntityFrameworkCore.Query.QueryableMethodTranslatingExpressionVisitor.VisitMethodCall(MethodCallExpression methodCallExpression)
+   at Microsoft.EntityFrameworkCore.Query.RelationalQueryableMethodTranslatingExpressionVisitor.VisitMethodCall(MethodCallExpression methodCallExpression)
+   at System.Linq.Expressions.MethodCallExpression.Accept(ExpressionVisitor visitor)
+   at Microsoft.EntityFrameworkCore.Query.QueryableMethodTranslatingExpressionVisitor.VisitMethodCall(MethodCallExpression methodCallExpression)
+   at Microsoft.EntityFrameworkCore.Query.RelationalQueryableMethodTranslatingExpressionVisitor.VisitMethodCall(MethodCallExpression methodCallExpression)
+   at System.Linq.Expressions.MethodCallExpression.Accept(ExpressionVisitor visitor)
+   at Microsoft.EntityFrameworkCore.Query.QueryCompilationContext.CreateQueryExecutor[TResult](Expression query)
+   at Microsoft.EntityFrameworkCore.Storage.Database.CompileQuery[TResult](Expression query, Boolean async)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.CompileQueryCore[TResult](IDatabase database, Expression query, IModel model, Boolean async)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.<>c__DisplayClass12_0`1.<ExecuteAsync>b__0()
+   at Microsoft.EntityFrameworkCore.Query.Internal.CompiledQueryCache.GetOrAddQueryCore[TFunc](Object cacheKey, Func`1 compiler)
+   at Microsoft.EntityFrameworkCore.Query.Internal.CompiledQueryCache.GetOrAddQuery[TResult](Object cacheKey, Func`1 compiler)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.ExecuteAsync[TResult](Expression query, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryProvider.ExecuteAsync[TResult](Expression expression, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable`1.GetAsyncEnumerator(CancellationToken cancellationToken)
+   at System.Runtime.CompilerServices.ConfiguredCancelableAsyncEnumerable`1.GetAsyncEnumerator()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at OMSDataService.DataRepositories.BidsheetRepository.SearchBidsheets(Nullable`1 locationId, Nullable`1 commodityId, Boolean active) in /Users/errol/Development/NOTRS/Projects/Kaapa/OMDataService/OMSDataService.DataRepositories/BidsheetRepository.cs:line 57
+   at OMSDataService.Controllers.BidsheetController.SearchBidsheets(Nullable`1 locationId, Nullable`1 commodityId, Boolean active) in /Users/errol/Development/NOTRS/Projects/Kaapa/OMDataService/OMSDataService/Controllers/BidsheetContractController.cs:line 102
