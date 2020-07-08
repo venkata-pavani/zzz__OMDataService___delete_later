@@ -40,13 +40,13 @@ namespace OMSDataService.DataRepositories
                               CashPrice = cd.CashPrice.HasValue ? cd.CashPrice.Value.ToString("N4") : "",
                               CommodityID = cd.CommodityID,
                               CommodityName = cmd.CommodityName,
-                              ContractDate = c.ContractDate.ToShortDateString(),
+                              ContractDate = c.ContractDate.ToString("MM/dd/yyyy"),
                               ContractID = c.ContractID,
                               ContractNumber = c.ContractNumber,
                               ContractTypeID = cd.ContractTypeID,
                               ContractTypeName = ct.ContractTypeCode,
-                              DeliveryEndDate = cd.DeliveryEndDate.HasValue ? cd.DeliveryEndDate.Value.ToShortDateString() : "",
-                              DeliveryStartDate = cd.DeliveryStartDate.HasValue ? cd.DeliveryStartDate.Value.ToShortDateString() : "",
+                              DeliveryEndDate = cd.DeliveryEndDate.HasValue ? cd.DeliveryEndDate.Value.ToString("MM/dd/yyyy") : "",
+                              DeliveryStartDate = cd.DeliveryStartDate.HasValue ? cd.DeliveryStartDate.Value.ToString("MM/dd/yyyy") : "",
                               FuturesPrice = cd.Futures.HasValue ? cd.Futures.Value.ToString("N4") : "",
                               LocationID = c.LocationID,
                               LocationName = l.LocationName,
@@ -57,7 +57,77 @@ namespace OMSDataService.DataRepositories
         [Obsolete]
         public async Task<List<ContractSearchResult>> GetContracts(string accountExternalRef)
         {
-            return await _context.Query<ContractSearchResult>().FromSqlRaw("Execute dbo.SearchContracts @AccountExternalRef = {0}", accountExternalRef).ToListAsync();
+            var contracts = await _context.Query<ContractSearchResult>().FromSqlRaw("Execute dbo.SearchContracts @AccountExternalRef = {0}", accountExternalRef).ToListAsync();
+
+            foreach (var contract in contracts)
+            {
+                contract.AppliedRemainingGraphData = new List<ContractGraphData>();
+                contract.SettledUnsettledGraphData = new List<ContractGraphData>();
+
+                if (string.IsNullOrEmpty(contract.Quantity) || decimal.Parse(contract.Quantity) <= 0)
+                {
+                    contract.AppliedRemainingGraphData.Add(new ContractGraphData()
+                    {
+                        Label = "Applied Quantity",
+                        Value = 0M,
+                        Color = "#075D3B"
+                    });
+
+                    contract.AppliedRemainingGraphData.Add(new ContractGraphData()
+                    {
+                        Label = "Remaining Quantity",
+                        Value = 0M,
+                        Color = "#FFE119"
+                    });
+
+                    contract.SettledUnsettledGraphData.Add(new ContractGraphData()
+                    {
+                        Label = "Settled Quantity",
+                        Value = 0M,
+                        Color = "#075D3B"
+                    });
+
+                    contract.SettledUnsettledGraphData.Add(new ContractGraphData()
+                    {
+                        Label = "Unsettled Quantity",
+                        Value = 0M,
+                        Color = "#FFE119"
+                    });
+                }
+
+                else
+                {
+                    contract.AppliedRemainingGraphData.Add(new ContractGraphData()
+                    {
+                        Label = "Applied Quantity",
+                        Value = Math.Round(decimal.Parse(contract.AppliedQuantity) / decimal.Parse(contract.Quantity), 2),
+                        Color = "#075D3B"
+                    });
+
+                    contract.AppliedRemainingGraphData.Add(new ContractGraphData()
+                    {
+                        Label = "Remaining Quantity",
+                        Value = Math.Round(decimal.Parse(contract.RemainingQuantity) / decimal.Parse(contract.Quantity), 2),
+                        Color = "#FFE119"
+                    });
+
+                    contract.SettledUnsettledGraphData.Add(new ContractGraphData()
+                    {
+                        Label = "Settled Quantity",
+                        Value = Math.Round(decimal.Parse(contract.SettledQuantity) / decimal.Parse(contract.Quantity), 2),
+                        Color = "#075D3B"
+                    });
+
+                    contract.SettledUnsettledGraphData.Add(new ContractGraphData()
+                    {
+                        Label = "Unsettled Quantity",
+                        Value = Math.Round(decimal.Parse(contract.UnsettledQuantity) / decimal.Parse(contract.Quantity), 2),
+                        Color = "#FFE119"
+                    });
+                }
+            }
+
+            return contracts;
         }
 
         public async Task<Contract> GetContract(int contractId)

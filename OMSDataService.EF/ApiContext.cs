@@ -58,7 +58,9 @@ namespace OMSDataService.EF
             modelBuilder.HasDefaultSchema(schema: DBGlobals.SchemaName);
 
             modelBuilder.Entity<ContractSearchResult>().HasNoKey();
-           
+
+            modelBuilder.Entity<ContractGraphData>().HasNoKey();
+
             base.OnModelCreating(modelBuilder);
         }
     }
