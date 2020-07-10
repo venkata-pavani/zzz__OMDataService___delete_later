@@ -26,6 +26,5 @@ namespace OMSDataService.DomainObjects.Models
         public int AddUserID { get; set; }
         public DateTime ChgDate { get; set; }
         public int ChgUserID { get; set; }
-        public byte[] ContractTimestamp { get; set; }
     }
 }

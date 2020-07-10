@@ -8,6 +8,7 @@ using OMSDataService.DataInterfaces;
 using OMSDataService.DomainObjects.Models;
 using Serilog;
 using Serilog.Events;
+using Newtonsoft.Json.Linq;
 
 namespace OMSDataService.Controllers
 {
@@ -74,6 +75,24 @@ namespace OMSDataService.Controllers
             }
         }
 
+        [ActionName("AddContract")]
+        [HttpPost]
+        public IActionResult AddContract([FromBody] JObject item)
+        {
+            try
+            { 
+                _repo.AddContract(item["contract"].ToObject<Contract>(), item["contractDetail"].ToObject<ContractDetail>());
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "AddContract failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
         [ActionName("UpdateContract")]
         [HttpPost]
         public IActionResult UpdateContract([FromBody] Contract item)
@@ -91,26 +110,5 @@ namespace OMSDataService.Controllers
                 return BadRequest(returnResult);
             }
         }
-
-
-        [ActionName("AddContract")]
-        [HttpPost]
-        public IActionResult AddContract([FromBody] Contract item)
-        {
-            try
-            {
-                _repo.AddContract(item);
-
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logger.Write(LogEventLevel.Error, ex, "AddContract failed: {ex.message}");
-                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
-                return BadRequest(returnResult);
-            }
-        }
-
-
     }
 }

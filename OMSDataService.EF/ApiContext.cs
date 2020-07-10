@@ -53,6 +53,12 @@ namespace OMSDataService.EF
 
         public DbSet<County> Counties { get; set; }
 
+        public DbSet<ContractStatusType> ContractStatusTypes { get; set; }
+
+        public DbSet<ContractPricingStatusType> ContractPricingStatusTypes { get; set; }
+
+        public DbSet<OfferStatusType> OfferStatusTypes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema(schema: DBGlobals.SchemaName);

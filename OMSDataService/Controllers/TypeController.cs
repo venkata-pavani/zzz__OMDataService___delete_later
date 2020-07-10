@@ -74,6 +74,23 @@ namespace OMSDataService.Controllers
             }
         }
 
+        [ActionName("GetContractStatusTypes")]
+        [HttpGet]
+        public async Task<IActionResult> GetContractStatusTypes()
+        {
+            try
+            {
+                var list = await _repo.GetContractStatusTypes();
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetContractStatusTypes failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
         [ActionName("GetContractTypes")]
         [HttpGet]
         public async Task<IActionResult> GetContractTypes()
@@ -223,6 +240,74 @@ namespace OMSDataService.Controllers
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetAccountTypes failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetAdvisors")]
+        [HttpGet]
+        public async Task<IActionResult> GetAdvisors()
+        {
+            try
+            {
+                var list = await _repo.GetAdvisors();
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetAdvisors failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetMarketZones")]
+        [HttpGet]
+        public async Task<IActionResult> GetMarketZones()
+        {
+            try
+            {
+                var list = await _repo.GetMarketZones();
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetMarketZones failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetContractPricingStatusTypes")]
+        [HttpGet]
+        public async Task<IActionResult> GetContractPricingStatusTypes()
+        {
+            try
+            {
+                var list = await _repo.GetContractPricingStatusTypes();
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetContractPricingStatusTypes failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetOfferStatusTypes")]
+        [HttpGet]
+        public async Task<IActionResult> GetOfferStatusTypes()
+        {
+            try
+            {
+                var list = await _repo.GetOfferStatusTypes();
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetOfferStatusTypes failed: {ex.message}");
                 var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
                 return BadRequest(returnResult);
             }

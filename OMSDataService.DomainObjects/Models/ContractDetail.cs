@@ -50,6 +50,12 @@ namespace OMSDataService.DomainObjects.Models
         public int AddUserID { get; set; }
         public DateTime ChgDate { get; set; }
         public int ChgUserID { get; set; }
-        public byte[] ContractDetailTimestamp { get; set; }
+        public DateTime? ContractDetailOfferDate { get; set; }
+        public bool? Offer { get; set; }
+        public int? OfferStatusTypeID { get; set; }
+        public decimal? OfferCashPrice { get; set; }
+        public decimal? OfferFutures { get; set; }
+        public decimal? OfferBasis { get; set; }
+        public int? MarketZoneID { get; set; }
     }
 }

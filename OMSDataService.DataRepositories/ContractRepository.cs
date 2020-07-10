@@ -138,9 +138,14 @@ namespace OMSDataService.DataRepositories
             return item;
         }
 
-        public void AddContract(Contract item)
+        public void AddContract(Contract contract, ContractDetail contractDetail)
         {
-            _context.Contracts.Add(item);
+            _context.Contracts.Add(contract);
+            _context.SaveChanges();
+
+            contractDetail.ContractID = contract.ContractID;
+
+            _context.ContractDetails.Add(contractDetail);
             _context.SaveChanges();
         }
 

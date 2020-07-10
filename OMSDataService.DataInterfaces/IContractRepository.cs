@@ -10,7 +10,7 @@ namespace OMSDataService.DataInterfaces
         Task<List<OfferSearchResult>> GetOffers(int accountId);
         Task<List<ContractSearchResult>> GetContracts(string accountExternalRef);
         Task<Contract> GetContract(int contractId);
-        void AddContract(Contract item);
+        void AddContract(Contract contract, ContractDetail contractDetail);
         void UpdateContract(Contract item);
 
     }

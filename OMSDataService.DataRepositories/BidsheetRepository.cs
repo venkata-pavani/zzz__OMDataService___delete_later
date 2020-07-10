@@ -55,29 +55,35 @@ namespace OMSDataService.DataRepositories
         public async Task<List<BidsheetSearchResult>> SearchBidsheets(int? locationId, int? commodityId, bool active)
         {
             var bidsheets = await (from b in _context.Bidsheets
-                             join l in _context.Locations on b.LocationID equals l.LocationID
-                             join c in _context.Commodities on b.CommodityID equals c.CommodityID
-                             join m in _context.Months on b.MonthID equals m.MonthID
-                             where (b.IsActive == active) &&
-                             (locationId == null || b.LocationID == locationId.Value) &&
-                             (commodityId == null || b.CommodityID == commodityId.Value)
-                             orderby l.LocationName, c.CommodityName, b.DeliveryBeginDate, b.DeliveryEndDate
-                             select new BidsheetSearchResult
-                             {
-                                 Basis = b.Basis.ToString("N4"),
-                                 BidsheetID = b.BidsheetID,
-                                 CommodityName = c.CommodityName,
-                                 DeliveryBeginDate = b.DeliveryBeginDate.ToString("MM/dd/yyyy"),
-                                 DeliveryEndDate = b.DeliveryEndDate.ToString("MM/dd/yyyy"),
-                                 DeliveryPeriod = b.DeliveryPeriod,
-                                 LocationName = l.LocationName,
-                                 FutureMonthYear = m.MonthName + " " + b.OptionYear,
-                                 HasOffers = false,
-                                 Symbol = c.TickerSymbol,
-                                 OptionMonthCode = m.MonthCode,
-                                 OptionYear = b.OptionYear,
-                                 TickConversion = c.TickConversion
-                             }).ToListAsync();
+                                   join l in _context.Locations on b.LocationID equals l.LocationID
+                                   join c in _context.Commodities on b.CommodityID equals c.CommodityID
+                                   join m in _context.Months on b.MonthID equals m.MonthID
+                                   where (b.IsActive == active) &&
+                                   (locationId == null || b.LocationID == locationId.Value) &&
+                                   (commodityId == null || b.CommodityID == commodityId.Value)
+                                   orderby l.LocationName, c.CommodityName, b.DeliveryBeginDate, b.DeliveryEndDate
+                                   select new BidsheetSearchResult
+                                   {
+                                       Basis = b.Basis.ToString("N4"),
+                                       BidsheetID = b.BidsheetID,
+                                       CommodityID = c.CommodityID,
+                                       CommodityName = c.CommodityName,
+                                       DeliveryBeginDate = b.DeliveryBeginDate.ToString("MM/dd/yyyy"),
+                                       DeliveryBegin = b.DeliveryBeginDate,
+                                       DeliveryEndDate = b.DeliveryEndDate.ToString("MM/dd/yyyy"),
+                                       DeliveryEnd = b.DeliveryEndDate,
+                                       DeliveryPeriod = b.DeliveryPeriod,
+                                       LocationID = l.LocationID,
+                                       LocationName = l.LocationName,
+                                       FutureMonthID = b.MonthID,
+                                       FutureMonthYear = m.MonthName + " " + b.OptionYear,
+                                       HasOffers = false,
+                                       Symbol = c.TickerSymbol,
+                                       OptionMonthCode = m.MonthCode,
+                                       OptionYear = b.OptionYear,
+                                       TickConversion = c.TickConversion,
+                                       MarketZoneID = l.MarketZoneID.HasValue ? l.MarketZoneID.Value : 0
+                                   }).ToListAsync();
 
             var url = "https://ondemand.websol.barchart.com/getQuote.json?apikey=061bdbf8ef8efcf5da6e335be86fa8de&symbols=";
 
