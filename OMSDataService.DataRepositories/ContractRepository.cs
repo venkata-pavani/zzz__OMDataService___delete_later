@@ -26,29 +26,29 @@ namespace OMSDataService.DataRepositories
         {
             return await (from c in _context.Contracts
                           join cd in _context.ContractDetails on c.ContractID equals cd.ContractID
-                          join a in _context.Accounts on c.AccountID equals a.AccountID
+                          join a in _context.Accounts on cd.AccountID equals a.AccountID
                           join cmd in _context.Commodities on cd.CommodityID equals cmd.CommodityID
                           join ct in _context.ContractTypes on cd.ContractTypeID equals ct.ContractTypeID
-                          join l in _context.Locations on c.LocationID equals l.LocationID
-                          where c.AccountID == accountId
+                          join l in _context.Locations on cd.LocationID equals l.LocationID
+                          where cd.AccountID == accountId && cd.Offer.Value == true
                           orderby c.ContractID
                           select new OfferSearchResult
                           {
-                              AccountID = c.AccountID,
+                              AccountID = cd.AccountID.HasValue ? cd.AccountID.Value : 0,
                               AccountName = a.AccountName,
-                              Basis = cd.Basis.HasValue ? cd.Basis.Value.ToString("N4") : "",
-                              CashPrice = cd.CashPrice.HasValue ? cd.CashPrice.Value.ToString("N4") : "",
+                              Basis = cd.OfferBasis.HasValue ? cd.OfferBasis.Value.ToString("N4") : "",
+                              CashPrice = cd.OfferCashPrice.HasValue ? cd.OfferCashPrice.Value.ToString("N4") : "",
                               CommodityID = cd.CommodityID,
                               CommodityName = cmd.CommodityName,
-                              ContractDate = c.ContractDate.ToString("MM/dd/yyyy"),
+                              ContractDate = cd.ContractDetailOfferDate.HasValue ? cd.ContractDetailOfferDate.Value.ToString("MM/dd/yyyy") : "",
                               ContractID = c.ContractID,
                               ContractNumber = c.ContractNumber,
                               ContractTypeID = cd.ContractTypeID,
                               ContractTypeName = ct.ContractTypeCode,
                               DeliveryEndDate = cd.DeliveryEndDate.HasValue ? cd.DeliveryEndDate.Value.ToString("MM/dd/yyyy") : "",
                               DeliveryStartDate = cd.DeliveryStartDate.HasValue ? cd.DeliveryStartDate.Value.ToString("MM/dd/yyyy") : "",
-                              FuturesPrice = cd.Futures.HasValue ? cd.Futures.Value.ToString("N4") : "",
-                              LocationID = c.LocationID,
+                              FuturesPrice = cd.OfferFutures.HasValue ? cd.OfferFutures.Value.ToString("N4") : "",
+                              LocationID = cd.LocationID.HasValue ? cd.LocationID.Value : 0,
                               LocationName = l.LocationName,
                               Quantity = cd.Quantity.HasValue ? cd.Quantity.Value.ToString("N4") : ""
                           }).ToListAsync();
