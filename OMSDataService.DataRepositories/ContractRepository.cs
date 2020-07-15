@@ -125,6 +125,10 @@ namespace OMSDataService.DataRepositories
                         Color = "#FFE119"
                     });
                 }
+
+                contract.Pricing = await _context.Query<ContractPricing>().FromSqlRaw("Execute dbo.GetContractPricings @ContractNumber = {0}", contract.InternalContractNumber).ToListAsync();
+
+                contract.Amendments = await _context.Query<ContractAmendment>().FromSqlRaw("Execute dbo.GetContractAmendments @ContractNumber = {0}", contract.InternalContractNumber).ToListAsync();
             }
 
             return contracts;

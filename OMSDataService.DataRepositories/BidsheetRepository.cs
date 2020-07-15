@@ -52,7 +52,7 @@ namespace OMSDataService.DataRepositories
             _context.SaveChanges();
         }
 
-        public async Task<List<BidsheetSearchResult>> SearchBidsheets(int? locationId, int? commodityId, bool active)
+        public async Task<List<BidsheetSearchResult>> SearchBidsheets(int? locationId, int? commodityId, bool active, bool countHasOffers)
         {
             var bidsheets = await (from b in _context.Bidsheets
                                    join l in _context.Locations on b.LocationID equals l.LocationID
@@ -124,6 +124,11 @@ namespace OMSDataService.DataRepositories
                                 bidsheet.FuturesPrice = (quote.lastPrice * bidsheet.TickConversion.Value).ToString("N4");
                                 bidsheet.FuturesChange = quote.netChange.ToString("N4");
                                 bidsheet.CashPrice = (quote.lastPrice * bidsheet.TickConversion.Value + decimal.Parse(bidsheet.Basis)).ToString("N4");
+                            }
+
+                            if (countHasOffers)
+                            {
+                                bidsheet.HasOffers = _context.ContractDetails.Where(c => c.BidsheetID == bidsheet.BidsheetID).Count() > 0;
                             }
                         }
                     }
