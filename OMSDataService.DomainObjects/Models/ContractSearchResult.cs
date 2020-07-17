@@ -40,30 +40,33 @@ namespace OMSDataService.DomainObjects.Models
     {
         public string LocationName { get; set; }
         public string ContractTypeName { get; set; }
-        public int AccountID { get; set; }
+        public int? AccountID { get; set; }
         public string AccountName { get; set; }
         public string CommodityName { get; set; }
         public int InternalContractNumber { get; set; }
         public string ContractNumber { get; set; }
         public string ContractDate { get; set; }
+        public DateTime? ContractDateTime { get; set; }
         public string DeliveryStartDate { get; set; }
+        public DateTime? DeliveryStart { get; set; }
         public string DeliveryEndDate { get; set; }
-        public string Quantity { get; set; }
+        public DateTime? DeliveryEnd { get; set; }
+        public decimal Quantity { get; set; }
         public string ContractStatus { get; set; }
         public string PricingStatus { get; set; }
         public string DeliveryBasis { get; set; }
         public string OptionMonth { get; set; }
-        public string Basis { get; set; }
-        public string FuturesPrice { get; set; }
-        public string CashPrice { get; set; }
+        public decimal? Basis { get; set; }
+        public decimal? FuturesPrice { get; set; }
+        public decimal? CashPrice { get; set; }
         public string InternalNotes { get; set; }
         public string AdditionalContractNotes { get; set; }
         public bool Printed { get; set; }
         public string MarketZoneName { get; set; }
-        public string AppliedQuantity { get; set; }
-        public string RemainingQuantity { get; set; }
-        public string SettledQuantity { get; set; }
-        public string UnsettledQuantity { get; set; }
+        public decimal? AppliedQuantity { get; set; }
+        public decimal? RemainingQuantity { get; set; }
+        public decimal? SettledQuantity { get; set; }
+        public decimal? UnsettledQuantity { get; set; }
         public string AdvisorName { get; set; }
         public string ContractTransactionType { get; set; }
 

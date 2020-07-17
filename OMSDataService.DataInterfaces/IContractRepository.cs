@@ -12,6 +12,9 @@ namespace OMSDataService.DataInterfaces
         Task<Contract> GetContract(int contractId);
         void AddContract(Contract contract, ContractDetail contractDetail);
         void UpdateContract(Contract item);
-
+        Task<List<ContractSearchResult>> SearchContracts(string contractTransactionTypeExternalRef, string locationExternalRef, string commodityExternalRef, string customerName,
+                                                         DateTime? contractDate, DateTime? deliveryBeginDate, DateTime? deliveryEndDate);
+        Task<List<OfferSearchResult>> SearchOffers(int? contractTransactionTypeID, int? locationID, int? commodityID, string customerName,
+                                                   DateTime? offerDate, DateTime? deliveryBeginDate, DateTime? deliveryEndDate);
     }
 }

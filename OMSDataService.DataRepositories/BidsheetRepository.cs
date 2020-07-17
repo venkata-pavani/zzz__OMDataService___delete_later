@@ -64,7 +64,7 @@ namespace OMSDataService.DataRepositories
                                    orderby l.LocationName, c.CommodityName, b.DeliveryBeginDate, b.DeliveryEndDate
                                    select new BidsheetSearchResult
                                    {
-                                       Basis = b.Basis.ToString("N4"),
+                                       Basis = b.Basis,
                                        BidsheetID = b.BidsheetID,
                                        CommodityID = c.CommodityID,
                                        CommodityName = c.CommodityName,
@@ -89,52 +89,55 @@ namespace OMSDataService.DataRepositories
 
             var symbolCount = 0;
 
-            foreach (var bidsheet in bidsheets)
+            if (bidsheets.Count > 0)
             {
-                if (!string.IsNullOrEmpty(bidsheet.Symbol))
+                foreach (var bidsheet in bidsheets)
                 {
-                    bidsheet.BarchartSymbol = bidsheet.Symbol + bidsheet.OptionMonthCode + bidsheet.OptionYear.ToString().Remove(0, 2);
-
-                    if (symbolCount >= 1)
+                    if (!string.IsNullOrEmpty(bidsheet.Symbol))
                     {
-                        url += ",";
-                    }
+                        bidsheet.BarchartSymbol = bidsheet.Symbol + bidsheet.OptionMonthCode + bidsheet.OptionYear.ToString().Remove(0, 2);
 
-                    url += bidsheet.BarchartSymbol;
-
-                    ++symbolCount;
-                } 
-            }
-
-            using (var httpClient = new HttpClient())
-            {
-                using (var response = await httpClient.GetAsync(url))
-                {
-                    var apiResponse = await response.Content.ReadAsStringAsync();
-                    var result = JsonSerializer.Deserialize(apiResponse, typeof(BarchartGetQuoteResponse)) as BarchartGetQuoteResponse;
-
-                    foreach (var bidsheet in bidsheets)
-                    {
-                        if (!string.IsNullOrEmpty(bidsheet.BarchartSymbol))
+                        if (symbolCount >= 1)
                         {
-                            var quote = result.results.Where(r => r.symbol == bidsheet.BarchartSymbol).FirstOrDefault();
+                            url += ",";
+                        }
 
-                            if (quote != null)
-                            {
-                                bidsheet.FuturesPrice = (quote.lastPrice * bidsheet.TickConversion.Value).ToString("N4");
-                                bidsheet.FuturesChange = quote.netChange.ToString("N4");
-                                bidsheet.CashPrice = (quote.lastPrice * bidsheet.TickConversion.Value + decimal.Parse(bidsheet.Basis)).ToString("N4");
-                            }
+                        url += bidsheet.BarchartSymbol;
 
-                            if (countHasOffers)
+                        ++symbolCount;
+                    }
+                }
+
+                using (var httpClient = new HttpClient())
+                {
+                    using (var response = await httpClient.GetAsync(url))
+                    {
+                        var apiResponse = await response.Content.ReadAsStringAsync();
+                        var result = JsonSerializer.Deserialize(apiResponse, typeof(BarchartGetQuoteResponse)) as BarchartGetQuoteResponse;
+
+                        foreach (var bidsheet in bidsheets)
+                        {
+                            if (!string.IsNullOrEmpty(bidsheet.BarchartSymbol))
                             {
-                                bidsheet.HasOffers = _context.ContractDetails.Where(c => c.BidsheetID == bidsheet.BidsheetID).Count() > 0;
+                                var quote = result.results.Where(r => r.symbol == bidsheet.BarchartSymbol).FirstOrDefault();
+
+                                if (quote != null)
+                                {
+                                    bidsheet.FuturesPrice = quote.lastPrice * bidsheet.TickConversion.Value;
+                                    bidsheet.FuturesChange = quote.netChange;
+                                    bidsheet.CashPrice = quote.lastPrice * bidsheet.TickConversion.Value + bidsheet.Basis;
+                                }
+
+                                if (countHasOffers)
+                                {
+                                    bidsheet.HasOffers = _context.ContractDetails.Where(c => c.BidsheetID == bidsheet.BidsheetID).Count() > 0;
+                                }
                             }
                         }
                     }
                 }
             }
-            
+
             return bidsheets;
         }
     }

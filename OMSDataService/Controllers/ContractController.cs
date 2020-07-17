@@ -110,5 +110,43 @@ namespace OMSDataService.Controllers
                 return BadRequest(returnResult);
             }
         }
+
+        [ActionName("SearchContracts")]
+        [HttpGet]
+        public async Task<IActionResult> SearchContracts(string contractTransactionTypeExternalRef, string locationExternalRef, string commodityExternalRef, string customerName,
+                                                         DateTime? contractDate, DateTime? deliveryBeginDate, DateTime? deliveryEndDate)
+        {
+            try
+            {
+                var list = await _repo.SearchContracts(contractTransactionTypeExternalRef, locationExternalRef, commodityExternalRef, customerName, contractDate,
+                                                       deliveryBeginDate, deliveryEndDate);
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "SearchContracts failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("SearchOffers")]
+        [HttpGet]
+        public async Task<IActionResult> SearchOffers(int? contractTransactionTypeID, int? locationID, int? commodityID, string customerName,
+                                                      DateTime? offerDate, DateTime? deliveryBeginDate, DateTime? deliveryEndDate)
+        {
+            try
+            {
+                var list = await _repo.SearchOffers(contractTransactionTypeID, locationID, commodityID, customerName, offerDate,
+                                                    deliveryBeginDate, deliveryEndDate);
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "SearchOffers failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
     }
 }
