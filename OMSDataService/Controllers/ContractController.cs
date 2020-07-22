@@ -95,11 +95,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("UpdateContract")]
         [HttpPost]
-        public IActionResult UpdateContract([FromBody] Contract item)
+        public IActionResult UpdateContract([FromBody] JObject item)
         {
             try
             {
-                _repo.UpdateContract(item);
+                _repo.UpdateContract(item["contract"].ToObject<Contract>(), item["contractDetail"].ToObject<ContractDetail>());
 
                 return Ok();
             }
@@ -125,6 +125,40 @@ namespace OMSDataService.Controllers
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "SearchContracts failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetContractPricings")]
+        [HttpGet]
+        public async Task<IActionResult> GetContractPricings(int contractNumber)
+        {
+            try
+            {
+                var list = await _repo.GetContractPricings(contractNumber);
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetContractPricings failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetContractAmendments")]
+        [HttpGet]
+        public async Task<IActionResult> GetContractAmendments(int contractNumber)
+        {
+            try
+            {
+                var list = await _repo.GetContractAmendments(contractNumber);
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetContractAmendments failed: {ex.message}");
                 var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
                 return BadRequest(returnResult);
             }

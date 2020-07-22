@@ -56,95 +56,31 @@ namespace OMSDataService.DataRepositories
                               LocationName = l.LocationName,
                               Quantity = cd.Quantity,
                               ContractTransactionType = ctt.Description
-                          }).ToListAsync();
+                          }).Take(100).ToListAsync();
         }
 
         [Obsolete]
         public async Task<List<ContractSearchResult>> GetContracts(string accountExternalRef)
         {
-            var contracts = await _context.Query<ContractSearchResult>().FromSqlRaw("Execute dbo.GetContracts @AccountExternalRef = {0}", accountExternalRef).ToListAsync();
-
-            foreach (var contract in contracts)
-            {
-                contract.AppliedRemainingGraphData = new List<ContractGraphData>();
-                contract.SettledUnsettledGraphData = new List<ContractGraphData>();
-
-                if (contract.Quantity <= 0)
-                {
-                    contract.AppliedRemainingGraphData.Add(new ContractGraphData()
-                    {
-                        Label = "Applied Quantity",
-                        Value = 0M,
-                        Color = "#075D3B"
-                    });
-
-                    contract.AppliedRemainingGraphData.Add(new ContractGraphData()
-                    {
-                        Label = "Remaining Quantity",
-                        Value = 0M,
-                        Color = "#FFE119"
-                    });
-
-                    contract.SettledUnsettledGraphData.Add(new ContractGraphData()
-                    {
-                        Label = "Settled Quantity",
-                        Value = 0M,
-                        Color = "#075D3B"
-                    });
-
-                    contract.SettledUnsettledGraphData.Add(new ContractGraphData()
-                    {
-                        Label = "Unsettled Quantity",
-                        Value = 0M,
-                        Color = "#FFE119"
-                    });
-                }
-
-                else
-                {
-                    contract.AppliedRemainingGraphData.Add(new ContractGraphData()
-                    {
-                        Label = "Applied Quantity",
-                        Value = Math.Round(contract.AppliedQuantity.Value / contract.Quantity, 4),
-                        Color = "#075D3B"
-                    });
-
-                    contract.AppliedRemainingGraphData.Add(new ContractGraphData()
-                    {
-                        Label = "Remaining Quantity",
-                        Value = Math.Round(contract.RemainingQuantity.Value / contract.Quantity, 4),
-                        Color = "#FFE119"
-                    });
-
-                    contract.SettledUnsettledGraphData.Add(new ContractGraphData()
-                    {
-                        Label = "Settled Quantity",
-                        Value = Math.Round(contract.SettledQuantity.Value / contract.Quantity, 4),
-                        Color = "#075D3B"
-                    });
-
-                    contract.SettledUnsettledGraphData.Add(new ContractGraphData()
-                    {
-                        Label = "Unsettled Quantity",
-                        Value = Math.Round(contract.UnsettledQuantity.Value / contract.Quantity, 4),
-                        Color = "#FFE119"
-                    });
-                }
-
-                contract.Pricing = await _context.Query<ContractPricing>().FromSqlRaw("Execute dbo.GetContractPricings @ContractNumber = {0}", contract.InternalContractNumber).ToListAsync();
-
-                contract.Amendments = await _context.Query<ContractAmendment>().FromSqlRaw("Execute dbo.GetContractAmendments @ContractNumber = {0}", contract.InternalContractNumber).ToListAsync();
-            }
-
-            return contracts;
+            return await _context.Query<ContractSearchResult>().FromSqlRaw("Execute dbo.GetContracts1 @AccountExternalRef = {0}", accountExternalRef).ToListAsync();
         }
 
-        public async Task<Contract> GetContract(int contractId)
+        public async Task<ContractDTO> GetContract(int contractId)
         {
-            var item = await _context.Contracts
-                  .FirstOrDefaultAsync(c => c.ContractID == contractId);  
+            var dto = new ContractDTO();
+            dto.Contract = null;
+            dto.ContractDetail = null;
 
-            return item;
+            var contract = await _context.Contracts.FirstOrDefaultAsync(c => c.ContractID == contractId);
+            var contractDetail = await _context.ContractDetails.FirstOrDefaultAsync(cd => cd.ContractID == contractId);
+
+            if (contract != null && contractDetail != null)
+            {
+                dto.Contract = contract;
+                dto.ContractDetail = contractDetail;
+            }
+
+            return dto;
         }
 
         public void AddContract(Contract contract, ContractDetail contractDetail)
@@ -158,9 +94,10 @@ namespace OMSDataService.DataRepositories
             _context.SaveChanges();
         }
 
-        public void UpdateContract(Contract item)
+        public void UpdateContract(Contract contract, ContractDetail contractDetail)
         {
-            _context.Entry(item).State = EntityState.Modified;
+            _context.Entry(contract).State = EntityState.Modified;
+            _context.Entry(contractDetail).State = EntityState.Modified;
             _context.SaveChanges();
         }
 
@@ -168,7 +105,7 @@ namespace OMSDataService.DataRepositories
         public async Task<List<ContractSearchResult>> SearchContracts(string contractTransactionTypeExternalRef, string locationExternalRef, string commodityExternalRef, string customerName,
                                                                       DateTime? contractDate, DateTime? deliveryBeginDate, DateTime? deliveryEndDate)
         {
-            return await _context.Query<ContractSearchResult>().FromSqlRaw("Execute dbo.SearchContracts " +
+            return await _context.Query<ContractSearchResult>().FromSqlRaw("Execute dbo.SearchContracts1 " +
                                                                            "@ContractTransactionTypeExternalRef = {0}," +
                                                                            "@LocationExternalRef = {1}, " +
                                                                            "@CommodityExternalRef = {2}, " +
@@ -184,6 +121,18 @@ namespace OMSDataService.DataRepositories
                                                                            deliveryBeginDate,
                                                                            deliveryEndDate)
                                                                            .ToListAsync();
+        }
+
+        [Obsolete]
+        public async Task<List<ContractPricing>> GetContractPricings(int contractNumber)
+        {
+            return await _context.Query<ContractPricing>().FromSqlRaw("Execute dbo.GetContractPricings @ContractNumber = {0}", contractNumber).ToListAsync();
+        }
+
+        [Obsolete]
+        public async Task<List<ContractAmendment>> GetContractAmendments(int contractNumber)
+        {
+            return await _context.Query<ContractAmendment>().FromSqlRaw("Execute dbo.GetContractAmendments @ContractNumber = {0}", contractNumber).ToListAsync();
         }
 
         public async Task<List<OfferSearchResult>> SearchOffers(int? contractTransactionTypeID, int? locationID, int? commodityID, string customerName,
