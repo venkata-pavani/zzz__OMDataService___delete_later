@@ -56,7 +56,7 @@ namespace OMSDataService.DataRepositories
                               LocationName = l.LocationName,
                               Quantity = cd.Quantity,
                               ContractTransactionType = ctt.Description
-                          }).Take(100).ToListAsync();
+                          }).Take(1000).ToListAsync();
         }
 
         [Obsolete]
@@ -177,7 +177,7 @@ namespace OMSDataService.DataRepositories
                               LocationName = l.LocationName,
                               Quantity = cd.Quantity,
                               ContractTransactionType = ctt.Description
-                          }).Take(100).ToListAsync();
+                          }).Take(1000).ToListAsync();
         }
     }
 }
