@@ -8,7 +8,7 @@ namespace OMSDataService.DomainObjects.Models
         public string LocationName { get; set; }
         public int ContractTypeID { get; set; }
         public string ContractTypeName { get; set; }
-        public int AccountID { get; set; }
+        public string AccountID { get; set; }
         public string AccountName { get; set; }
         public int CommodityID { get; set; }
         public string CommodityName { get; set; }
@@ -24,5 +24,8 @@ namespace OMSDataService.DomainObjects.Models
         public decimal? FuturesPrice { get; set; }
         public decimal? CashPrice { get; set; }
         public string ContractTransactionType { get; set; }
+        public string OfferStatusType { get; set; }
+        public string MarketZone { get; set; }
+        public string AdvisorName { get; set; }
     }
 }

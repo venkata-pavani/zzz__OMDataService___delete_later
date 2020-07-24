@@ -113,13 +113,16 @@ namespace OMSDataService.Controllers
 
         [ActionName("SearchContracts")]
         [HttpGet]
-        public async Task<IActionResult> SearchContracts(string contractTransactionTypeExternalRef, string locationExternalRef, string commodityExternalRef, string customerName,
-                                                         DateTime? contractDate, DateTime? deliveryBeginDate, DateTime? deliveryEndDate)
+        public async Task<IActionResult> SearchContracts(string contractTransactionTypeExternalRef, string locationExternalRef, string commodityExternalRef,
+                                                         string customerName, string marketZoneExternalRef, string contractTypeExternalRef, string contractStatusTypeExternalRef,
+                                                         string advisorExternalRef, DateTime? contractStartDate, DateTime? contractEndDate, DateTime? deliveryBeginStartDate,
+                                                         DateTime? deliveryBeginEndDate, DateTime? deliveryEndStartDate, DateTime? deliveryEndEndDate)
         {
             try
             {
-                var list = await _repo.SearchContracts(contractTransactionTypeExternalRef, locationExternalRef, commodityExternalRef, customerName, contractDate,
-                                                       deliveryBeginDate, deliveryEndDate);
+                var list = await _repo.SearchContracts(contractTransactionTypeExternalRef, locationExternalRef, commodityExternalRef, customerName,
+                                                       marketZoneExternalRef, contractTypeExternalRef, contractStatusTypeExternalRef, advisorExternalRef,
+                                                       contractStartDate, contractEndDate, deliveryBeginStartDate, deliveryBeginEndDate, deliveryEndStartDate, deliveryEndEndDate);
                 return Ok(list);
             }
             catch (Exception ex)
@@ -166,13 +169,14 @@ namespace OMSDataService.Controllers
 
         [ActionName("SearchOffers")]
         [HttpGet]
-        public async Task<IActionResult> SearchOffers(int? contractTransactionTypeID, int? locationID, int? commodityID, string customerName,
-                                                      DateTime? offerDate, DateTime? deliveryBeginDate, DateTime? deliveryEndDate)
+        public async Task<IActionResult> SearchOffers(int? contractTransactionTypeID, int? locationID, int? commodityID, string customerName, int? contractTypeID, int? offerStatusTypeID,
+                                                                int? marketZoneID, int? advisorID, DateTime? offerStartDate, DateTime? offerEndDate, DateTime? deliveryBeginStartDate,
+                                                                DateTime? deliveryBeginEndDate, DateTime? deliveryEndStartDate, DateTime? deliveryEndEndDate)
         {
             try
             {
-                var list = await _repo.SearchOffers(contractTransactionTypeID, locationID, commodityID, customerName, offerDate,
-                                                    deliveryBeginDate, deliveryEndDate);
+                var list = await _repo.SearchOffers(contractTransactionTypeID, locationID, commodityID, customerName, contractTypeID, offerStatusTypeID, marketZoneID,
+                                                    advisorID, offerStartDate, offerEndDate, deliveryBeginStartDate, deliveryBeginEndDate, deliveryEndStartDate, deliveryEndEndDate);
                 return Ok(list);
             }
             catch (Exception ex)

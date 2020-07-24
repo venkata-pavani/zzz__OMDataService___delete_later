@@ -40,7 +40,7 @@ namespace OMSDataService.DomainObjects.Models
     {
         public string LocationName { get; set; }
         public string ContractTypeName { get; set; }
-        //public int? AccountID { get; set; }
+        public string AccountID { get; set; }
         public string AccountName { get; set; }
         public string CommodityName { get; set; }
         public int InternalContractNumber { get; set; }
