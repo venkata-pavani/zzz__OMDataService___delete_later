@@ -49,6 +49,9 @@ namespace OMSDataService
 
             services.AddAutoMapper(typeof(MappingProfile));
 
+            // read LDAP Configuration
+            services.Configure<LdapConfig>(Configuration.GetSection("Ldap"));
+            services.AddScoped<IAuthenticationService, LdapAuthenticationService>();
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
