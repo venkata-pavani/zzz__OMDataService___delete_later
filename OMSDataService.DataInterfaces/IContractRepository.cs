@@ -21,5 +21,6 @@ namespace OMSDataService.DataInterfaces
                                                    DateTime? deliveryEndStartDate, DateTime? deliveryEndEndDate);
         Task<List<ContractPricing>> GetContractPricings(int contractNumber);
         Task<List<ContractAmendment>> GetContractAmendments(int contractNumber);
+        Task<List<ContractOfferSearchResult>> GetOffersAndContracts(int accountId);
     }
 }

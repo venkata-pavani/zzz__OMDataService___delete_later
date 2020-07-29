@@ -59,6 +59,8 @@ namespace OMSDataService.EF
 
         public DbSet<OfferStatusType> OfferStatusTypes { get; set; }
 
+        public DbSet<ContractExportStatusType> ContractExportStatusTypes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema(schema: DBGlobals.SchemaName);
