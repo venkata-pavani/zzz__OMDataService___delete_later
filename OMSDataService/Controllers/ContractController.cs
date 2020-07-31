@@ -41,23 +41,6 @@ namespace OMSDataService.Controllers
             }
         }
 
-        [ActionName("GetOffersAndContracts")]
-        [HttpGet]
-        public async Task<IActionResult> GetOffersAndContracts(int accountId)
-        {
-            try
-            {
-                var list = await _repo.GetOffersAndContracts(accountId);
-                return Ok(list);
-            }
-            catch (Exception ex)
-            {
-                _logger.Write(LogEventLevel.Error, ex, "GetOffersAndContracts failed: {ex.message}");
-                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
-                return BadRequest(returnResult);
-            }
-        }
-
         [ActionName("GetContracts")]
         [HttpGet]
         public async Task<IActionResult> GetContracts(string accountExternalRef)
@@ -187,8 +170,8 @@ namespace OMSDataService.Controllers
         [ActionName("SearchOffers")]
         [HttpGet]
         public async Task<IActionResult> SearchOffers(int? contractTransactionTypeID, int? locationID, int? commodityID, string customerName, int? contractTypeID, int? offerStatusTypeID,
-                                                                int? marketZoneID, int? advisorID, DateTime? offerStartDate, DateTime? offerEndDate, DateTime? deliveryBeginStartDate,
-                                                                DateTime? deliveryBeginEndDate, DateTime? deliveryEndStartDate, DateTime? deliveryEndEndDate)
+                                                      int? marketZoneID, int? advisorID, DateTime? offerStartDate, DateTime? offerEndDate, DateTime? deliveryBeginStartDate,
+                                                      DateTime? deliveryBeginEndDate, DateTime? deliveryEndStartDate, DateTime? deliveryEndEndDate)
         {
             try
             {
@@ -199,6 +182,45 @@ namespace OMSDataService.Controllers
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "SearchOffers failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetOffersAndContracts")]
+        [HttpGet]
+        public async Task<IActionResult> GetOffersAndContracts(int accountId)
+        {
+            try
+            {
+                var list = await _repo.GetOffersAndContracts(accountId);
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetOffersAndContracts failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("SearchOffersAndContracts")]
+        [HttpGet]
+        public async Task<IActionResult> SearchOffersAndContracts(int? contractTransactionTypeID, int? locationID, int? commodityID, string customerName, int? contractTypeID,
+                                                                  int? marketZoneID, int? advisorID, DateTime? createdStartDate, DateTime? createdEndDate,
+                                                                  DateTime? deliveryBeginStartDate, DateTime? deliveryBeginEndDate, DateTime? deliveryEndStartDate,
+                                                                  DateTime? deliveryEndEndDate)
+        {
+            try
+            {
+                var list = await _repo.SearchOffersAndContracts(contractTransactionTypeID, locationID, commodityID, customerName, contractTypeID, marketZoneID,
+                                                                advisorID, createdStartDate, createdEndDate, deliveryBeginStartDate, deliveryBeginEndDate, deliveryEndStartDate,
+                                                                deliveryEndEndDate);
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "SearchOffersAndContracts failed: {ex.message}");
                 var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
                 return BadRequest(returnResult);
             }

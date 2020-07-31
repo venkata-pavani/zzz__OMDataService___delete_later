@@ -22,5 +22,9 @@ namespace OMSDataService.DataInterfaces
         Task<List<ContractPricing>> GetContractPricings(int contractNumber);
         Task<List<ContractAmendment>> GetContractAmendments(int contractNumber);
         Task<List<ContractOfferSearchResult>> GetOffersAndContracts(int accountId);
+        Task<List<ContractOfferSearchResult>> SearchOffersAndContracts(int? contractTransactionTypeID, int? locationID, int? commodityID, string customerName, int? contractTypeID,
+                                                                       int? marketZoneID, int? advisorID, DateTime? createdStartDate, DateTime? createdEndDate,
+                                                                       DateTime? deliveryBeginStartDate, DateTime? deliveryBeginEndDate, DateTime? deliveryEndStartDate,
+                                                                       DateTime? deliveryEndEndDate);
     }
 }

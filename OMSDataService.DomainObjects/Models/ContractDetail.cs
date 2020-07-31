@@ -47,9 +47,9 @@ namespace OMSDataService.DomainObjects.Models
         public int? ContractExportStatusTypeID { get; set; }
         public bool? IsArchived { get; set; }
         public DateTime AddDate { get; set; }
-        public int AddUserID { get; set; }
+        public string AddUserID { get; set; }
         public DateTime ChgDate { get; set; }
-        public int ChgUserID { get; set; }
+        public string ChgUserID { get; set; }
         public DateTime? ContractDetailOfferDate { get; set; }
         public bool? Offer { get; set; }
         public int? OfferStatusTypeID { get; set; }

@@ -26,8 +26,8 @@ namespace OMSDataService.DomainObjects.Models
         public string ExternalRef { get; set; }
         public bool IsActive { get; set; }
         public DateTime AddDate { get; set; }
-        public int AddUserID { get; set; }
+        public string AddUserID { get; set; }
         public DateTime ChgDate { get; set; }
-        public int ChgUserID { get; set; }
+        public string ChgUserID { get; set; }
     }
 }

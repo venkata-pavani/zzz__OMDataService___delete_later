@@ -42,12 +42,16 @@ namespace OMSDataService.DataRepositories
 
         public void AddBidsheet(Bidsheet item)
         {
+            item.AddDate = item.ChgDate = DateTime.Now;
+
             _context.Bidsheets.Add(item);
             _context.SaveChanges();
         }
 
         public void UpdateBidsheet(Bidsheet item)
         {
+            item.ChgDate = DateTime.Now;
+
             _context.Entry(item).State = EntityState.Modified;
             _context.SaveChanges();
         }
