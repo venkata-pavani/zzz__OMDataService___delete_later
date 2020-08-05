@@ -41,6 +41,23 @@ namespace OMSDataService.Controllers
             }
         }
 
+        [ActionName("GetOffersOnContract")]
+        [HttpGet]
+        public async Task<IActionResult> GetOffersOnContract(int contractNumber)
+        {
+            try
+            {
+                var list = await _repo.GetOffersOnContract(contractNumber);
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetOffersOnContract failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
         [ActionName("GetContracts")]
         [HttpGet]
         public async Task<IActionResult> GetContracts(string accountExternalRef)

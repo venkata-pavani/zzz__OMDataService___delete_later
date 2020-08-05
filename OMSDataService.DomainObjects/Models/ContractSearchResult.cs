@@ -69,6 +69,7 @@ namespace OMSDataService.DomainObjects.Models
         public decimal? UnsettledQuantity { get; set; }
         public string AdvisorName { get; set; }
         public string ContractTransactionType { get; set; }
+        public bool HasOffers { get; set; }
 
         [NotMapped]
         public List<ContractGraphData> AppliedRemainingGraphData { get; set; }
@@ -81,5 +82,8 @@ namespace OMSDataService.DomainObjects.Models
 
         [NotMapped]
         public List<ContractAmendment> Amendments { get; set; }
+
+        [NotMapped]
+        public List<OfferSearchResult> Offers { get; set; }
     }
 }
