@@ -9,6 +9,7 @@ namespace OMSDataService.DataInterfaces
     {
         Task<List<OfferSearchResult>> GetOffers(int accountId);
         Task<List<OfferSearchResult>> GetOffersOnContract(int contractNumber);
+        Task<List<OfferSearchResult>> GetOffersOnBidsheet(int bidsheetID);
         Task<List<ContractSearchResult>> GetContracts(string accountExternalRef);
         Task<ContractDTO> GetContract(int contractId);
         void AddContract(Contract contract, ContractDetail contractDetail);

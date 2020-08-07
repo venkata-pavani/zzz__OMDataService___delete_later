@@ -119,26 +119,55 @@ namespace OMSDataService.DataRepositories
 
         public async Task<List<AccountSearchResult>> SearchAccounts(string accountName, string externalRef)
         {
-            return await (from a in _context.Accounts
-                          join s in _context.States on a.StateID equals s.StateID
-                          where (string.IsNullOrEmpty(accountName) || a.AccountName.Contains(accountName)) &&
-                                (string.IsNullOrEmpty(externalRef) || a.ExternalRef.Contains(externalRef))
-                          select new AccountSearchResult
-                          {
-                              AccountID = a.AccountID,
-                              AccountName = a.AccountName,
-                              Address1 = a.Address1,
-                              Address2 = a.Address2,
-                              City = a.City,
-                              ExternalRef = a.ExternalRef,
-                              ExternalRefName = a.ExternalRefName,
-                              Fax = a.Fax,
-                              Phone1 = a.Phone1,
-                              Phone2 = a.Phone2,
-                              State = s.StateName,
-                              WebAddress = a.WebAddress,
-                              Zip = a.Zip
-                          }).OrderBy(a => a.AccountName).ToListAsync();
+            var accountNameSearchString = !string.IsNullOrEmpty(accountName) ? accountName.Replace(" ", "") : "";
+            var externalRefSearchString = !string.IsNullOrEmpty(externalRef) ? externalRef.Replace(" ", "") : "";
+
+            var accounts = await (from a in _context.Accounts
+                                  join s in _context.States on a.StateID equals s.StateID
+                                  where (string.IsNullOrEmpty(accountName) || a.AccountName.Replace(" ", "").StartsWith(accountNameSearchString)) &&
+                                        (string.IsNullOrEmpty(externalRef) || a.ExternalRef.Replace(" ", "").StartsWith(externalRefSearchString))
+                                  select new AccountSearchResult
+                                  {
+                                      AccountID = a.AccountID,
+                                      AccountName = a.AccountName,
+                                      Address1 = a.Address1,
+                                      Address2 = a.Address2,
+                                      City = a.City,
+                                      ExternalRef = a.ExternalRef,
+                                      ExternalRefName = a.ExternalRefName,
+                                      Fax = a.Fax,
+                                      Phone1 = a.Phone1,
+                                      Phone2 = a.Phone2,
+                                      State = s.StateName,
+                                      WebAddress = a.WebAddress,
+                                      Zip = a.Zip
+                                  }).OrderBy(a => a.AccountName).ToListAsync();
+
+            if (accounts.Count == 0)
+            {
+                accounts = await (from a in _context.Accounts
+                                  join s in _context.States on a.StateID equals s.StateID
+                                  where (string.IsNullOrEmpty(accountName) || a.AccountName.Replace(" ", "").Contains(accountNameSearchString)) &&
+                                        (string.IsNullOrEmpty(externalRef) || a.ExternalRef.Replace(" ", "").Contains(externalRefSearchString))
+                                  select new AccountSearchResult
+                                  {
+                                      AccountID = a.AccountID,
+                                      AccountName = a.AccountName,
+                                      Address1 = a.Address1,
+                                      Address2 = a.Address2,
+                                      City = a.City,
+                                      ExternalRef = a.ExternalRef,
+                                      ExternalRefName = a.ExternalRefName,
+                                      Fax = a.Fax,
+                                      Phone1 = a.Phone1,
+                                      Phone2 = a.Phone2,
+                                      State = s.StateName,
+                                      WebAddress = a.WebAddress,
+                                      Zip = a.Zip
+                                  }).OrderBy(a => a.AccountName).ToListAsync();
+            }
+
+            return accounts;
         }
 
         public async Task<List<AccountType>> GetAccountTypes()

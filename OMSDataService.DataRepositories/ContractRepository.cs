@@ -108,6 +108,49 @@ namespace OMSDataService.DataRepositories
                           }).Take(1000).ToListAsync();
         }
 
+        public async Task<List<OfferSearchResult>> GetOffersOnBidsheet(int bidsheetID)
+        {
+            return await (from c in _context.Contracts
+                          join cd in _context.ContractDetails on c.ContractID equals cd.ContractID
+                          join a in _context.Accounts on cd.AccountID equals a.AccountID
+                          join cmd in _context.Commodities on cd.CommodityID equals cmd.CommodityID
+                          join ct in _context.ContractTypes on cd.ContractTypeID equals ct.ContractTypeID
+                          join l in _context.Locations on cd.LocationID equals l.LocationID
+                          join ctt in _context.ContractTransactionTypes on c.ContractTransactionTypeID equals ctt.ContractTransactionTypeID
+                          join ost in _context.OfferStatusTypes on cd.OfferStatusTypeID equals ost.OfferStatusTypeID
+                          join m in _context.MarketZones on cd.MarketZoneID equals m.MarketZoneID
+                          join ad in _context.Advisors on cd.AdvisorID equals ad.AdvisorID
+                          where cd.BidsheetID == bidsheetID && cd.Offer.Value == true
+                          orderby c.ContractID
+                          select new OfferSearchResult
+                          {
+                              AccountID = a.ExternalRef,
+                              AccountName = a.AccountName,
+                              Basis = cd.OfferBasis,
+                              CashPrice = cd.OfferCashPrice,
+                              CommodityID = cd.CommodityID,
+                              CommodityName = cmd.CommodityName,
+                              ContractDate = cd.ContractDetailOfferDate.HasValue ? cd.ContractDetailOfferDate.Value.ToString("MM/dd/yyyy") : "",
+                              ContractDateTime = cd.ContractDetailOfferDate,
+                              ContractID = c.ContractID,
+                              ContractNumber = c.ContractNumber,
+                              ContractTypeID = cd.ContractTypeID,
+                              ContractTypeName = ct.ContractTypeCode,
+                              DeliveryEndDate = cd.DeliveryEndDate.HasValue ? cd.DeliveryEndDate.Value.ToString("MM/dd/yyyy") : "",
+                              DeliveryEnd = cd.DeliveryEndDate,
+                              DeliveryStartDate = cd.DeliveryStartDate.HasValue ? cd.DeliveryStartDate.Value.ToString("MM/dd/yyyy") : "",
+                              DeliveryStart = cd.DeliveryStartDate,
+                              FuturesPrice = cd.OfferFutures,
+                              LocationID = cd.LocationID.HasValue ? cd.LocationID.Value : 0,
+                              LocationName = l.LocationName,
+                              Quantity = cd.Quantity,
+                              ContractTransactionType = ctt.Description,
+                              OfferStatusType = ost.OfferStatusTypeDescription,
+                              MarketZone = m.Description,
+                              AdvisorName = ad.AdvisorName
+                          }).Take(1000).ToListAsync();
+        }
+
         [Obsolete]
         public async Task<List<ContractSearchResult>> GetContracts(string accountExternalRef)
         {
@@ -160,6 +203,8 @@ namespace OMSDataService.DataRepositories
                                                                       string advisorExternalRef, DateTime? contractStartDate, DateTime? contractEndDate, DateTime? deliveryBeginStartDate,
                                                                       DateTime? deliveryBeginEndDate, DateTime? deliveryEndStartDate, DateTime? deliveryEndEndDate)
         {
+            var customerNameSearchString = !string.IsNullOrEmpty(customerName) ? customerName.Replace(" ", "") : null;
+
             return await _context.Query<ContractSearchResult>().FromSqlRaw("Execute dbo.SearchContracts " +
                                                                            "@ContractTransactionTypeExternalRef = {0}," +
                                                                            "@LocationExternalRef = {1}, " +
@@ -178,7 +223,7 @@ namespace OMSDataService.DataRepositories
                                                                            contractTransactionTypeExternalRef,
                                                                            locationExternalRef,
                                                                            commodityExternalRef,
-                                                                           customerName,
+                                                                           customerNameSearchString,
                                                                            marketZoneExternalRef,
                                                                            contractTypeExternalRef,
                                                                            contractStatusTypeExternalRef,
@@ -208,6 +253,8 @@ namespace OMSDataService.DataRepositories
                                                                 int? marketZoneID, int? advisorID, DateTime? offerStartDate, DateTime? offerEndDate, DateTime? deliveryBeginStartDate,
                                                                 DateTime? deliveryBeginEndDate, DateTime? deliveryEndStartDate, DateTime? deliveryEndEndDate)
         {
+            var customerNameSearchString = !string.IsNullOrEmpty(customerName) ? customerName.Replace(" ", "") : "";
+
             return await (from c in _context.Contracts
                           join cd in _context.ContractDetails on c.ContractID equals cd.ContractID
                           join a in _context.Accounts on cd.AccountID equals a.AccountID
@@ -222,7 +269,7 @@ namespace OMSDataService.DataRepositories
                                 (!contractTransactionTypeID.HasValue || c.ContractTransactionTypeID == contractTransactionTypeID.Value) &&
                                 (!locationID.HasValue || cd.LocationID == locationID.Value) &&
                                 (!commodityID.HasValue || cd.CommodityID == commodityID.Value) &&
-                                (string.IsNullOrEmpty(customerName) || a.AccountName.Contains(customerName) || a.ExternalRef.Contains(customerName)) &&
+                                (string.IsNullOrEmpty(customerName) || a.AccountName.Replace(" ", "").StartsWith(customerNameSearchString) || a.ExternalRef.Replace(" ", "").StartsWith(customerNameSearchString)) &&
                                 (!contractTypeID.HasValue || cd.ContractTypeID == contractTypeID.Value) &&
                                 (!offerStatusTypeID.HasValue || cd.OfferStatusTypeID == offerStatusTypeID) &&
                                 (!marketZoneID.HasValue || cd.MarketZoneID == marketZoneID) &&
@@ -230,19 +277,19 @@ namespace OMSDataService.DataRepositories
                                 (
                                     (!offerStartDate.HasValue || !offerEndDate.HasValue)
                                     ||
-                                    (offerStartDate.Value <= cd.ContractDetailOfferDate.Value && offerEndDate >= cd.ContractDetailOfferDate.Value)
+                                    (offerStartDate.Value.Date <= cd.ContractDetailOfferDate.Value.Date && offerEndDate.Value.Date >= cd.ContractDetailOfferDate.Value.Date)
                                 )
                                 &&
                                 (
                                     (!deliveryBeginStartDate.HasValue || !deliveryBeginEndDate.HasValue)
                                     ||
-                                    (deliveryBeginStartDate.Value <= cd.DeliveryStartDate.Value && deliveryBeginEndDate >= cd.DeliveryStartDate.Value)
+                                    (deliveryBeginStartDate.Value.Date <= cd.DeliveryStartDate.Value.Date && deliveryBeginEndDate.Value.Date >= cd.DeliveryStartDate.Value.Date)
                                 )
                                 &&
                                 (
                                     (!deliveryEndStartDate.HasValue || !deliveryEndEndDate.HasValue)
                                     ||
-                                    (deliveryEndStartDate.Value <= cd.DeliveryEndDate.Value && deliveryEndEndDate >= cd.DeliveryEndDate.Value)
+                                    (deliveryEndStartDate.Value.Date <= cd.DeliveryEndDate.Value.Date && deliveryEndEndDate.Value.Date >= cd.DeliveryEndDate.Value.Date)
                                 )
                           orderby c.ContractID
                           select new OfferSearchResult
@@ -328,6 +375,8 @@ namespace OMSDataService.DataRepositories
                                                                                     DateTime? deliveryBeginStartDate, DateTime? deliveryBeginEndDate, DateTime? deliveryEndStartDate,
                                                                                     DateTime? deliveryEndEndDate)
         {
+            var customerNameSearchString = !string.IsNullOrEmpty(customerName) ? customerName.Replace(" ", "") : "";
+
             return await (from c in _context.Contracts
                           join cd in _context.ContractDetails on c.ContractID equals cd.ContractID
                           join a in _context.Accounts on cd.AccountID equals a.AccountID
@@ -341,26 +390,26 @@ namespace OMSDataService.DataRepositories
                           where (!contractTransactionTypeID.HasValue || c.ContractTransactionTypeID == contractTransactionTypeID.Value) &&
                                 (!locationID.HasValue || cd.LocationID == locationID.Value) &&
                                 (!commodityID.HasValue || cd.CommodityID == commodityID.Value) &&
-                                (string.IsNullOrEmpty(customerName) || a.AccountName.Contains(customerName) || a.ExternalRef.Contains(customerName)) &&
+                                (string.IsNullOrEmpty(customerName) || a.AccountName.Replace(" ", "").StartsWith(customerNameSearchString) || a.ExternalRef.Replace(" ", "").StartsWith(customerNameSearchString)) &&
                                 (!contractTypeID.HasValue || cd.ContractTypeID == contractTypeID.Value) &&
                                 (!marketZoneID.HasValue || cd.MarketZoneID == marketZoneID) &&
                                 (!advisorID.HasValue || cd.AdvisorID == advisorID) &&
                                 (
                                     (!createdStartDate.HasValue || !createdEndDate.HasValue)
                                     ||
-                                    (createdStartDate.Value <= cd.AddDate && createdEndDate >= cd.AddDate)
+                                    (createdStartDate.Value.Date <= cd.AddDate.Date && createdEndDate.Value.Date >= cd.AddDate.Date)
                                 )
                                 &&
                                 (
                                     (!deliveryBeginStartDate.HasValue || !deliveryBeginEndDate.HasValue)
                                     ||
-                                    (deliveryBeginStartDate.Value <= cd.DeliveryStartDate.Value && deliveryBeginEndDate >= cd.DeliveryStartDate.Value)
+                                    (deliveryBeginStartDate.Value.Date <= cd.DeliveryStartDate.Value.Date && deliveryBeginEndDate.Value.Date >= cd.DeliveryStartDate.Value.Date)
                                 )
                                 &&
                                 (
                                     (!deliveryEndStartDate.HasValue || !deliveryEndEndDate.HasValue)
                                     ||
-                                    (deliveryEndStartDate.Value <= cd.DeliveryEndDate.Value && deliveryEndEndDate >= cd.DeliveryEndDate.Value)
+                                    (deliveryEndStartDate.Value.Date <= cd.DeliveryEndDate.Value.Date && deliveryEndEndDate.Value.Date >= cd.DeliveryEndDate.Value.Date)
                                 )
                           orderby c.AddDate
                           select new ContractOfferSearchResult

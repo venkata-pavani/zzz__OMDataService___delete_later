@@ -58,6 +58,23 @@ namespace OMSDataService.Controllers
             }
         }
 
+        [ActionName("GetOffersOnBidsheet")]
+        [HttpGet]
+        public async Task<IActionResult> GetOffersOnBidsheet(int bidsheetID)
+        {
+            try
+            {
+                var list = await _repo.GetOffersOnBidsheet(bidsheetID);
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetOffersOnBidsheet failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
         [ActionName("GetContracts")]
         [HttpGet]
         public async Task<IActionResult> GetContracts(string accountExternalRef)
