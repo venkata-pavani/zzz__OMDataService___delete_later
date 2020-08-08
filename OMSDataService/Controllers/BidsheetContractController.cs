@@ -95,11 +95,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("SearchBidsheets")]
         [HttpGet]
-        public async Task<IActionResult> SearchBidsheets(int? locationId, int? commodityId, bool active, bool countHasOffers)
+        public async Task<IActionResult> SearchBidsheets(int? locationId, int? commodityId, bool active, bool countHasOffers, bool countHasOffersByAccountOnly, int? accountID)
         {
             try
             {
-                var list = await _repo.SearchBidsheets(locationId, commodityId, active, countHasOffers);
+                var list = await _repo.SearchBidsheets(locationId, commodityId, active, countHasOffers, countHasOffersByAccountOnly, accountID);
                 return Ok(list);
             }
             catch (Exception ex)

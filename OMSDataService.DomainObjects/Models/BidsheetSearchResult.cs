@@ -25,6 +25,7 @@ namespace OMSDataService.DomainObjects.Models
         public bool HasOffers { get; set; }
         public decimal Quantity { get; set; }
         public string BarchartSymbol { get; set; }
+        public string CommoditySymbol { get; set; }
         public decimal? TickConversion { get; set; }
         public string DeliveryPeriod { get; set; }
         public int MarketZoneID { get; set; }

@@ -56,7 +56,7 @@ namespace OMSDataService.DataRepositories
             _context.SaveChanges();
         }
 
-        public async Task<List<BidsheetSearchResult>> SearchBidsheets(int? locationId, int? commodityId, bool active, bool countHasOffers)
+        public async Task<List<BidsheetSearchResult>> SearchBidsheets(int? locationId, int? commodityId, bool active, bool countHasOffers, bool countHasOffersByAccountOnly, int? accountID)
         {
             var bidsheets = await (from b in _context.Bidsheets
                                    join l in _context.Locations on b.LocationID equals l.LocationID
@@ -86,7 +86,8 @@ namespace OMSDataService.DataRepositories
                                        OptionMonthCode = m.MonthCode,
                                        OptionYear = b.OptionYear,
                                        TickConversion = c.TickConversion,
-                                       MarketZoneID = l.MarketZoneID.HasValue ? l.MarketZoneID.Value : 0
+                                       MarketZoneID = l.MarketZoneID ?? 0,
+                                       CommoditySymbol = c.TickerSymbol + m.MonthCode + b.OptionYear.ToString().Substring(3, 1)
                                    }).ToListAsync();
 
             var url = "https://ondemand.websol.barchart.com/getQuote.json?apikey=061bdbf8ef8efcf5da6e335be86fa8de&symbols=";
@@ -134,7 +135,15 @@ namespace OMSDataService.DataRepositories
 
                                 if (countHasOffers)
                                 {
-                                    bidsheet.HasOffers = _context.ContractDetails.Where(c => c.BidsheetID == bidsheet.BidsheetID).Count() > 0;
+                                    if (countHasOffersByAccountOnly)
+                                    {
+                                        bidsheet.HasOffers = _context.ContractDetails.Where(c => c.BidsheetID == bidsheet.BidsheetID && c.AccountID == accountID && c.Offer.Value).Count() > 0;
+                                    }
+
+                                    else
+                                    {
+                                        bidsheet.HasOffers = _context.ContractDetails.Where(c => c.BidsheetID == bidsheet.BidsheetID).Count() > 0;
+                                    }
                                 }
                             }
                         }

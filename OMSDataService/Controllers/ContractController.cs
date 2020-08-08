@@ -60,11 +60,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetOffersOnBidsheet")]
         [HttpGet]
-        public async Task<IActionResult> GetOffersOnBidsheet(int bidsheetID)
+        public async Task<IActionResult> GetOffersOnBidsheet(int bidsheetID, bool getOffersByAccountOnly, int? accountID)
         {
             try
             {
-                var list = await _repo.GetOffersOnBidsheet(bidsheetID);
+                var list = await _repo.GetOffersOnBidsheet(bidsheetID, getOffersByAccountOnly, accountID);
                 return Ok(list);
             }
             catch (Exception ex)
@@ -147,14 +147,14 @@ namespace OMSDataService.Controllers
 
         [ActionName("SearchContracts")]
         [HttpGet]
-        public async Task<IActionResult> SearchContracts(string contractTransactionTypeExternalRef, string locationExternalRef, string commodityExternalRef,
+        public async Task<IActionResult> SearchContracts(string contractTransactionTypeExternalRef, string locationExternalRef, string commodityExternalRef, string commoditySymbol,
                                                          string customerName, string marketZoneExternalRef, string contractTypeExternalRef, string contractStatusTypeExternalRef,
                                                          string advisorExternalRef, DateTime? contractStartDate, DateTime? contractEndDate, DateTime? deliveryBeginStartDate,
                                                          DateTime? deliveryBeginEndDate, DateTime? deliveryEndStartDate, DateTime? deliveryEndEndDate)
         {
             try
             {
-                var list = await _repo.SearchContracts(contractTransactionTypeExternalRef, locationExternalRef, commodityExternalRef, customerName,
+                var list = await _repo.SearchContracts(contractTransactionTypeExternalRef, locationExternalRef, commodityExternalRef, commoditySymbol, customerName,
                                                        marketZoneExternalRef, contractTypeExternalRef, contractStatusTypeExternalRef, advisorExternalRef,
                                                        contractStartDate, contractEndDate, deliveryBeginStartDate, deliveryBeginEndDate, deliveryEndStartDate, deliveryEndEndDate);
                 return Ok(list);
@@ -203,13 +203,13 @@ namespace OMSDataService.Controllers
 
         [ActionName("SearchOffers")]
         [HttpGet]
-        public async Task<IActionResult> SearchOffers(int? contractTransactionTypeID, int? locationID, int? commodityID, string customerName, int? contractTypeID, int? offerStatusTypeID,
-                                                      int? marketZoneID, int? advisorID, DateTime? offerStartDate, DateTime? offerEndDate, DateTime? deliveryBeginStartDate,
-                                                      DateTime? deliveryBeginEndDate, DateTime? deliveryEndStartDate, DateTime? deliveryEndEndDate)
+        public async Task<IActionResult> SearchOffers(int? contractTransactionTypeID, int? locationID, int? commodityID, string commoditySymbol, string customerName, int? contractTypeID,
+                                                      int? offerStatusTypeID, int? marketZoneID, int? advisorID, DateTime? offerStartDate, DateTime? offerEndDate,
+                                                      DateTime? deliveryBeginStartDate, DateTime? deliveryBeginEndDate, DateTime? deliveryEndStartDate, DateTime? deliveryEndEndDate)
         {
             try
             {
-                var list = await _repo.SearchOffers(contractTransactionTypeID, locationID, commodityID, customerName, contractTypeID, offerStatusTypeID, marketZoneID,
+                var list = await _repo.SearchOffers(contractTransactionTypeID, locationID, commodityID, commoditySymbol, customerName, contractTypeID, offerStatusTypeID, marketZoneID,
                                                     advisorID, offerStartDate, offerEndDate, deliveryBeginStartDate, deliveryBeginEndDate, deliveryEndStartDate, deliveryEndEndDate);
                 return Ok(list);
             }
@@ -240,14 +240,14 @@ namespace OMSDataService.Controllers
 
         [ActionName("SearchOffersAndContracts")]
         [HttpGet]
-        public async Task<IActionResult> SearchOffersAndContracts(int? contractTransactionTypeID, int? locationID, int? commodityID, string customerName, int? contractTypeID,
-                                                                  int? marketZoneID, int? advisorID, DateTime? createdStartDate, DateTime? createdEndDate,
+        public async Task<IActionResult> SearchOffersAndContracts(int? contractTransactionTypeID, int? locationID, int? commodityID, string commoditySymbol, string customerName,
+                                                                  int? contractTypeID, int? marketZoneID, int? advisorID, DateTime? createdStartDate, DateTime? createdEndDate,
                                                                   DateTime? deliveryBeginStartDate, DateTime? deliveryBeginEndDate, DateTime? deliveryEndStartDate,
                                                                   DateTime? deliveryEndEndDate)
         {
             try
             {
-                var list = await _repo.SearchOffersAndContracts(contractTransactionTypeID, locationID, commodityID, customerName, contractTypeID, marketZoneID,
+                var list = await _repo.SearchOffersAndContracts(contractTransactionTypeID, locationID, commodityID, commoditySymbol, customerName, contractTypeID, marketZoneID,
                                                                 advisorID, createdStartDate, createdEndDate, deliveryBeginStartDate, deliveryBeginEndDate, deliveryEndStartDate,
                                                                 deliveryEndEndDate);
                 return Ok(list);

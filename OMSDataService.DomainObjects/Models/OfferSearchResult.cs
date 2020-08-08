@@ -27,5 +27,6 @@ namespace OMSDataService.DomainObjects.Models
         public string OfferStatusType { get; set; }
         public string MarketZone { get; set; }
         public string AdvisorName { get; set; }
+        public string CommoditySymbol { get; set; }
     }
 }
