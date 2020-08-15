@@ -40,5 +40,7 @@ namespace OMSDataService.DataInterfaces
         Task<List<ContractPricingStatusType>> GetContractPricingStatusTypes();
 
         Task<List<OfferStatusType>> GetOfferStatusTypes();
+
+        Task<List<ContractExportStatusType>> GetContractExportStatusTypes();
     }
 }

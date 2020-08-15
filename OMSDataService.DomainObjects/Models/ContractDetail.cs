@@ -57,5 +57,18 @@ namespace OMSDataService.DomainObjects.Models
         public decimal? OfferFutures { get; set; }
         public decimal? OfferBasis { get; set; }
         public int? MarketZoneID { get; set; }
+        public decimal? FuturesOnAdd { get; set; }
+        public DateTime? FuturesOnAddDateTime { get; set; }
+        public decimal? FuturesOnInsert { get; set; }
+        public DateTime? FuturesOnInsertDateTime { get; set; }
+        public decimal? BasisOnAdd { get; set; }
+        public DateTime? BasisOnAddDateTime { get; set; }
+        public decimal? BasisOnInsert { get; set; }
+        public DateTime? BasisOnInsertDateTime { get; set; }
+        public int? AdvisorReviewID { get; set; }
+        public DateTime? AdvisorReviewDateTime { get; set; }
+        public int? AdvisorManagerReviewID { get; set; }
+        public DateTime? AdvisorManagerReviewDateTime { get; set; }
+        public bool? WasOffer { get; set; }
     }
 }

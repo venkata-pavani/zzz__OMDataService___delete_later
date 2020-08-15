@@ -29,7 +29,7 @@ namespace OMSDataService.DomainObjects.Models
         public decimal? FuturesPrice { get; set; }
         public decimal? CashPrice { get; set; }
         public string ContractTransactionType { get; set; }
-        public string OfferStatusType { get; set; }
+        public string Status { get; set; }
         public string MarketZone { get; set; }
         public string AdvisorName { get; set; }
         public string CommoditySymbol { get; set; }

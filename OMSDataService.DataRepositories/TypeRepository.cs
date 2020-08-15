@@ -194,5 +194,10 @@ namespace OMSDataService.DataRepositories
         {
             return await _context.OfferStatusTypes.OrderBy(o => o.OfferStatusTypeDescription).ToListAsync();
         }
+
+        public async Task<List<ContractExportStatusType>> GetContractExportStatusTypes()
+        {
+            return await _context.ContractExportStatusTypes.OrderBy(o => o.ContractExportStatusTypeName).ToListAsync();
+        }
     }
 }

@@ -312,5 +312,22 @@ namespace OMSDataService.Controllers
                 return BadRequest(returnResult);
             }
         }
+
+        [ActionName("GetContractExportStatusTypes")]
+        [HttpGet]
+        public async Task<IActionResult> GetContractExportStatusTypes()
+        {
+            try
+            {
+                var list = await _repo.GetContractExportStatusTypes();
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetContractExportStatusTypes failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
     }
 }

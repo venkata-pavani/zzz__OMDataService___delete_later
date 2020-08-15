@@ -11,6 +11,7 @@ namespace OMSDataService.DomainObjects.Models
         public int CommodityID { get; set; }
         public string CommodityName { get; set; }
         public string CommodityCode { get; set; }
+        public string Symbol { get; set; }
         public string TickerSymbol { get; set; }
         public decimal? TickConversion { get; set; }
         public decimal? ContractConversion { get; set; }

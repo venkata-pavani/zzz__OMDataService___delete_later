@@ -111,13 +111,13 @@ namespace OMSDataService.Controllers
 
         [ActionName("AddContract")]
         [HttpPost]
-        public IActionResult AddContract([FromBody] JObject item)
+        public async Task<IActionResult> AddContract([FromBody] JObject item)
         {
             try
             { 
-                _repo.AddContract(item["contract"].ToObject<Contract>(), item["contractDetail"].ToObject<ContractDetail>());
+                var result = await _repo.AddContract(item["contract"].ToObject<Contract>(), item["contractDetail"].ToObject<ContractDetail>());
 
-                return Ok();
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -145,18 +145,56 @@ namespace OMSDataService.Controllers
             }
         }
 
+        [ActionName("ConvertOfferToContract")]
+        [HttpPost]
+        public IActionResult ConvertOfferToContract([FromBody] JObject item)
+        {
+            try
+            {
+                _repo.ConvertOfferToContract(item["contract"].ToObject<Contract>(), item["contractDetail"].ToObject<ContractDetail>());
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "ConvertOfferToContract failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("RollOffer")]
+        [HttpPost]
+        public IActionResult RollOffer([FromBody] JObject item)
+        {
+            try
+            {
+                _repo.RollOffer(item["contract"].ToObject<Contract>(), item["contractDetail"].ToObject<ContractDetail>(), item["bidsheet"].ToObject<BidsheetSearchResult>());
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "RollOffer failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
         [ActionName("SearchContracts")]
         [HttpGet]
         public async Task<IActionResult> SearchContracts(string contractTransactionTypeExternalRef, string locationExternalRef, string commodityExternalRef, string commoditySymbol,
                                                          string customerName, string marketZoneExternalRef, string contractTypeExternalRef, string contractStatusTypeExternalRef,
                                                          string advisorExternalRef, DateTime? contractStartDate, DateTime? contractEndDate, DateTime? deliveryBeginStartDate,
-                                                         DateTime? deliveryBeginEndDate, DateTime? deliveryEndStartDate, DateTime? deliveryEndEndDate)
+                                                         DateTime? deliveryBeginEndDate, DateTime? deliveryEndStartDate, DateTime? deliveryEndEndDate,
+                                                         string contractPricingStatusTypeExternalRef)
         {
             try
             {
                 var list = await _repo.SearchContracts(contractTransactionTypeExternalRef, locationExternalRef, commodityExternalRef, commoditySymbol, customerName,
                                                        marketZoneExternalRef, contractTypeExternalRef, contractStatusTypeExternalRef, advisorExternalRef,
-                                                       contractStartDate, contractEndDate, deliveryBeginStartDate, deliveryBeginEndDate, deliveryEndStartDate, deliveryEndEndDate);
+                                                       contractStartDate, contractEndDate, deliveryBeginStartDate, deliveryBeginEndDate, deliveryEndStartDate, deliveryEndEndDate,
+                                                       contractPricingStatusTypeExternalRef);
                 return Ok(list);
             }
             catch (Exception ex)

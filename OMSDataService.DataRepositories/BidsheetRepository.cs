@@ -32,6 +32,94 @@ namespace OMSDataService.DataRepositories
             return list;
         }
 
+        public async Task<List<BidsheetSearchResult>> GetBidsheetsForLocationAndCommodity(int locationId, int commodityId)
+        {
+            var bidsheets = await (from b in _context.Bidsheets
+                                   join l in _context.Locations on b.LocationID equals l.LocationID
+                                   join c in _context.Commodities on b.CommodityID equals c.CommodityID
+                                   join m in _context.Months on b.MonthID equals m.MonthID
+                                   where b.IsActive &&
+                                   b.LocationID == locationId &&
+                                   b.CommodityID == commodityId
+                                   orderby b.DeliveryBeginDate, b.DeliveryEndDate
+                                   select new BidsheetSearchResult
+                                   {
+                                       Basis = b.Basis,
+                                       BidsheetID = b.BidsheetID,
+                                       CommodityID = c.CommodityID,
+                                       CommodityName = c.CommodityName,
+                                       DeliveryBeginDate = b.DeliveryBeginDate.ToString("MM/dd/yyyy"),
+                                       DeliveryBegin = b.DeliveryBeginDate,
+                                       DeliveryEndDate = b.DeliveryEndDate.ToString("MM/dd/yyyy"),
+                                       DeliveryEnd = b.DeliveryEndDate,
+                                       DeliveryPeriod = b.DeliveryPeriod,
+                                       LocationID = l.LocationID,
+                                       LocationName = l.LocationName,
+                                       FutureMonthID = b.MonthID,
+                                       FutureMonthYear = m.MonthName + " " + b.OptionYear,
+                                       HasOffers = false,
+                                       Symbol = c.TickerSymbol,
+                                       OptionMonthCode = m.MonthCode,
+                                       OptionYear = b.OptionYear,
+                                       TickConversion = c.TickConversion,
+                                       MarketZoneID = l.MarketZoneID ?? 0,
+                                       CommoditySymbol = c.Symbol + m.MonthCode + b.OptionYear.ToString().Substring(3, 1)
+                                   }).ToListAsync();
+
+            var url = "https://ondemand.websol.barchart.com/getQuote.json?apikey=061bdbf8ef8efcf5da6e335be86fa8de&symbols=";
+
+            var symbolCount = 0;
+
+            if (bidsheets.Count > 0)
+            {
+                foreach (var bidsheet in bidsheets)
+                {
+                    if (!string.IsNullOrEmpty(bidsheet.Symbol))
+                    {
+                        bidsheet.BarchartSymbol = bidsheet.Symbol + bidsheet.OptionMonthCode + bidsheet.OptionYear.ToString().Remove(0, 2);
+
+                        if (symbolCount >= 1)
+                        {
+                            url += ",";
+                        }
+
+                        url += bidsheet.BarchartSymbol;
+
+                        ++symbolCount;
+                    }
+                }
+
+                using (var httpClient = new HttpClient())
+                {
+                    using (var response = await httpClient.GetAsync(url))
+                    {
+                        var apiResponse = await response.Content.ReadAsStringAsync();
+                        var result = JsonSerializer.Deserialize(apiResponse, typeof(BarchartGetQuoteResponse)) as BarchartGetQuoteResponse;
+
+                        foreach (var bidsheet in bidsheets)
+                        {
+                            if (!string.IsNullOrEmpty(bidsheet.BarchartSymbol))
+                            {
+                                if (result != null && result.results != null && result.results.Length > 0)
+                                {
+                                    var quote = result.results.Where(r => r.symbol == bidsheet.BarchartSymbol).FirstOrDefault();
+
+                                    if (quote != null)
+                                    {
+                                        bidsheet.FuturesPrice = quote.lastPrice * bidsheet.TickConversion.Value;
+                                        bidsheet.FuturesChange = quote.netChange;
+                                        bidsheet.CashPrice = quote.lastPrice * bidsheet.TickConversion.Value + bidsheet.Basis;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return bidsheets;
+        }
+
         public async Task<Bidsheet> GetBidsheet(int bidsheetId)
         {
             var item = await _context.Bidsheets
@@ -87,7 +175,7 @@ namespace OMSDataService.DataRepositories
                                        OptionYear = b.OptionYear,
                                        TickConversion = c.TickConversion,
                                        MarketZoneID = l.MarketZoneID ?? 0,
-                                       CommoditySymbol = c.TickerSymbol + m.MonthCode + b.OptionYear.ToString().Substring(3, 1)
+                                       CommoditySymbol = c.Symbol + m.MonthCode + b.OptionYear.ToString().Substring(3, 1)
                                    }).ToListAsync();
 
             var url = "https://ondemand.websol.barchart.com/getQuote.json?apikey=061bdbf8ef8efcf5da6e335be86fa8de&symbols=";
@@ -124,26 +212,29 @@ namespace OMSDataService.DataRepositories
                         {
                             if (!string.IsNullOrEmpty(bidsheet.BarchartSymbol))
                             {
-                                var quote = result.results.Where(r => r.symbol == bidsheet.BarchartSymbol).FirstOrDefault();
+                                if (result != null && result.results != null && result.results.Length > 0)
+                                { 
+                                    var quote = result.results.Where(r => r.symbol == bidsheet.BarchartSymbol).FirstOrDefault();
 
-                                if (quote != null)
+                                    if (quote != null)
+                                    {
+                                        bidsheet.FuturesPrice = quote.lastPrice * bidsheet.TickConversion.Value;
+                                        bidsheet.FuturesChange = quote.netChange;
+                                        bidsheet.CashPrice = quote.lastPrice * bidsheet.TickConversion.Value + bidsheet.Basis;
+                                    }
+                                }
+                            }
+
+                            if (countHasOffers)
+                            {
+                                if (countHasOffersByAccountOnly)
                                 {
-                                    bidsheet.FuturesPrice = quote.lastPrice * bidsheet.TickConversion.Value;
-                                    bidsheet.FuturesChange = quote.netChange;
-                                    bidsheet.CashPrice = quote.lastPrice * bidsheet.TickConversion.Value + bidsheet.Basis;
+                                    bidsheet.HasOffers = _context.ContractDetails.Where(c => c.BidsheetID == bidsheet.BidsheetID && c.AccountID == accountID && c.Offer.Value).Count() > 0;
                                 }
 
-                                if (countHasOffers)
+                                else
                                 {
-                                    if (countHasOffersByAccountOnly)
-                                    {
-                                        bidsheet.HasOffers = _context.ContractDetails.Where(c => c.BidsheetID == bidsheet.BidsheetID && c.AccountID == accountID && c.Offer.Value).Count() > 0;
-                                    }
-
-                                    else
-                                    {
-                                        bidsheet.HasOffers = _context.ContractDetails.Where(c => c.BidsheetID == bidsheet.BidsheetID).Count() > 0;
-                                    }
+                                    bidsheet.HasOffers = _context.ContractDetails.Where(c => c.BidsheetID == bidsheet.BidsheetID && c.Offer.Value).Count() > 0;
                                 }
                             }
                         }

@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Net.Http;
+using System.Text.Json;
 
 namespace OMSDataService.DataRepositories
 {
@@ -34,6 +36,7 @@ namespace OMSDataService.DataRepositories
                           join ost in _context.OfferStatusTypes on cd.OfferStatusTypeID equals ost.OfferStatusTypeID
                           join m in _context.MarketZones on cd.MarketZoneID equals m.MarketZoneID
                           join ad in _context.Advisors on cd.AdvisorID equals ad.AdvisorID
+                          join mo in _context.Months on cd.HedgeMonthID equals mo.MonthID
                           where cd.AccountID == accountId && cd.Offer.Value == true
                           orderby c.ContractID
                           select new OfferSearchResult
@@ -61,7 +64,8 @@ namespace OMSDataService.DataRepositories
                               ContractTransactionType = ctt.Description,
                               OfferStatusType = ost.OfferStatusTypeDescription,
                               MarketZone = m.Description,
-                              AdvisorName = ad.AdvisorName
+                              AdvisorName = ad.AdvisorName,
+                              CommoditySymbol = cmd.Symbol + mo.MonthCode + cd.HedgeYear.ToString().Substring(3, 1)
                           }).Take(1000).ToListAsync();
         }
 
@@ -77,6 +81,7 @@ namespace OMSDataService.DataRepositories
                           join ost in _context.OfferStatusTypes on cd.OfferStatusTypeID equals ost.OfferStatusTypeID
                           join m in _context.MarketZones on cd.MarketZoneID equals m.MarketZoneID
                           join ad in _context.Advisors on cd.AdvisorID equals ad.AdvisorID
+                          join mo in _context.Months on cd.HedgeMonthID equals mo.MonthID
                           where c.ContractNumber == contractNumber.ToString() && cd.Offer.Value == true
                           orderby c.ContractID
                           select new OfferSearchResult
@@ -104,7 +109,8 @@ namespace OMSDataService.DataRepositories
                               ContractTransactionType = ctt.Description,
                               OfferStatusType = ost.OfferStatusTypeDescription,
                               MarketZone = m.Description,
-                              AdvisorName = ad.AdvisorName
+                              AdvisorName = ad.AdvisorName,
+                              CommoditySymbol = cmd.Symbol + mo.MonthCode + cd.HedgeYear.ToString().Substring(3, 1)
                           }).Take(1000).ToListAsync();
         }
 
@@ -120,6 +126,7 @@ namespace OMSDataService.DataRepositories
                           join ost in _context.OfferStatusTypes on cd.OfferStatusTypeID equals ost.OfferStatusTypeID
                           join m in _context.MarketZones on cd.MarketZoneID equals m.MarketZoneID
                           join ad in _context.Advisors on cd.AdvisorID equals ad.AdvisorID
+                          join mo in _context.Months on cd.HedgeMonthID equals mo.MonthID
                           where cd.BidsheetID == bidsheetID &&
                                 cd.Offer.Value == true &&
                                 (!getOffersByAccountOnly || cd.AccountID == accountID)
@@ -149,7 +156,8 @@ namespace OMSDataService.DataRepositories
                               ContractTransactionType = ctt.Description,
                               OfferStatusType = ost.OfferStatusTypeDescription,
                               MarketZone = m.Description,
-                              AdvisorName = ad.AdvisorName
+                              AdvisorName = ad.AdvisorName,
+                              CommoditySymbol = cmd.Symbol + mo.MonthCode + cd.HedgeYear.ToString().Substring(3, 1)
                           }).Take(1000).ToListAsync();
         }
 
@@ -177,22 +185,121 @@ namespace OMSDataService.DataRepositories
             return dto;
         }
 
-        public void AddContract(Contract contract, ContractDetail contractDetail)
+        public async Task<int> AddContract(Contract contract, ContractDetail contractDetail)
         {
             contract.AddDate = contractDetail.AddDate = contract.ChgDate = contractDetail.ChgDate = DateTime.Now;
 
+            if (contractDetail.FuturesOnAddDateTime.HasValue)
+            {
+                contractDetail.FuturesOnAddDateTime = contractDetail.FuturesOnAddDateTime.Value.ToLocalTime();
+            }
+
+            if (contractDetail.BasisOnAddDateTime.HasValue)
+            {
+                contractDetail.BasisOnAddDateTime = contractDetail.BasisOnAddDateTime.Value.ToLocalTime();
+            }
+
+            if (contractDetail.AdvisorReviewDateTime.HasValue)
+            {
+                contractDetail.AdvisorReviewDateTime = contractDetail.AdvisorReviewDateTime.Value.ToLocalTime();
+            }
+
+            if (contractDetail.AdvisorManagerReviewDateTime.HasValue)
+            {
+                contractDetail.AdvisorManagerReviewDateTime = contractDetail.AdvisorManagerReviewDateTime.Value.ToLocalTime();
+            }
+
+            // if is purchase contract, then capture trading slippage
+            if (contract.ContractTransactionTypeID == 1 && !contractDetail.Offer.Value)
+            {
+                var commodity = _context.Commodities.SingleOrDefault(c => c.CommodityID == contractDetail.CommodityID);
+
+                var month = _context.Months.SingleOrDefault(m => m.MonthID == contractDetail.HedgeMonthID.Value);
+
+                var bidsheet = _context.Bidsheets.SingleOrDefault(b => b.BidsheetID == contractDetail.BidsheetID.Value);
+
+                if (commodity != null && month != null && contractDetail.HedgeYear.HasValue && bidsheet != null)
+                {
+                    var symbol = commodity.TickerSymbol + month.MonthCode + contractDetail.HedgeYear.ToString().Remove(0, 2);
+
+                    var url = "https://ondemand.websol.barchart.com/getQuote.json?apikey=061bdbf8ef8efcf5da6e335be86fa8de&symbols=" + symbol;
+
+                    using (var httpClient = new HttpClient())
+                    {
+                        using (var response = await httpClient.GetAsync(url))
+                        {
+                            var apiResponse = await response.Content.ReadAsStringAsync();
+
+                            var result = JsonSerializer.Deserialize(apiResponse, typeof(BarchartGetQuoteResponse)) as BarchartGetQuoteResponse;
+
+                            if (result != null && result.results != null && result.results.Length > 0)
+                            {
+                                var now = DateTime.Now;
+                                contractDetail.FuturesOnInsert = result.results[0].lastPrice * commodity.TickConversion.Value;
+                                contractDetail.FuturesOnInsertDateTime = now;
+                                contractDetail.BasisOnInsert = bidsheet.Basis;
+                                contractDetail.BasisOnInsertDateTime = now;
+                            }
+                        }
+                    }
+                }
+            }
+            
             _context.Contracts.Add(contract);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             contractDetail.ContractID = contract.ContractID;
 
             _context.ContractDetails.Add(contractDetail);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
+            return contract.ContractID;
         }
 
         public void UpdateContract(Contract contract, ContractDetail contractDetail)
         {
             contract.ChgDate = contractDetail.ChgDate = DateTime.Now;
+
+            if (contractDetail.AdvisorReviewDateTime.HasValue)
+            {
+                contractDetail.AdvisorReviewDateTime = contractDetail.AdvisorReviewDateTime.Value.ToLocalTime();
+            }
+
+            if (contractDetail.AdvisorManagerReviewDateTime.HasValue)
+            {
+                contractDetail.AdvisorManagerReviewDateTime = contractDetail.AdvisorManagerReviewDateTime.Value.ToLocalTime();
+            }
+
+            _context.Entry(contract).State = EntityState.Modified;
+            _context.Entry(contractDetail).State = EntityState.Modified;
+            _context.SaveChanges();
+        }
+
+        public void ConvertOfferToContract(Contract contract, ContractDetail contractDetail)
+        {
+            contract.ChgDate = contractDetail.ChgDate = DateTime.Now;
+
+            contractDetail.OfferStatusTypeID = 2;
+            contractDetail.ContractDetailDate = DateTime.Now;
+            contractDetail.ContractExportStatusTypeID = 1;
+
+            _context.Entry(contract).State = EntityState.Modified;
+            _context.Entry(contractDetail).State = EntityState.Modified;
+            _context.SaveChanges();
+        }
+
+        public void RollOffer(Contract contract, ContractDetail contractDetail, BidsheetSearchResult bidsheet)
+        {
+            contract.ChgDate = contractDetail.ChgDate = DateTime.Now;
+
+            contractDetail.BidsheetID = bidsheet.BidsheetID;
+            contractDetail.DeliveryStartDate = bidsheet.DeliveryBegin;
+            contractDetail.DeliveryEndDate = bidsheet.DeliveryEnd;
+            contractDetail.HedgeMonthID = bidsheet.FutureMonthID;
+            contractDetail.HedgeYear = bidsheet.OptionYear;
+            //contractDetail.OfferFutures = bidsheet.FuturesPrice;
+            //contractDetail.OfferBasis = bidsheet.Basis;
+            //contractDetail.OfferCashPrice = bidsheet.FuturesPrice + bidsheet.Basis;
 
             _context.Entry(contract).State = EntityState.Modified;
             _context.Entry(contractDetail).State = EntityState.Modified;
@@ -203,9 +310,28 @@ namespace OMSDataService.DataRepositories
         public async Task<List<ContractSearchResult>> SearchContracts(string contractTransactionTypeExternalRef, string locationExternalRef, string commodityExternalRef, string commoditySymbol,
                                                                       string customerName, string marketZoneExternalRef, string contractTypeExternalRef, string contractStatusTypeExternalRef,
                                                                       string advisorExternalRef, DateTime? contractStartDate, DateTime? contractEndDate, DateTime? deliveryBeginStartDate,
-                                                                      DateTime? deliveryBeginEndDate, DateTime? deliveryEndStartDate, DateTime? deliveryEndEndDate)
+                                                                      DateTime? deliveryBeginEndDate, DateTime? deliveryEndStartDate, DateTime? deliveryEndEndDate,
+                                                                      string contractPricingStatusTypeExternalRef)
         {
             var customerNameSearchString = !string.IsNullOrEmpty(customerName) ? customerName.Replace(" ", "") : null;
+
+            if (!string.IsNullOrEmpty(contractStatusTypeExternalRef))
+            {
+                if (contractStatusTypeExternalRef == "C")
+                {
+                    contractStatusTypeExternalRef = "Closed";
+                }
+
+                else if (contractStatusTypeExternalRef == "X")
+                {
+                    contractStatusTypeExternalRef = "Cancelled";
+                }
+
+                else
+                {
+                    contractStatusTypeExternalRef = "Open";
+                }
+            }
 
             return await _context.Query<ContractSearchResult>().FromSqlRaw("Execute dbo.SearchContracts " +
                                                                            "@ContractTransactionTypeExternalRef = {0}," +
@@ -222,7 +348,8 @@ namespace OMSDataService.DataRepositories
                                                                            "@DeliveryBeginEndDate = {11}, " +
                                                                            "@DeliveryEndStartDate = {12}, " +
                                                                            "@DeliveryEndEndDate = {13}, " +
-                                                                           "@CommoditySymbol = {14}",
+                                                                           "@CommoditySymbol = {14}, " +
+                                                                           "@ContractPricingStatusType = {15}",
                                                                            contractTransactionTypeExternalRef,
                                                                            locationExternalRef,
                                                                            commodityExternalRef,
@@ -237,7 +364,8 @@ namespace OMSDataService.DataRepositories
                                                                            deliveryBeginEndDate,
                                                                            deliveryEndStartDate,
                                                                            deliveryEndEndDate,
-                                                                           commoditySymbol)
+                                                                           commoditySymbol,
+                                                                           contractPricingStatusTypeExternalRef)
                                                                            .ToListAsync();
         }
 
@@ -260,7 +388,7 @@ namespace OMSDataService.DataRepositories
         {
             var customerNameSearchString = !string.IsNullOrEmpty(customerName) ? customerName.Replace(" ", "") : "";
 
-            var tickerSymbol = "";
+            var symbol = "";
 
             var monthCode = "";
 
@@ -268,19 +396,19 @@ namespace OMSDataService.DataRepositories
 
             if (!string.IsNullOrEmpty(commoditySymbol))
             {
+                if (commoditySymbol.Length >= 1)
+                {
+                    symbol = commoditySymbol.Substring(0, 1);
+                }
+
                 if (commoditySymbol.Length >= 2)
                 {
-                    tickerSymbol = commoditySymbol.Substring(0, 2);
+                    monthCode = commoditySymbol.Substring(1, 1);
                 }
 
                 if (commoditySymbol.Length >= 3)
                 {
-                    monthCode = commoditySymbol.Substring(2, 1);
-                }
-
-                if (commoditySymbol.Length >= 4)
-                {
-                    hedgeYear = commoditySymbol.Substring(3, 1);
+                    hedgeYear = commoditySymbol.Substring(2, 1);
                 }
             }
 
@@ -322,7 +450,7 @@ namespace OMSDataService.DataRepositories
                                     (deliveryEndStartDate.Value.Date <= cd.DeliveryEndDate.Value.Date && deliveryEndEndDate.Value.Date >= cd.DeliveryEndDate.Value.Date)
                                 )
                                 &&
-                                (string.IsNullOrEmpty(commoditySymbol) || (cmd.TickerSymbol == tickerSymbol && mo.MonthCode == monthCode && cd.HedgeYear.ToString().Substring(3, 1) == hedgeYear))
+                                (string.IsNullOrEmpty(commoditySymbol) || (cmd.Symbol == symbol && mo.MonthCode == monthCode && cd.HedgeYear.ToString().Substring(3, 1) == hedgeYear))
                           orderby c.ContractID
                           select new OfferSearchResult
                           {
@@ -350,7 +478,7 @@ namespace OMSDataService.DataRepositories
                               OfferStatusType = ost.OfferStatusTypeDescription,
                               MarketZone = m.Description,
                               AdvisorName = ad.AdvisorName,
-                              CommoditySymbol = cmd.TickerSymbol + mo.MonthCode + cd.HedgeYear.ToString().Substring(3, 1)
+                              CommoditySymbol = cmd.Symbol + mo.MonthCode + cd.HedgeYear.ToString().Substring(3, 1)
                           }).Take(1000).ToListAsync();
         }
 
@@ -401,7 +529,15 @@ namespace OMSDataService.DataRepositories
                               ContractTransactionType = ctt.Description,
                               MarketZone = m.Description,
                               AdvisorName = ad.AdvisorName,
-                              CommoditySymbol = cmd.TickerSymbol + mo.MonthCode + cd.HedgeYear.ToString().Substring(3, 1)
+                              CommoditySymbol = cmd.Symbol + mo.MonthCode + cd.HedgeYear.ToString().Substring(3, 1),
+                              Status = cd.Offer.Value ?
+                                       (from ost in _context.OfferStatusTypes
+                                        where ost.OfferStatusTypeID == cd.OfferStatusTypeID
+                                        select ost).SingleOrDefault().OfferStatusTypeDescription
+                                        :
+                                       (from cst in _context.ContractStatusTypes
+                                        where cst.ContractStatusTypeID == cd.ContractStatusTypeID
+                                        select cst).SingleOrDefault().Description
                           }).Take(1000).ToListAsync();
         }
 
@@ -412,7 +548,7 @@ namespace OMSDataService.DataRepositories
         {
             var customerNameSearchString = !string.IsNullOrEmpty(customerName) ? customerName.Replace(" ", "") : "";
 
-            var tickerSymbol = "";
+            var symbol = "";
 
             var monthCode = "";
 
@@ -420,19 +556,19 @@ namespace OMSDataService.DataRepositories
 
             if (!string.IsNullOrEmpty(commoditySymbol))
             {
+                if (commoditySymbol.Length >= 1)
+                {
+                    symbol = commoditySymbol.Substring(0, 1);
+                }
+
                 if (commoditySymbol.Length >= 2)
                 {
-                    tickerSymbol = commoditySymbol.Substring(0, 2);
+                    monthCode = commoditySymbol.Substring(1, 1);
                 }
 
                 if (commoditySymbol.Length >= 3)
                 {
-                    monthCode = commoditySymbol.Substring(2, 1);
-                }
-
-                if (commoditySymbol.Length >= 4)
-                {
-                    hedgeYear = commoditySymbol.Substring(3, 1);
+                    hedgeYear = commoditySymbol.Substring(2, 1);
                 }
             }
 
@@ -472,7 +608,7 @@ namespace OMSDataService.DataRepositories
                                     (deliveryEndStartDate.Value.Date <= cd.DeliveryEndDate.Value.Date && deliveryEndEndDate.Value.Date >= cd.DeliveryEndDate.Value.Date)
                                 )
                                 &&
-                                (string.IsNullOrEmpty(commoditySymbol) || (cmd.TickerSymbol == tickerSymbol && mo.MonthCode == monthCode && cd.HedgeYear.ToString().Substring(3, 1) == hedgeYear))
+                                (string.IsNullOrEmpty(commoditySymbol) || (cmd.TickerSymbol == symbol && mo.MonthCode == monthCode && cd.HedgeYear.ToString().Substring(3, 1) == hedgeYear))
                           orderby c.AddDate
                           select new ContractOfferSearchResult
                           {
@@ -506,7 +642,15 @@ namespace OMSDataService.DataRepositories
                               ContractTransactionType = ctt.Description,
                               MarketZone = m.Description,
                               AdvisorName = ad.AdvisorName,
-                              CommoditySymbol = cmd.TickerSymbol + mo.MonthCode + cd.HedgeYear.ToString().Substring(3, 1)
+                              CommoditySymbol = cmd.Symbol + mo.MonthCode + cd.HedgeYear.ToString().Substring(3, 1),
+                              Status = cd.Offer.Value ?
+                                       (from ost in _context.OfferStatusTypes
+                                        where ost.OfferStatusTypeID == cd.OfferStatusTypeID
+                                        select ost).SingleOrDefault().OfferStatusTypeDescription
+                                        :
+                                       (from cst in _context.ContractStatusTypes
+                                        where cst.ContractStatusTypeID == cd.ContractStatusTypeID
+                                        select cst).SingleOrDefault().Description
                           }).Take(1000).ToListAsync();
         }
     }

@@ -8,6 +8,7 @@ namespace OMSDataService.DataInterfaces
     public interface IBidsheetRepository
     {
         Task<List<Bidsheet>> GetBidsheets();
+        Task<List<BidsheetSearchResult>> GetBidsheetsForLocationAndCommodity(int locationId, int commodityId);
         Task<Bidsheet> GetBidsheet(int bidsheetId);
         void AddBidsheet(Bidsheet item);
         void UpdateBidsheet(Bidsheet item);
