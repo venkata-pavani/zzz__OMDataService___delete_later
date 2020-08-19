@@ -210,7 +210,7 @@ namespace OMSDataService.DataRepositories
             }
 
             // if is purchase contract, then capture trading slippage
-            if (contract.ContractTransactionTypeID == 1 && !contractDetail.Offer.Value)
+            if ((contract.ContractTransactionTypeID == 1 || contract.ContractTransactionTypeID == 2 || contract.ContractTransactionTypeID == 3) && !contractDetail.Offer.Value)
             {
                 var commodity = _context.Commodities.SingleOrDefault(c => c.CommodityID == contractDetail.CommodityID);
 
@@ -235,10 +235,21 @@ namespace OMSDataService.DataRepositories
                             if (result != null && result.results != null && result.results.Length > 0)
                             {
                                 var now = DateTime.Now;
-                                contractDetail.FuturesOnInsert = result.results[0].lastPrice * commodity.TickConversion.Value;
-                                contractDetail.FuturesOnInsertDateTime = now;
-                                contractDetail.BasisOnInsert = bidsheet.Basis;
-                                contractDetail.BasisOnInsertDateTime = now;
+
+                                if (contract.ContractTransactionTypeID == 1 || contract.ContractTransactionTypeID == 3)
+                                {
+                                    contractDetail.FuturesOnInsert = result.results[0].lastPrice * commodity.TickConversion.Value;
+                                    contractDetail.FuturesOnInsertDateTime = now;
+                                    contractDetail.BasisOnInsert = null;
+                                    contractDetail.BasisOnInsertDateTime = null;
+                                }
+                                else
+                                {
+                                    contractDetail.FuturesOnInsert = null;
+                                    contractDetail.FuturesOnInsertDateTime = null;
+                                    contractDetail.BasisOnInsert = bidsheet.Basis;
+                                    contractDetail.BasisOnInsertDateTime = now;
+                                }
                             }
                         }
                     }
@@ -282,6 +293,9 @@ namespace OMSDataService.DataRepositories
             contractDetail.OfferStatusTypeID = 2;
             contractDetail.ContractDetailDate = DateTime.Now;
             contractDetail.ContractExportStatusTypeID = 1;
+            contractDetail.Futures = contractDetail.OfferFutures;
+            contractDetail.Basis = contractDetail.OfferBasis;
+            contractDetail.CashPrice = contractDetail.OfferCashPrice;
 
             _context.Entry(contract).State = EntityState.Modified;
             _context.Entry(contractDetail).State = EntityState.Modified;
