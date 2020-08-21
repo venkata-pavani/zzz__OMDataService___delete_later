@@ -70,7 +70,16 @@ namespace OMSDataService.DomainObjects.Models
         public string AdvisorName { get; set; }
         public string ContractTransactionType { get; set; }
         public bool HasOffers { get; set; }
-
+        public int LocationID { get; set; }
+        public int OMSAccountID { get; set; }
+        public int ContractTypeID { get; set; }
+        public int CommodityID { get; set; }
+        public int ContractStatusTypeID { get; set; }
+        public int ContractPricingStatusTypeID { get; set; }
+        public int MarketZoneID { get; set; }
+        public int? AdvisorID { get; set; }
+        public int ContractTransactionTypeID { get; set; }
+        
         [NotMapped]
         public List<ContractGraphData> AppliedRemainingGraphData { get; set; }
 

@@ -209,8 +209,9 @@ namespace OMSDataService.DataRepositories
                 contractDetail.AdvisorManagerReviewDateTime = contractDetail.AdvisorManagerReviewDateTime.Value.ToLocalTime();
             }
 
-            // if is purchase contract, then capture trading slippage
-            if ((contract.ContractTransactionTypeID == 1 || contract.ContractTransactionTypeID == 2 || contract.ContractTransactionTypeID == 3) && !contractDetail.Offer.Value)
+            // capture trading slippage
+            if (contract.ContractTransactionTypeID == 1 && (contractDetail.ContractTypeID == 1 || contractDetail.ContractTypeID == 2 || contractDetail.ContractTypeID == 3) &&
+                !contractDetail.Offer.Value && contractDetail.BidsheetID != null)
             {
                 var commodity = _context.Commodities.SingleOrDefault(c => c.CommodityID == contractDetail.CommodityID);
 
@@ -236,7 +237,7 @@ namespace OMSDataService.DataRepositories
                             {
                                 var now = DateTime.Now;
 
-                                if (contract.ContractTransactionTypeID == 1 || contract.ContractTransactionTypeID == 3)
+                                if (contractDetail.ContractTypeID == 1 || contractDetail.ContractTypeID == 3)
                                 {
                                     contractDetail.FuturesOnInsert = result.results[0].lastPrice * commodity.TickConversion.Value;
                                     contractDetail.FuturesOnInsertDateTime = now;
@@ -519,8 +520,8 @@ namespace OMSDataService.DataRepositories
                               ContractExportStatusTypeName = cest.ContractExportStatusTypeName,
                               AccountID = a.ExternalRef,
                               AccountName = a.AccountName,
-                              Basis = cd.OfferBasis,
-                              CashPrice = cd.OfferCashPrice,
+                              Basis = cd.Offer.Value ? cd.OfferBasis : cd.Basis,
+                              CashPrice = cd.Offer.Value ? cd.OfferCashPrice : cd.CashPrice,
                               CommodityID = cd.CommodityID,
                               CommodityName = cmd.CommodityName,
                               ContractDate = cd.Offer.Value ?

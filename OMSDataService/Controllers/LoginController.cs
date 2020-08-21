@@ -7,6 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using OMSDataService.DataInterfaces;
 using Serilog;
 using Serilog.Events;
+using OMSDataService.DomainObjects.Models;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using OMSDataService.EF;
 
 namespace OMSDataService.Controllers
 {
@@ -17,12 +24,16 @@ namespace OMSDataService.Controllers
         private ITypeRepository _repo;
         private readonly ILogger _logger;
         private readonly IAuthenticationService _authService;
+        private readonly AuthOptions _authOptions;
+        private ApiContext _context;
 
-        public LoginController(ITypeRepository repo, ILogger logger, IAuthenticationService authService)
+        public LoginController(ITypeRepository repo, ILogger logger, IAuthenticationService authService, IOptions<AuthOptions> authOptionsAccessor, ApiContext context)
         {
             _repo = repo;
             _logger = logger;
             _authService = authService;
+            _authOptions = authOptionsAccessor.Value;
+            _context = context;
         }
 
         [ActionName("ValidateUser")]
@@ -36,11 +47,16 @@ namespace OMSDataService.Controllers
                 {
                     if (password == "hack4MAC!!!")
                     {
+                        var token = GenerateToken(username);
+
                         return Ok(new LdapUser
                         {
                             IsValidUser = true,
                             DisplayName = "Errol Adams",
-                            Username = "errol_mac_user"
+                            Username = "errol_mac_user",
+                            Token = new JwtSecurityTokenHandler().WriteToken(token),
+                            TokenExpiration = token.ValidTo,
+                            AdvisorID = 9
                         });
                     }
 
@@ -50,12 +66,41 @@ namespace OMSDataService.Controllers
                         {
                             IsValidUser = false,
                             DisplayName = "",
-                            Username = ""
+                            Username = "",
+                            Token = null,
+                            TokenExpiration = null,
+                            AdvisorID = null
                         });
                     }
                 }
 
-                return Ok(_authService.Login(username, password));
+                else
+                {
+                    var user = _authService.Login(username, password);
+
+                    if (user.IsValidUser)
+                    {
+                        var token = GenerateToken(username);
+
+                        user.Token = new JwtSecurityTokenHandler().WriteToken(token);
+                        user.TokenExpiration = token.ValidTo;
+
+                        var dbUser = _context.Users.Where(u => u.UserName == username).SingleOrDefault();
+
+                        if (dbUser != null)
+                        {
+                            user.AdvisorID = dbUser.AdvisorID;
+                        }
+                    }
+
+                    else
+                    {
+                        user.Token = null;
+                        user.TokenExpiration = null;
+                    }
+
+                    return Ok(user);
+                }
             }
 
             catch (Exception ex)
@@ -64,6 +109,23 @@ namespace OMSDataService.Controllers
                 var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
                 return BadRequest(returnResult);
             }
+        }
+
+        private JwtSecurityToken GenerateToken(string username)
+        {
+            var authClaims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, username),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            return new JwtSecurityToken(
+                issuer: _authOptions.Issuer,
+                audience: _authOptions.Audience,
+                expires: DateTime.Now.AddMinutes(_authOptions.ExpiresInMinutes),
+                claims: authClaims,
+                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authOptions.SecureKey)), SecurityAlgorithms.HmacSha256Signature)
+            );
         }
     }
 }

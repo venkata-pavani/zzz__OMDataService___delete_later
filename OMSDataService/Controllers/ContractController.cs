@@ -9,9 +9,11 @@ using OMSDataService.DomainObjects.Models;
 using Serilog;
 using Serilog.Events;
 using Newtonsoft.Json.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace OMSDataService.Controllers
 {
+    [Authorize]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class ContractController : ControllerBase

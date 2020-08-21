@@ -8,9 +8,11 @@ using OMSDataService.DataInterfaces;
 using OMSDataService.DomainObjects.Models;
 using Serilog;
 using Serilog.Events;
+using Microsoft.AspNetCore.Authorization;
 
 namespace OMSDataService.Controllers
 {
+    [Authorize]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class BidsheetController : ControllerBase

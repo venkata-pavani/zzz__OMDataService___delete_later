@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using OMSDataService.DataInterfaces;
 using Serilog;
 using Serilog.Events;
+using Microsoft.AspNetCore.Authorization;
 
 namespace OMSDataService.Controllers
 {
+    [Authorize]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class TypeController : ControllerBase
