@@ -7,7 +7,7 @@ namespace OMSDataService.DomainObjects.Models
     public class ContractGraphData
     {
         public string Label { get; set; }
-        public decimal Value { get; set; }
+        public decimal? Value { get; set; }
         public string Color { get; set; }
     }
 
@@ -43,7 +43,7 @@ namespace OMSDataService.DomainObjects.Models
         public string AccountID { get; set; }
         public string AccountName { get; set; }
         public string CommodityName { get; set; }
-        public int InternalContractNumber { get; set; }
+        public int? InternalContractNumber { get; set; }
         public string ContractNumber { get; set; }
         public string ContractDate { get; set; }
         public DateTime? ContractDateTime { get; set; }
@@ -51,7 +51,7 @@ namespace OMSDataService.DomainObjects.Models
         public DateTime? DeliveryStart { get; set; }
         public string DeliveryEndDate { get; set; }
         public DateTime? DeliveryEnd { get; set; }
-        public decimal Quantity { get; set; }
+        public decimal? Quantity { get; set; }
         public string ContractStatus { get; set; }
         public string PricingStatus { get; set; }
         public string DeliveryBasis { get; set; }
@@ -70,15 +70,15 @@ namespace OMSDataService.DomainObjects.Models
         public string AdvisorName { get; set; }
         public string ContractTransactionType { get; set; }
         public bool HasOffers { get; set; }
-        public int LocationID { get; set; }
-        public int OMSAccountID { get; set; }
-        public int ContractTypeID { get; set; }
-        public int CommodityID { get; set; }
-        public int ContractStatusTypeID { get; set; }
-        public int ContractPricingStatusTypeID { get; set; }
-        public int MarketZoneID { get; set; }
+        public int? LocationID { get; set; }
+        public int? OMSAccountID { get; set; }
+        public int? ContractTypeID { get; set; }
+        public int? CommodityID { get; set; }
+        public int? ContractStatusTypeID { get; set; }
+        public int? ContractPricingStatusTypeID { get; set; }
+        public int? MarketZoneID { get; set; }
         public int? AdvisorID { get; set; }
-        public int ContractTransactionTypeID { get; set; }
+        public int? ContractTransactionTypeID { get; set; }
         
         [NotMapped]
         public List<ContractGraphData> AppliedRemainingGraphData { get; set; }

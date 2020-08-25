@@ -31,7 +31,8 @@ namespace OMSDataService
         { 
             services.AddControllers();
 
-            services.AddDbContext<ApiContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Default")));
+            services.AddDbContext<ApiContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Default"),
+                                              sqlServerOptions => sqlServerOptions.CommandTimeout(180)));
 
             services.AddCors(options =>
             {
@@ -50,9 +51,9 @@ namespace OMSDataService
             services.AddAutoMapper(typeof(MappingProfile));
 
             services.Configure<LdapConfig>(Configuration.GetSection("Ldap"));
+
             services.AddScoped<IAuthenticationService, LdapAuthenticationService>();
 
-            //services.AddTransient<IUserService, UserService>();
             services.Configure<AuthOptions>(Configuration.GetSection("AuthOptions"));
 
             var authOptions = Configuration.GetSection("AuthOptions").Get<AuthOptions>();

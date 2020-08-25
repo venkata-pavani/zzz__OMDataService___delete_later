@@ -33,5 +33,6 @@ namespace OMSDataService.DomainObjects.Models
         public string MarketZone { get; set; }
         public string AdvisorName { get; set; }
         public string CommoditySymbol { get; set; }
+        public string StatusColor { get; set; }
     }
 }

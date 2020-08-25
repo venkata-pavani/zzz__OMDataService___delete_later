@@ -10,6 +10,7 @@ namespace OMSDataService.DomainObjects.Models
         [Key]
         public int OfferStatusTypeID { get; set; }
         public string OfferStatusTypeDescription { get; set; }
+        public string StatusColor { get; set; }
         public bool? IsDefault { get; set; }
         public int? SortOrder { get; set; }
         public bool? IsActive { get; set; }

@@ -65,7 +65,8 @@ namespace OMSDataService.DataRepositories
                               OfferStatusType = ost.OfferStatusTypeDescription,
                               MarketZone = m.Description,
                               AdvisorName = ad.AdvisorName,
-                              CommoditySymbol = cmd.Symbol + mo.MonthCode + cd.HedgeYear.ToString().Substring(3, 1)
+                              CommoditySymbol = cmd.Symbol + mo.MonthCode + cd.HedgeYear.ToString().Substring(3, 1),
+                              StatusColor = ost.StatusColor
                           }).Take(1000).ToListAsync();
         }
 
@@ -110,7 +111,8 @@ namespace OMSDataService.DataRepositories
                               OfferStatusType = ost.OfferStatusTypeDescription,
                               MarketZone = m.Description,
                               AdvisorName = ad.AdvisorName,
-                              CommoditySymbol = cmd.Symbol + mo.MonthCode + cd.HedgeYear.ToString().Substring(3, 1)
+                              CommoditySymbol = cmd.Symbol + mo.MonthCode + cd.HedgeYear.ToString().Substring(3, 1),
+                              StatusColor = ost.StatusColor
                           }).Take(1000).ToListAsync();
         }
 
@@ -157,7 +159,8 @@ namespace OMSDataService.DataRepositories
                               OfferStatusType = ost.OfferStatusTypeDescription,
                               MarketZone = m.Description,
                               AdvisorName = ad.AdvisorName,
-                              CommoditySymbol = cmd.Symbol + mo.MonthCode + cd.HedgeYear.ToString().Substring(3, 1)
+                              CommoditySymbol = cmd.Symbol + mo.MonthCode + cd.HedgeYear.ToString().Substring(3, 1),
+                              StatusColor = ost.StatusColor
                           }).Take(1000).ToListAsync();
         }
 
@@ -493,7 +496,8 @@ namespace OMSDataService.DataRepositories
                               OfferStatusType = ost.OfferStatusTypeDescription,
                               MarketZone = m.Description,
                               AdvisorName = ad.AdvisorName,
-                              CommoditySymbol = cmd.Symbol + mo.MonthCode + cd.HedgeYear.ToString().Substring(3, 1)
+                              CommoditySymbol = cmd.Symbol + mo.MonthCode + cd.HedgeYear.ToString().Substring(3, 1),
+                              StatusColor = ost.StatusColor
                           }).Take(1000).ToListAsync();
         }
 
@@ -552,7 +556,13 @@ namespace OMSDataService.DataRepositories
                                         :
                                        (from cst in _context.ContractStatusTypes
                                         where cst.ContractStatusTypeID == cd.ContractStatusTypeID
-                                        select cst).SingleOrDefault().Description
+                                        select cst).SingleOrDefault().Description,
+                              StatusColor = cd.Offer.Value ?
+                                            (from ost in _context.OfferStatusTypes
+                                             where ost.OfferStatusTypeID == cd.OfferStatusTypeID
+                                             select ost).SingleOrDefault().StatusColor
+                                            :
+                                            ""
                           }).Take(1000).ToListAsync();
         }
 
@@ -665,7 +675,13 @@ namespace OMSDataService.DataRepositories
                                         :
                                        (from cst in _context.ContractStatusTypes
                                         where cst.ContractStatusTypeID == cd.ContractStatusTypeID
-                                        select cst).SingleOrDefault().Description
+                                        select cst).SingleOrDefault().Description,
+                              StatusColor = cd.Offer.Value ?
+                                            (from ost in _context.OfferStatusTypes
+                                             where ost.OfferStatusTypeID == cd.OfferStatusTypeID
+                                             select ost).SingleOrDefault().StatusColor
+                                            :
+                                            ""
                           }).Take(1000).ToListAsync();
         }
     }
