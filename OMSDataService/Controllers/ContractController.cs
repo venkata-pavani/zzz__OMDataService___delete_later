@@ -299,5 +299,22 @@ namespace OMSDataService.Controllers
                 return BadRequest(returnResult);
             }
         }
+
+        [ActionName("SearchPositionManagerOffers")]
+        [HttpGet]
+        public async Task<IActionResult> SearchPositionManagerOffers(int? commodityID, string commoditySymbol, string customerName, int? marketZoneID, int? advisorID)
+        {
+            try
+            {
+                var list = await _repo.SearchPositionManagerOffers(commodityID, commoditySymbol, customerName, marketZoneID, advisorID);
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "SearchPositionManagerOffers failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
     }
 }

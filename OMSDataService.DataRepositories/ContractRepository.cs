@@ -684,5 +684,86 @@ namespace OMSDataService.DataRepositories
                                             ""
                           }).Take(1000).ToListAsync();
         }
+
+        public async Task<List<OfferSearchResult>> SearchPositionManagerOffers(int? commodityID, string commoditySymbol, string customerName, int? marketZoneID, int? advisorID)
+        {
+            var customerNameSearchString = !string.IsNullOrEmpty(customerName) ? customerName.Replace(" ", "") : "";
+
+            var symbol = "";
+
+            var monthCode = "";
+
+            var hedgeYear = "";
+
+            if (!string.IsNullOrEmpty(commoditySymbol))
+            {
+                if (commoditySymbol.Length >= 1)
+                {
+                    symbol = commoditySymbol.Substring(0, 1);
+                }
+
+                if (commoditySymbol.Length >= 2)
+                {
+                    monthCode = commoditySymbol.Substring(1, 1);
+                }
+
+                if (commoditySymbol.Length >= 3)
+                {
+                    hedgeYear = commoditySymbol.Substring(2, 1);
+                }
+            }
+
+            return await (from c in _context.Contracts
+                          join cd in _context.ContractDetails on c.ContractID equals cd.ContractID
+                          join a in _context.Accounts on cd.AccountID equals a.AccountID
+                          join cmd in _context.Commodities on cd.CommodityID equals cmd.CommodityID
+                          join ct in _context.ContractTypes on cd.ContractTypeID equals ct.ContractTypeID
+                          join l in _context.Locations on cd.LocationID equals l.LocationID
+                          join ctt in _context.ContractTransactionTypes on c.ContractTransactionTypeID equals ctt.ContractTransactionTypeID
+                          join ost in _context.OfferStatusTypes on cd.OfferStatusTypeID equals ost.OfferStatusTypeID
+                          join m in _context.MarketZones on cd.MarketZoneID equals m.MarketZoneID
+                          join ad in _context.Advisors on cd.AdvisorID equals ad.AdvisorID
+                          join mo in _context.Months on cd.HedgeMonthID equals mo.MonthID
+                          join b in _context.Bidsheets on cd.BidsheetID equals b.BidsheetID
+                          where cd.Offer.Value == true &&
+                                (cd.ContractTypeID == 1 || cd.ContractTypeID == 3) &&
+                                cd.OfferStatusTypeID == 1 &&
+                                c.ContractTransactionTypeID == 1 && 
+                                (!commodityID.HasValue || cd.CommodityID == commodityID.Value) &&
+                                (string.IsNullOrEmpty(customerName) || a.AccountName.Replace(" ", "").StartsWith(customerNameSearchString) || a.ExternalRef.Replace(" ", "").StartsWith(customerNameSearchString)) &&
+                                (!marketZoneID.HasValue || cd.MarketZoneID == marketZoneID) &&
+                                (!advisorID.HasValue || cd.AdvisorID == advisorID) &&
+                                (string.IsNullOrEmpty(commoditySymbol) || (cmd.Symbol == symbol && mo.MonthCode == monthCode && cd.HedgeYear.ToString().Substring(3, 1) == hedgeYear))
+                          orderby c.ContractID
+                          select new OfferSearchResult
+                          {
+                              AccountID = a.ExternalRef,
+                              AccountName = a.AccountName,
+                              Basis = cd.OfferBasis,
+                              CashPrice = cd.OfferCashPrice,
+                              CommodityID = cd.CommodityID,
+                              CommodityName = cmd.CommodityName,
+                              ContractDate = cd.ContractDetailOfferDate.HasValue ? cd.ContractDetailOfferDate.Value.ToString("MM/dd/yyyy") : "",
+                              ContractDateTime = cd.ContractDetailOfferDate,
+                              ContractID = c.ContractID,
+                              ContractNumber = c.ContractNumber,
+                              ContractTypeID = cd.ContractTypeID,
+                              ContractTypeName = ct.ContractTypeCode,
+                              DeliveryEndDate = cd.DeliveryEndDate.HasValue ? cd.DeliveryEndDate.Value.ToString("MM/dd/yyyy") : "",
+                              DeliveryEnd = cd.DeliveryEndDate,
+                              DeliveryStartDate = cd.DeliveryStartDate.HasValue ? cd.DeliveryStartDate.Value.ToString("MM/dd/yyyy") : "",
+                              DeliveryStart = cd.DeliveryStartDate,
+                              FuturesPrice = cd.ContractTypeID == 1 ? (cd.OfferCashPrice + b.Basis) : cd.OfferFutures,
+                              LocationID = cd.LocationID.HasValue ? cd.LocationID.Value : 0,
+                              LocationName = l.LocationName,
+                              Quantity = cd.Quantity,
+                              ContractTransactionType = ctt.Description,
+                              OfferStatusType = ost.OfferStatusTypeDescription,
+                              MarketZone = m.Description,
+                              AdvisorName = ad.AdvisorName,
+                              CommoditySymbol = cmd.Symbol + mo.MonthCode + cd.HedgeYear.ToString().Substring(3, 1),
+                              StatusColor = ost.StatusColor
+                          }).Take(1000).ToListAsync();
+        }
     }
 }

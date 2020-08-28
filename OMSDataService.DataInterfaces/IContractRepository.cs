@@ -30,5 +30,6 @@ namespace OMSDataService.DataInterfaces
                                                                        int? contractTypeID, int? marketZoneID, int? advisorID, DateTime? createdStartDate, DateTime? createdEndDate,
                                                                        DateTime? deliveryBeginStartDate, DateTime? deliveryBeginEndDate, DateTime? deliveryEndStartDate,
                                                                        DateTime? deliveryEndEndDate);
+        Task<List<OfferSearchResult>> SearchPositionManagerOffers(int? commodityID, string commoditySymbol, string customerName, int? marketZoneID, int? advisorID);
     }
 }
