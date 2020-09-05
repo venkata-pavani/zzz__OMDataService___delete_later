@@ -76,6 +76,23 @@ namespace OMSDataService.Controllers
             }
         }
 
+        [ActionName("GetBidsheetWithFutureValues")]
+        [HttpGet]
+        public async Task<IActionResult> GetBidsheetWithFutureValues(int bidsheetId)
+        {
+            try
+            {
+                var list = await _repo.GetBidsheetWithFutureValues(bidsheetId);
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetBidsheetWithFutureValues failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
         [ActionName("UpdateBidsheet")]
         [HttpPost]
         public IActionResult UpdateBidsheet([FromBody] Bidsheet item)

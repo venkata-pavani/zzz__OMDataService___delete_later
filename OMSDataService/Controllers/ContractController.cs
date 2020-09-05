@@ -19,10 +19,13 @@ namespace OMSDataService.Controllers
     public class ContractController : ControllerBase
     {
         private IContractRepository _repo;
+        private IBidsheetRepository _bidsheetRepository;
         private readonly ILogger _logger;
-        public ContractController(IContractRepository repo, ILogger logger)
+
+        public ContractController(IContractRepository repo, IBidsheetRepository bidsheetRepository, ILogger logger)
         {
-             _repo = repo;
+            _repo = repo;
+            _bidsheetRepository = bidsheetRepository;
             _logger = logger;
         }
 
@@ -111,6 +114,98 @@ namespace OMSDataService.Controllers
             }
         }
 
+        [ActionName("GetNewContract")]
+        [HttpGet]
+        public async Task<IActionResult> GetNewContract(bool isSalesContract, bool isOffer, int? bidsheetID, int? contractTypeID, int accountID)
+        {
+            try
+            {
+                BidsheetSearchResult bidsheet = null;
+
+                if (bidsheetID.HasValue)
+                {
+                    bidsheet = await _bidsheetRepository.GetBidsheetWithFutureValues(bidsheetID.Value);
+                }
+
+                var list = await _repo.GetNewContract(isSalesContract, isOffer, bidsheet, contractTypeID, accountID);
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetNewContract failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetNewOfferFromContract")]
+        [HttpGet]
+        public async Task<IActionResult> GetNewOfferFromContract(int contractNumber)
+        {
+            try
+            {
+                var list = await _repo.GetNewOfferFromContract(contractNumber);
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetNewOfferFromContract failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetNewPricingFromContract")]
+        [HttpGet]
+        public async Task<IActionResult> GetNewPricingFromContract(int contractNumber)
+        {
+            try
+            {
+                var list = await _repo.GetNewPricingFromContract(contractNumber);
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetNewPricingFromContract failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetNewOfferClone")]
+        [HttpGet]
+        public async Task<IActionResult> GetNewOfferClone(int contractID)
+        {
+            try
+            {
+                var list = await _repo.GetNewOfferClone(contractID);
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetNewOfferClone failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetNewContractClone")]
+        [HttpGet]
+        public async Task<IActionResult> GetNewContractClone(int contractID)
+        {
+            try
+            {
+                var list = await _repo.GetNewContractClone(contractID);
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetNewContractClone failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
         [ActionName("AddContract")]
         [HttpPost]
         public async Task<IActionResult> AddContract([FromBody] JObject item)
@@ -142,6 +237,24 @@ namespace OMSDataService.Controllers
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "UpdateContract failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("DeleteContract")]
+        [HttpPost]
+        public IActionResult DeleteContract([FromBody] JObject item)
+        {
+            try
+            {
+                _repo.DeleteContract(item["contract"].ToObject<Contract>(), item["contractDetail"].ToObject<ContractDetail>());
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "DeleteContract failed: {ex.message}");
                 var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
                 return BadRequest(returnResult);
             }

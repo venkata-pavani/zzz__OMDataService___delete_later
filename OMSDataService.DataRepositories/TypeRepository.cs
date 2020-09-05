@@ -21,100 +21,148 @@ namespace OMSDataService.DataRepositories
             _mapper = mapper;
         }
 
-        public async Task<List<Location>> GetLocations()
+        public async Task<List<Location>> GetLocations(bool sortForDropDownList)
         {
-            var list = await _context.Locations
-                .OrderBy(x => x.LocationName)
-                    .ToListAsync();          
+            if (sortForDropDownList)
+            {
+                return await _context.Locations.OrderBy(l => l.SortOrder).ThenBy(l => l.LocationName).ToListAsync();
+            }
 
-            return list;
+            else
+            {
+                return await _context.Locations.OrderBy(l => l.LocationName).ToListAsync();
+            }
         }
 
-        public async Task<List<Commodity>> GetCommodities()
+        public async Task<List<Commodity>> GetCommodities(bool sortForDropDownList)
         {
-            var list = await _context.Commodities
-                .OrderBy(x => x.CommodityName)
-                    .ToListAsync();
+            if (sortForDropDownList)
+            {
+                return await _context.Commodities.OrderBy(c => c.SortOrder).ThenBy(c => c.CommodityName).ToListAsync();
+            }
 
-            return list;
+            else
+            {
+                return await _context.Commodities.OrderBy(c => c.CommodityName).ToListAsync();
+            }
         }
 
-        public async Task<List<ContractTransactionType>> GetContractTransactionTypes()
+        public async Task<List<ContractTransactionType>> GetContractTransactionTypes(bool sortForDropDownList)
         {
-            var list = await _context.ContractTransactionTypes
-                .OrderBy(x => x.Description)
-                    .ToListAsync();
+            if (sortForDropDownList)
+            {
+                return await _context.ContractTransactionTypes.OrderBy(c => c.SortOrder).ThenBy(c => c.Description).ToListAsync();
+            }
 
-            return list;
+            else
+            {
+                return await _context.ContractTransactionTypes.OrderBy(c => c.Description).ToListAsync();
+            }
         }
 
-        public async Task<List<ContractStatusType>> GetContractStatusTypes()
+        public async Task<List<ContractStatusType>> GetContractStatusTypes(bool sortForDropDownList)
         {
-            return await _context.ContractStatusTypes.OrderBy(x => x.Description).ToListAsync();
+            if (sortForDropDownList)
+            {
+                return await _context.ContractStatusTypes.OrderBy(c => c.SortOrder).ThenBy(c => c.Description).ToListAsync();
+            }
+
+            else
+            {
+                return await _context.ContractStatusTypes.OrderBy(c => c.Description).ToListAsync();
+            }
         }
 
-        public async Task<List<ContractType>> GetContractTypes()
+        public async Task<List<ContractType>> GetContractTypes(bool sortForDropDownList)
         {
-            var list = await _context.ContractTypes
-                .OrderBy(x => x.Description)
-                    .ToListAsync();
+            if (sortForDropDownList)
+            {
+                return await _context.ContractTypes.OrderBy(c => c.SortOrder).ThenBy(c => c.Description).ToListAsync();
+            }
 
-            return list;
+            else
+            {
+                return await _context.ContractTypes.OrderBy(c => c.Description).ToListAsync();
+            }
         }       
 
-        public async Task<List<Month>> GetMonths()
+        public async Task<List<Month>> GetMonths(bool sortForDropDownList)
         {
-            var list = await _context.Months
-                .OrderBy(x => x.MonthID)
-                    .ToListAsync();
+            if (sortForDropDownList)
+            {
+                return await _context.Months.OrderBy(m => m.SortOrder).ThenBy(m => m.MonthID).ToListAsync();
+            }
 
-            return list;
+            else
+            {
+                return await _context.Months.OrderBy(m => m.MonthID).ToListAsync();
+            }
         }
 
-        public async Task<List<OfferDurationType>> GetOfferDurationTypes()
+        public async Task<List<OfferDurationType>> GetOfferDurationTypes(bool sortForDropDownList)
         {
-            var list = await _context.OfferDurationTypes
-                .OrderBy(x => x.Description)
-                    .ToListAsync();
+            if (sortForDropDownList)
+            {
+                return await _context.OfferDurationTypes.OrderBy(o => o.SortOrder).ThenBy(o => o.Description).ToListAsync();
+            }
 
-            return list;
+            else
+            {
+                return await _context.OfferDurationTypes.OrderBy(o => o.Description).ToListAsync();
+            }
         }
 
-        public async Task<List<OfferPriceType>> GetOfferPriceTypes()
+        public async Task<List<OfferPriceType>> GetOfferPriceTypes(bool sortForDropDownList)
         {
-            var list = await _context.OfferPriceTypes
-                .OrderBy(x => x.OfferPriceTypeDescription)
-                    .ToListAsync();
+            if (sortForDropDownList)
+            {
+                return await _context.OfferPriceTypes.OrderBy(o => o.SortOrder).ThenBy(o => o.OfferPriceTypeDescription).ToListAsync();
+            }
 
-            return list;
+            else
+            {
+                return await _context.OfferPriceTypes.OrderBy(o => o.OfferPriceTypeDescription).ToListAsync();
+            }
         }
 
 
-        public async Task<List<OfferType>> GetOfferTypes()
+        public async Task<List<OfferType>> GetOfferTypes(bool sortForDropDownList)
         {
-            var list = await _context.OfferTypes
-                .OrderBy(x => x.OfferTypeDescription)
-                    .ToListAsync();
+            if (sortForDropDownList)
+            {
+                return await _context.OfferTypes.OrderBy(o => o.SortOrder).ThenBy(o => o.OfferTypeDescription).ToListAsync();
+            }
 
-            return list;
+            else
+            {
+                return await _context.OfferTypes.OrderBy(o => o.OfferTypeDescription).ToListAsync();
+            }
         }
 
-        public async Task<List<UnitOfMeasure>> GetUnitsOfMeasure()
+        public async Task<List<UnitOfMeasure>> GetUnitsOfMeasure(bool sortForDropDownList)
         {
-            var list = await _context.UnitsOfMeasure
-                .OrderBy(x => x.UOM)
-                    .ToListAsync();
+            if (sortForDropDownList)
+            {
+                return await _context.UnitsOfMeasure.OrderBy(u => u.SortOrder).ThenBy(u => u.UOM).ToListAsync();
+            }
 
-            return list;
+            else
+            {
+                return await _context.UnitsOfMeasure.OrderBy(u => u.UOM).ToListAsync();
+            }
         }
 
-        public async Task<List<Account>> GetAccounts()
+        public async Task<List<Account>> GetAccounts(bool sortForDropDownList)
         {
-            var list = await _context.Accounts
-                .OrderBy(x => x.AccountName)
-                    .ToListAsync();
+            if (sortForDropDownList)
+            {
+                return await _context.Accounts.OrderBy(a=> a.SortOrder).ThenBy(a => a.AccountName).ToListAsync();
+            }
 
-            return list;
+            else
+            {
+                return await _context.Accounts.OrderBy(a => a.AccountName).ToListAsync();
+            }
         }
 
         public async Task<List<AccountSearchResult>> SearchAccounts(string accountName, string externalRef)
@@ -170,34 +218,82 @@ namespace OMSDataService.DataRepositories
             return accounts;
         }
 
-        public async Task<List<AccountType>> GetAccountTypes()
+        public async Task<List<AccountType>> GetAccountTypes(bool sortForDropDownList)
         {
-            return await _context.AccountTypes.OrderBy(x => x.AccountTypeDescription).ToListAsync();
+            if (sortForDropDownList)
+            {
+                return await _context.AccountTypes.OrderBy(a => a.SortOrder).ThenBy(a => a.AccountTypeDescription).ToListAsync();
+            }
+
+            else
+            {
+                return await _context.AccountTypes.OrderBy(a => a.AccountTypeDescription).ToListAsync();
+            }
         }
 
-        public async Task<List<Advisor>> GetAdvisors()
+        public async Task<List<Advisor>> GetAdvisors(bool sortForDropDownList)
         {
-            return await _context.Advisors.OrderBy(a => a.AdvisorName).ToListAsync();
+            if (sortForDropDownList)
+            {
+                return await _context.Advisors.OrderBy(a => a.SortOrder).ThenBy(a => a.AdvisorName).ToListAsync();
+            }
+
+            else
+            {
+                return await _context.Advisors.OrderBy(a => a.AdvisorName).ToListAsync();
+            }
         }
 
-        public async Task<List<MarketZone>> GetMarketZones()
+        public async Task<List<MarketZone>> GetMarketZones(bool sortForDropDownList)
         {
-            return await _context.MarketZones.OrderBy(m => m.MarketZoneName).ToListAsync();
+            if (sortForDropDownList)
+            {
+                return await _context.MarketZones.OrderBy(m => m.SortOrder).ThenBy(m => m.MarketZoneName).ToListAsync();
+            }
+
+            else
+            {
+                return await _context.MarketZones.OrderBy(m => m.MarketZoneName).ToListAsync();
+            }
         }
 
-        public async Task<List<ContractPricingStatusType>> GetContractPricingStatusTypes()
+        public async Task<List<ContractPricingStatusType>> GetContractPricingStatusTypes(bool sortForDropDownList)
         {
-            return await _context.ContractPricingStatusTypes.OrderBy(c => c.Description).ToListAsync();
+            if (sortForDropDownList)
+            {
+                return await _context.ContractPricingStatusTypes.OrderBy(c => c.SortOrder).ThenBy(c => c.Description).ToListAsync();
+            }
+
+            else
+            {
+                return await _context.ContractPricingStatusTypes.OrderBy(c => c.Description).ToListAsync();
+            }
         }
 
-        public async Task<List<OfferStatusType>> GetOfferStatusTypes()
+        public async Task<List<OfferStatusType>> GetOfferStatusTypes(bool sortForDropDownList)
         {
-            return await _context.OfferStatusTypes.OrderBy(o => o.OfferStatusTypeDescription).ToListAsync();
+            if (sortForDropDownList)
+            {
+                return await _context.OfferStatusTypes.OrderBy(o => o.SortOrder).ThenBy(o => o.OfferStatusTypeDescription).ToListAsync();
+            }
+
+            else
+            {
+                return await _context.OfferStatusTypes.OrderBy(o => o.OfferStatusTypeDescription).ToListAsync();
+            }
         }
 
-        public async Task<List<ContractExportStatusType>> GetContractExportStatusTypes()
+        public async Task<List<ContractExportStatusType>> GetContractExportStatusTypes(bool sortForDropDownList)
         {
-            return await _context.ContractExportStatusTypes.OrderBy(o => o.ContractExportStatusTypeName).ToListAsync();
+            if (sortForDropDownList)
+            {
+                return await _context.ContractExportStatusTypes.OrderBy(o => o.SortOrder).ThenBy(o => o.ContractExportStatusTypeName).ToListAsync();
+            }
+
+            else
+            {
+                return await _context.ContractExportStatusTypes.OrderBy(o => o.ContractExportStatusTypeName).ToListAsync();
+            }
         }
     }
 }

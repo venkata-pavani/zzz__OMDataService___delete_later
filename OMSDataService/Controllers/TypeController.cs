@@ -18,6 +18,7 @@ namespace OMSDataService.Controllers
     {
         private ITypeRepository _repo;
         private readonly ILogger _logger;
+
         public TypeController(ITypeRepository repo, ILogger logger)
         {
              _repo = repo;
@@ -26,11 +27,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetLocations")]
         [HttpGet]
-        public async Task<IActionResult> GetLocations()
+        public async Task<IActionResult> GetLocations(bool sortForDropDownList)
         {
             try
             {
-                var list = await _repo.GetLocations();
+                var list = await _repo.GetLocations(sortForDropDownList);
                 return Ok(list);
             }
             catch (Exception ex)
@@ -43,11 +44,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetCommodities")]
         [HttpGet]
-        public async Task<IActionResult> GetCommodities()
+        public async Task<IActionResult> GetCommodities(bool sortForDropDownList)
         {
             try
             {
-                var list = await _repo.GetCommodities();
+                var list = await _repo.GetCommodities(sortForDropDownList);
                 return Ok(list);
             }
             catch (Exception ex)
@@ -58,14 +59,13 @@ namespace OMSDataService.Controllers
             }
         }
 
-
         [ActionName("GetContractTransactionTypes")]
         [HttpGet]
-        public async Task<IActionResult> GetContractTransactionTypes()
+        public async Task<IActionResult> GetContractTransactionTypes(bool sortForDropDownList)
         {
             try
             {
-                var list = await _repo.GetContractTransactionTypes();
+                var list = await _repo.GetContractTransactionTypes(sortForDropDownList);
                 return Ok(list);
             }
             catch (Exception ex)
@@ -78,11 +78,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetContractStatusTypes")]
         [HttpGet]
-        public async Task<IActionResult> GetContractStatusTypes()
+        public async Task<IActionResult> GetContractStatusTypes(bool sortForDropDownList)
         {
             try
             {
-                var list = await _repo.GetContractStatusTypes();
+                var list = await _repo.GetContractStatusTypes(sortForDropDownList);
                 return Ok(list);
             }
             catch (Exception ex)
@@ -95,11 +95,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetContractTypes")]
         [HttpGet]
-        public async Task<IActionResult> GetContractTypes()
+        public async Task<IActionResult> GetContractTypes(bool sortForDropDownList)
         {
             try
             {
-                var list = await _repo.GetContractTypes();
+                var list = await _repo.GetContractTypes(sortForDropDownList);
                 return Ok(list);
             }
             catch (Exception ex)
@@ -113,11 +113,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetMonths")]
         [HttpGet]
-        public async Task<IActionResult> GetMonths()
+        public async Task<IActionResult> GetMonths(bool sortForDropDownList)
         {
             try
             {
-                var list = await _repo.GetMonths();
+                var list = await _repo.GetMonths(sortForDropDownList);
                 return Ok(list);
             }
             catch (Exception ex)
@@ -130,11 +130,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetOfferDurationTypes")]
         [HttpGet]
-        public async Task<IActionResult> GetOfferDurationTypes()
+        public async Task<IActionResult> GetOfferDurationTypes(bool sortForDropDownList)
         {
             try
             {
-                var list = await _repo.GetOfferDurationTypes();
+                var list = await _repo.GetOfferDurationTypes(sortForDropDownList);
                 return Ok(list);
             }
             catch (Exception ex)
@@ -147,11 +147,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetOfferPriceTypes")]
         [HttpGet]
-        public async Task<IActionResult> GetOfferPriceTypes()
+        public async Task<IActionResult> GetOfferPriceTypes(bool sortForDropDownList)
         {
             try
             {
-                var list = await _repo.GetOfferPriceTypes();
+                var list = await _repo.GetOfferPriceTypes(sortForDropDownList);
                 return Ok(list);
             }
             catch (Exception ex)
@@ -164,11 +164,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetOfferTypes")]
         [HttpGet]
-        public async Task<IActionResult> GetOfferTypes()
+        public async Task<IActionResult> GetOfferTypes(bool sortForDropDownList)
         {
             try
             {
-                var list = await _repo.GetOfferTypes();
+                var list = await _repo.GetOfferTypes(sortForDropDownList);
                 return Ok(list);
             }
             catch (Exception ex)
@@ -181,11 +181,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetUnitsOfMeasure")]
         [HttpGet]
-        public async Task<IActionResult> GetUnitsOfMeasure()
+        public async Task<IActionResult> GetUnitsOfMeasure(bool sortForDropDownList)
         {
             try
             {
-                var list = await _repo.GetUnitsOfMeasure();
+                var list = await _repo.GetUnitsOfMeasure(sortForDropDownList);
                 return Ok(list);
             }
             catch (Exception ex)
@@ -198,11 +198,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetAccounts")]
         [HttpGet]
-        public async Task<IActionResult> GetAccounts()
+        public async Task<IActionResult> GetAccounts(bool sortForDropDownList)
         {
             try
             {
-                var list = await _repo.GetAccounts();
+                var list = await _repo.GetAccounts(sortForDropDownList);
                 return Ok(list);
             }
             catch (Exception ex)
@@ -232,11 +232,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetAccountTypes")]
         [HttpGet]
-        public async Task<IActionResult> GetAccountTypes()
+        public async Task<IActionResult> GetAccountTypes(bool sortForDropDownList)
         {
             try
             {
-                var list = await _repo.GetAccountTypes();
+                var list = await _repo.GetAccountTypes(sortForDropDownList);
                 return Ok(list);
             }
             catch (Exception ex)
@@ -249,11 +249,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetAdvisors")]
         [HttpGet]
-        public async Task<IActionResult> GetAdvisors()
+        public async Task<IActionResult> GetAdvisors(bool sortForDropDownList)
         {
             try
             {
-                var list = await _repo.GetAdvisors();
+                var list = await _repo.GetAdvisors(sortForDropDownList);
                 return Ok(list);
             }
             catch (Exception ex)
@@ -266,11 +266,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetMarketZones")]
         [HttpGet]
-        public async Task<IActionResult> GetMarketZones()
+        public async Task<IActionResult> GetMarketZones(bool sortForDropDownList)
         {
             try
             {
-                var list = await _repo.GetMarketZones();
+                var list = await _repo.GetMarketZones(sortForDropDownList);
                 return Ok(list);
             }
             catch (Exception ex)
@@ -283,11 +283,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetContractPricingStatusTypes")]
         [HttpGet]
-        public async Task<IActionResult> GetContractPricingStatusTypes()
+        public async Task<IActionResult> GetContractPricingStatusTypes(bool sortForDropDownList)
         {
             try
             {
-                var list = await _repo.GetContractPricingStatusTypes();
+                var list = await _repo.GetContractPricingStatusTypes(sortForDropDownList);
                 return Ok(list);
             }
             catch (Exception ex)
@@ -300,11 +300,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetOfferStatusTypes")]
         [HttpGet]
-        public async Task<IActionResult> GetOfferStatusTypes()
+        public async Task<IActionResult> GetOfferStatusTypes(bool sortForDropDownList)
         {
             try
             {
-                var list = await _repo.GetOfferStatusTypes();
+                var list = await _repo.GetOfferStatusTypes(sortForDropDownList);
                 return Ok(list);
             }
             catch (Exception ex)
@@ -317,11 +317,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetContractExportStatusTypes")]
         [HttpGet]
-        public async Task<IActionResult> GetContractExportStatusTypes()
+        public async Task<IActionResult> GetContractExportStatusTypes(bool sortForDropDownList)
         {
             try
             {
-                var list = await _repo.GetContractExportStatusTypes();
+                var list = await _repo.GetContractExportStatusTypes(sortForDropDownList);
                 return Ok(list);
             }
             catch (Exception ex)

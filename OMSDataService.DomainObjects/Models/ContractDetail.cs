@@ -70,5 +70,6 @@ namespace OMSDataService.DomainObjects.Models
         public int? AdvisorManagerReviewID { get; set; }
         public DateTime? AdvisorManagerReviewDateTime { get; set; }
         public bool? WasOffer { get; set; }
+        public bool Deleted { get; set; }
     }
 }

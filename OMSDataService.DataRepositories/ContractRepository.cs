@@ -37,7 +37,7 @@ namespace OMSDataService.DataRepositories
                           join m in _context.MarketZones on cd.MarketZoneID equals m.MarketZoneID
                           join ad in _context.Advisors on cd.AdvisorID equals ad.AdvisorID
                           join mo in _context.Months on cd.HedgeMonthID equals mo.MonthID
-                          where cd.AccountID == accountId && cd.Offer.Value == true
+                          where cd.AccountID == accountId && cd.Offer.Value == true && !c.Deleted
                           orderby c.ContractID
                           select new OfferSearchResult
                           {
@@ -83,7 +83,7 @@ namespace OMSDataService.DataRepositories
                           join m in _context.MarketZones on cd.MarketZoneID equals m.MarketZoneID
                           join ad in _context.Advisors on cd.AdvisorID equals ad.AdvisorID
                           join mo in _context.Months on cd.HedgeMonthID equals mo.MonthID
-                          where c.ContractNumber == contractNumber.ToString() && cd.Offer.Value == true
+                          where c.ContractNumber == contractNumber.ToString() && cd.Offer.Value == true && !c.Deleted
                           orderby c.ContractID
                           select new OfferSearchResult
                           {
@@ -130,6 +130,7 @@ namespace OMSDataService.DataRepositories
                           join ad in _context.Advisors on cd.AdvisorID equals ad.AdvisorID
                           join mo in _context.Months on cd.HedgeMonthID equals mo.MonthID
                           where cd.BidsheetID == bidsheetID &&
+                                !c.Deleted &&
                                 cd.Offer.Value == true &&
                                 (!getOffersByAccountOnly || cd.AccountID == accountID)
                           orderby c.ContractID
@@ -186,6 +187,274 @@ namespace OMSDataService.DataRepositories
             }
 
             return dto;
+        }
+
+        public async Task<ContractDTO> GetNewContract(bool isSalesContract, bool isOffer, BidsheetSearchResult bidsheet, int? contractTypeID, int accountID)
+        {
+            var nowDate = DateTime.Now;
+            var now = new DateTime(nowDate.Year, nowDate.Month, nowDate.Day, 0, 0, 0);
+
+            int? offerPriceTypeID = null;
+
+            if (isOffer && contractTypeID.HasValue)
+            {
+                if (contractTypeID == 1 || contractTypeID == 7)
+                {
+                    offerPriceTypeID = 2;
+                }
+
+                else if (contractTypeID == 2)
+                {
+                    offerPriceTypeID = 1;
+                }
+
+                else if (contractTypeID == 3)
+                {
+                    offerPriceTypeID = 3;
+                }
+            }
+
+            decimal? futuresOnAdd = null;
+            DateTime? futuresOnAddDateTime = null;
+
+            if (!isOffer && bidsheet != null && !isSalesContract && contractTypeID.HasValue && (contractTypeID == 1 || contractTypeID == 3))
+            {
+                futuresOnAdd = bidsheet.FuturesPrice;
+                futuresOnAddDateTime = now;
+            }
+
+            decimal? basisOnAdd = null;
+            DateTime? basisOnAddDateTime = null;
+
+            if (!isOffer && bidsheet != null && !isSalesContract && contractTypeID.HasValue && contractTypeID == 2)
+            {
+                basisOnAdd = bidsheet.Basis;
+                basisOnAddDateTime = now;
+            }
+
+            var dto = new ContractDTO()
+            {
+                Contract = new Contract()
+                {
+                    ContractDate = now,
+                    ContractTransactionTypeID = isSalesContract ? 2 : 1,
+                    Deleted = false
+                },
+
+                ContractDetail = new ContractDetail()
+                {
+                    AccountID = accountID,
+                    Basis = (bidsheet != null && !isOffer) ? bidsheet.Basis : (decimal?)null,
+                    BasisOnAdd = basisOnAdd,
+                    BasisOnAddDateTime = basisOnAddDateTime,
+                    BidsheetID = bidsheet != null ? bidsheet.BidsheetID : (int?) null,
+                    CashPrice = (bidsheet != null && !isOffer) ? bidsheet.CashPrice : (decimal?) null,
+                    CommodityID = bidsheet != null ? bidsheet.CommodityID : 0,
+                    ContractDetailDate = isOffer ? (DateTime?) null : now,
+                    ContractDetailOfferDate = isOffer ? now : (DateTime?) null,
+                    ContractExportStatusTypeID = 5,
+                    ContractStatusTypeID = isOffer ? (int?) null : 4,
+                    ContractTypeID = contractTypeID.HasValue ? contractTypeID.Value : 0,
+                    DeliveryEndDate = bidsheet != null ? bidsheet.DeliveryEnd : (DateTime?) null,
+                    DeliveryStartDate = bidsheet != null ? bidsheet.DeliveryBegin : (DateTime?)null,
+                    FinalPrice = false,
+                    Futures = (bidsheet != null && !isOffer) ? bidsheet.FuturesPrice : (decimal?)null,
+                    FuturesOnAdd = futuresOnAdd,
+                    FuturesOnAddDateTime = futuresOnAddDateTime,
+                    HedgeMonthID = bidsheet != null ? bidsheet.FutureMonthID : (int?) null,
+                    HedgeYear = bidsheet != null ? bidsheet.OptionYear : (int?) null,
+                    IsArchived = false,
+                    LocationID = bidsheet != null ? bidsheet.LocationID : 0,
+                    MarketZoneID = bidsheet != null ? bidsheet.MarketZoneID : (int?) null,
+                    Offer = isOffer,
+                    OfferBasis = (bidsheet != null && isOffer) ? bidsheet.Basis : (decimal?)null,
+                    OfferCashPrice = (bidsheet != null && isOffer) ? bidsheet.CashPrice : (decimal?)null,
+                    OfferDurationTypeID = isOffer ? 1 : (int?) null,
+                    OfferFutures = (bidsheet != null && isOffer) ? bidsheet.FuturesPrice : (decimal?)null,
+                    OfferPriceTypeID = offerPriceTypeID,
+                    OfferStatusTypeID = isOffer ? 1 : (int?) null,
+                    OfferTypeID = isOffer ? 2 : (int?) null,
+                    Printed = false,
+                    WasOffer = isOffer,
+                    Deleted = false
+                }
+            };
+
+            return dto;
+        }
+
+        [Obsolete]
+        public async Task<ContractDTO> GetNewOfferFromContract(int contractNumber)
+        {
+            var contracts = await _context.Query<ContractSearchResult>().FromSqlRaw("Execute dbo.GetContract @ContractNumber = {0}", contractNumber).ToListAsync();
+
+            if (contracts.Count == 1)
+            {
+                var contract = contracts[0];
+
+                var nowDate = DateTime.Now;
+                var now = new DateTime(nowDate.Year, nowDate.Month, nowDate.Day, 0, 0, 0);
+
+                var dto = new ContractDTO()
+                {
+                    Contract = new Contract()
+                    {
+                        ContractDate = now,
+                        ContractNumber = contract.ContractNumber,
+                        ContractPricingStatusTypeID = contract.ContractPricingStatusTypeID,
+                        ContractTransactionTypeID = 1,
+                        Deleted = false
+                    },
+
+                    ContractDetail = new ContractDetail()
+                    {
+                        AccountID = contract.OMSAccountID,
+                        CommodityID = contract.CommodityID.Value,
+                        ContractDetailOfferDate = now,
+                        ContractExportStatusTypeID = 5,
+                        ContractTypeID = 0,
+                        FinalPrice = false,
+                        IsArchived = false,
+                        LocationID = contract.LocationID,
+                        MarketZoneID = contract.MarketZoneID,
+                        Offer = true,
+                        OfferDurationTypeID = 1,
+                        OfferStatusTypeID = 1,
+                        OfferTypeID = 2,
+                        Quantity = contract.Quantity,
+                        Printed = false,
+                        WasOffer = true,
+                        Deleted = false
+                    }
+                };
+
+                return dto;
+            }
+
+            else
+            {
+                return new ContractDTO()
+                {
+                    Contract = new Contract(),
+                    ContractDetail = new ContractDetail()
+                };
+            }
+        }
+
+        [Obsolete]
+        public async Task<ContractDTO> GetNewPricingFromContract(int contractNumber)
+        {
+            var contracts = await _context.Query<ContractSearchResult>().FromSqlRaw("Execute dbo.GetContract @ContractNumber = {0}", contractNumber).ToListAsync();
+
+            if (contracts.Count == 1)
+            {
+                var contract = contracts[0];
+
+                var nowDate = DateTime.Now;
+                var now = new DateTime(nowDate.Year, nowDate.Month, nowDate.Day, 0, 0, 0);
+
+                var dto = new ContractDTO()
+                {
+                    Contract = new Contract()
+                    {
+                        ContractDate = now,
+                        ContractNumber = contract.ContractNumber,
+                        ContractPricingStatusTypeID = contract.ContractPricingStatusTypeID,
+                        ContractTransactionTypeID = 1,
+                        Deleted = false
+                    },
+
+                    ContractDetail = new ContractDetail()
+                    {
+                        AccountID = contract.OMSAccountID,
+                        CommodityID = contract.CommodityID.Value,
+                        ContractDetailDate = now,
+                        ContractExportStatusTypeID = 5,
+                        ContractStatusTypeID = 4,
+                        ContractTypeID = 0,
+                        FinalPrice = false,
+                        IsArchived = false,
+                        LocationID = contract.LocationID,
+                        MarketZoneID = contract.MarketZoneID,
+                        Quantity = contract.Quantity,
+                        Printed = false,
+                        WasOffer = false,
+                        Deleted = false
+                    }
+                };
+
+                return dto;
+            }
+
+            else
+            {
+                return new ContractDTO()
+                {
+                    Contract = new Contract(),
+                    ContractDetail = new ContractDetail()
+                };
+            }
+        }
+
+        public async Task<ContractDTO> GetNewOfferClone(int contractID)
+        {
+            var contract = await _context.Contracts.Where(c => c.ContractID == contractID).SingleOrDefaultAsync();
+            var contractDetail = await _context.ContractDetails.Where(c => c.ContractID == contractID).SingleOrDefaultAsync();
+
+            if (contract != null && contractDetail != null)
+            {
+                contract.ContractID = 0;
+                contractDetail.ContractID = 0;
+                contractDetail.ContractDetailID = 0;
+                contractDetail.ContractExportStatusTypeID = 5;
+                contract.Deleted = contractDetail.Deleted = false;
+
+                return new ContractDTO()
+                {
+                    Contract = contract,
+                    ContractDetail = contractDetail
+                };
+            }
+
+            else
+            {
+                return new ContractDTO()
+                {
+                    Contract = new Contract(),
+                    ContractDetail = new ContractDetail()
+                };
+            }
+        }
+
+        public async Task<ContractDTO> GetNewContractClone(int contractID)
+        {
+            var contract = await _context.Contracts.Where(c => c.ContractID == contractID).SingleOrDefaultAsync();
+            var contractDetail = await _context.ContractDetails.Where(c => c.ContractID == contractID).SingleOrDefaultAsync();
+
+            if (contract != null && contractDetail != null)
+            {
+                contract.ContractID = 0;
+                contract.ContractNumber = "";
+                contractDetail.ContractID = 0;
+                contractDetail.ContractDetailID = 0;
+                contractDetail.ContractExportStatusTypeID = 5;
+                contract.Deleted = contractDetail.Deleted = false;
+
+                return new ContractDTO()
+                {
+                    Contract = contract,
+                    ContractDetail = contractDetail
+                };
+            }
+
+            else
+            {
+                return new ContractDTO()
+                {
+                    Contract = new Contract(),
+                    ContractDetail = new ContractDetail()
+                };
+            }
         }
 
         public async Task<int> AddContract(Contract contract, ContractDetail contractDetail)
@@ -284,6 +553,16 @@ namespace OMSDataService.DataRepositories
             {
                 contractDetail.AdvisorManagerReviewDateTime = contractDetail.AdvisorManagerReviewDateTime.Value.ToLocalTime();
             }
+
+            _context.Entry(contract).State = EntityState.Modified;
+            _context.Entry(contractDetail).State = EntityState.Modified;
+            _context.SaveChanges();
+        }
+
+        public void DeleteContract(Contract contract, ContractDetail contractDetail)
+        {
+            contract.ChgDate = contractDetail.ChgDate = DateTime.Now;
+            contract.Deleted = contractDetail.Deleted = true;
 
             _context.Entry(contract).State = EntityState.Modified;
             _context.Entry(contractDetail).State = EntityState.Modified;
@@ -441,7 +720,7 @@ namespace OMSDataService.DataRepositories
                           join m in _context.MarketZones on cd.MarketZoneID equals m.MarketZoneID
                           join ad in _context.Advisors on cd.AdvisorID equals ad.AdvisorID
                           join mo in _context.Months on cd.HedgeMonthID equals mo.MonthID
-                          where cd.Offer.Value == true &&
+                          where cd.Offer.Value == true && !c.Deleted &&
                                 (!contractTransactionTypeID.HasValue || c.ContractTransactionTypeID == contractTransactionTypeID.Value) &&
                                 (!locationID.HasValue || cd.LocationID == locationID.Value) &&
                                 (!commodityID.HasValue || cd.CommodityID == commodityID.Value) &&
@@ -514,7 +793,7 @@ namespace OMSDataService.DataRepositories
                           join ad in _context.Advisors on cd.AdvisorID equals ad.AdvisorID
                           join cest in _context.ContractExportStatusTypes on cd.ContractExportStatusTypeID equals cest.ContractExportStatusTypeID
                           join mo in _context.Months on cd.HedgeMonthID equals mo.MonthID
-                          where cd.AccountID == accountId
+                          where cd.AccountID == accountId && !c.Deleted
                           orderby c.AddDate
                           select new ContractOfferSearchResult
                           {
@@ -608,7 +887,8 @@ namespace OMSDataService.DataRepositories
                           join ad in _context.Advisors on cd.AdvisorID equals ad.AdvisorID
                           join cest in _context.ContractExportStatusTypes on cd.ContractExportStatusTypeID equals cest.ContractExportStatusTypeID
                           join mo in _context.Months on cd.HedgeMonthID equals mo.MonthID
-                          where (!contractTransactionTypeID.HasValue || c.ContractTransactionTypeID == contractTransactionTypeID.Value) &&
+                          where !c.Deleted &&
+                                (!contractTransactionTypeID.HasValue || c.ContractTransactionTypeID == contractTransactionTypeID.Value) &&
                                 (!locationID.HasValue || cd.LocationID == locationID.Value) &&
                                 (!commodityID.HasValue || cd.CommodityID == commodityID.Value) &&
                                 (string.IsNullOrEmpty(customerName) || a.AccountName.Replace(" ", "").StartsWith(customerNameSearchString) || a.ExternalRef.Replace(" ", "").StartsWith(customerNameSearchString)) &&
@@ -725,7 +1005,7 @@ namespace OMSDataService.DataRepositories
                           join ad in _context.Advisors on cd.AdvisorID equals ad.AdvisorID
                           join mo in _context.Months on cd.HedgeMonthID equals mo.MonthID
                           join b in _context.Bidsheets on cd.BidsheetID equals b.BidsheetID
-                          where cd.Offer.Value == true &&
+                          where cd.Offer.Value == true && !c.Deleted &&
                                 (cd.ContractTypeID == 1 || cd.ContractTypeID == 3) &&
                                 cd.OfferStatusTypeID == 1 &&
                                 c.ContractTransactionTypeID == 1 && 

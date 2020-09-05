@@ -7,40 +7,40 @@ namespace OMSDataService.DataInterfaces
 {
     public interface ITypeRepository
     {
-        Task<List<Location>> GetLocations();
+        Task<List<Location>> GetLocations(bool sortForDropDownList);
 
-        Task<List<Commodity>> GetCommodities();
+        Task<List<Commodity>> GetCommodities(bool sortForDropDownList);
 
-        Task<List<ContractTransactionType>> GetContractTransactionTypes();
+        Task<List<ContractTransactionType>> GetContractTransactionTypes(bool sortForDropDownList);
 
-        Task<List<ContractStatusType>> GetContractStatusTypes();
+        Task<List<ContractStatusType>> GetContractStatusTypes(bool sortForDropDownList);
 
-        Task<List<ContractType>> GetContractTypes();
+        Task<List<ContractType>> GetContractTypes(bool sortForDropDownList);
         
-        Task<List<Month>> GetMonths();
+        Task<List<Month>> GetMonths(bool sortForDropDownList);
 
-        Task<List<OfferDurationType>> GetOfferDurationTypes();
+        Task<List<OfferDurationType>> GetOfferDurationTypes(bool sortForDropDownList);
 
-        Task<List<OfferPriceType>> GetOfferPriceTypes();
+        Task<List<OfferPriceType>> GetOfferPriceTypes(bool sortForDropDownList);
 
-        Task<List<OfferType>> GetOfferTypes();
+        Task<List<OfferType>> GetOfferTypes(bool sortForDropDownList);
 
-        Task<List<UnitOfMeasure>> GetUnitsOfMeasure();
+        Task<List<UnitOfMeasure>> GetUnitsOfMeasure(bool sortForDropDownList);
 
-        Task<List<Account>> GetAccounts();
+        Task<List<Account>> GetAccounts(bool sortForDropDownList);
 
         Task<List<AccountSearchResult>> SearchAccounts(string accountName, string externalRef);
 
-        Task<List<AccountType>> GetAccountTypes();
+        Task<List<AccountType>> GetAccountTypes(bool sortForDropDownList);
 
-        Task<List<Advisor>> GetAdvisors();
+        Task<List<Advisor>> GetAdvisors(bool sortForDropDownList);
 
-        Task<List<MarketZone>> GetMarketZones();
+        Task<List<MarketZone>> GetMarketZones(bool sortForDropDownList);
 
-        Task<List<ContractPricingStatusType>> GetContractPricingStatusTypes();
+        Task<List<ContractPricingStatusType>> GetContractPricingStatusTypes(bool sortForDropDownList);
 
-        Task<List<OfferStatusType>> GetOfferStatusTypes();
+        Task<List<OfferStatusType>> GetOfferStatusTypes(bool sortForDropDownList);
 
-        Task<List<ContractExportStatusType>> GetContractExportStatusTypes();
+        Task<List<ContractExportStatusType>> GetContractExportStatusTypes(bool sortForDropDownList);
     }
 }

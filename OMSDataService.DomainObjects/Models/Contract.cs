@@ -26,5 +26,6 @@ namespace OMSDataService.DomainObjects.Models
         public string AddUserID { get; set; }
         public DateTime ChgDate { get; set; }
         public string ChgUserID { get; set; }
+        public bool Deleted { get; set; }
     }
 }
