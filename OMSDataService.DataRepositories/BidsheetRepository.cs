@@ -191,6 +191,29 @@ namespace OMSDataService.DataRepositories
             return item;
         }
 
+        public async Task<Bidsheet> GetNewBidsheet()
+        {
+            var nowDate = DateTime.Now;
+            var now = new DateTime(nowDate.Year, nowDate.Month, nowDate.Day, 0, 0, 0);
+
+            return new Bidsheet()
+            {
+                BidsheetID = 0,
+                LocationID = -1,
+                CommodityID = -1,
+                MonthID = -1,
+                OptionYear = -1,
+                DeliveryBeginDate = now,
+                DeliveryEndDate = now,
+                PreferredBasis = 0,
+                PriceProtection = 0,
+                AllowProducerView = true,
+                FOB = 0,
+                Margin = 0,
+                IsActive = true
+            };
+        }
+
         public void AddBidsheet(Bidsheet item)
         {
             item.AddDate = item.ChgDate = DateTime.Now;
@@ -306,6 +329,46 @@ namespace OMSDataService.DataRepositories
             }
 
             return bidsheets;
+        }
+
+        public async Task<List<BidsheetSearchResult>> SearchBidsheetsArchive(int? locationId, int? commodityId, DateTime? archiveStartDate, DateTime? archiveEndDate)
+        {
+            return await (from b in _context.BidsheetsHistory
+                          join l in _context.Locations on b.LocationID equals l.LocationID
+                          join c in _context.Commodities on b.CommodityID equals c.CommodityID
+                          join m in _context.Months on b.MonthID equals m.MonthID
+                          where (locationId == null || b.LocationID == locationId.Value) &&
+                          (commodityId == null || b.CommodityID == commodityId.Value) &&
+                          (
+                            (!archiveStartDate.HasValue || !archiveEndDate.HasValue)
+                            ||
+                            (archiveStartDate.Value.Date <= b.ArchiveDate.Value.Date && archiveEndDate.Value.Date >= b.ArchiveDate.Value.Date)
+                          )
+                          orderby l.LocationName, c.CommodityName, b.DeliveryBeginDate, b.DeliveryEndDate
+                          select new BidsheetSearchResult
+                          {
+                              Basis = b.Basis.Value,
+                              BidsheetID = b.BidsheetID.Value,
+                              CommodityID = c.CommodityID,
+                              CommodityName = c.CommodityName,
+                              DeliveryBeginDate = b.DeliveryBeginDate.Value.ToString("MM/dd/yyyy"),
+                              DeliveryBegin = b.DeliveryBeginDate.Value,
+                              DeliveryEndDate = b.DeliveryEndDate.Value.ToString("MM/dd/yyyy"),
+                              DeliveryEnd = b.DeliveryEndDate.Value,
+                              DeliveryPeriod = b.DeliveryPeriod,
+                              LocationID = l.LocationID,
+                              LocationName = l.LocationName,
+                              FutureMonthID = b.MonthID.Value,
+                              FutureMonthYear = m.MonthName + " " + b.OptionYear,
+                              HasOffers = false,
+                              Symbol = c.TickerSymbol,
+                              OptionMonthCode = m.MonthCode,
+                              OptionYear = b.OptionYear.Value,
+                              TickConversion = c.TickConversion,
+                              MarketZoneID = l.MarketZoneID ?? 0,
+                              CommoditySymbol = c.Symbol + m.MonthCode + b.OptionYear.ToString().Substring(3, 1),
+                              ArchiveDate = b.ArchiveDate.Value
+                          }).Take(1000).ToListAsync();
         }
     }
 }

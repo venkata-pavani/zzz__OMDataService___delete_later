@@ -111,6 +111,24 @@ namespace OMSDataService.Controllers
             }
         }
 
+        [ActionName("GetNewBidsheet")]
+        [HttpGet]
+        public async Task<IActionResult> GetNewBidsheet()
+        {
+            try
+            {
+                var bidsheet = await _repo.GetNewBidsheet();
+
+                return Ok(bidsheet);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetNewBidsheet failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
         [ActionName("AddBidsheet")]
         [HttpPost]
         public IActionResult AddBidsheet([FromBody] Bidsheet item)
@@ -141,6 +159,23 @@ namespace OMSDataService.Controllers
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "SearchBidsheets failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("SearchBidsheetsArchive")]
+        [HttpGet]
+        public async Task<IActionResult> SearchBidsheetsArchive(int? locationId, int? commodityId, DateTime? archiveStartDate, DateTime? archiveEndDate)
+        {
+            try
+            {
+                var list = await _repo.SearchBidsheetsArchive(locationId, commodityId, archiveStartDate, archiveEndDate);
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "SearchBidsheetsArchive failed: {ex.message}");
                 var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
                 return BadRequest(returnResult);
             }

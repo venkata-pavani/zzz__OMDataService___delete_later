@@ -29,5 +29,6 @@ namespace OMSDataService.DomainObjects.Models
         public decimal? TickConversion { get; set; }
         public string DeliveryPeriod { get; set; }
         public int MarketZoneID { get; set; }
+        public DateTime? ArchiveDate { get; set; }
     }
 }

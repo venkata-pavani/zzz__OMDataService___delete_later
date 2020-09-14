@@ -594,10 +594,7 @@ namespace OMSDataService.DataRepositories
             contractDetail.DeliveryEndDate = bidsheet.DeliveryEnd;
             contractDetail.HedgeMonthID = bidsheet.FutureMonthID;
             contractDetail.HedgeYear = bidsheet.OptionYear;
-            //contractDetail.OfferFutures = bidsheet.FuturesPrice;
-            //contractDetail.OfferBasis = bidsheet.Basis;
-            //contractDetail.OfferCashPrice = bidsheet.FuturesPrice + bidsheet.Basis;
-
+            
             _context.Entry(contract).State = EntityState.Modified;
             _context.Entry(contractDetail).State = EntityState.Modified;
             _context.SaveChanges();
@@ -1007,7 +1004,7 @@ namespace OMSDataService.DataRepositories
                           join b in _context.Bidsheets on cd.BidsheetID equals b.BidsheetID
                           where cd.Offer.Value == true && !c.Deleted &&
                                 (cd.ContractTypeID == 1 || cd.ContractTypeID == 3) &&
-                                cd.OfferStatusTypeID == 1 &&
+                                (cd.OfferStatusTypeID == 1 || cd.OfferStatusTypeID == 5) &&
                                 c.ContractTransactionTypeID == 1 && 
                                 (!commodityID.HasValue || cd.CommodityID == commodityID.Value) &&
                                 (string.IsNullOrEmpty(customerName) || a.AccountName.Replace(" ", "").StartsWith(customerNameSearchString) || a.ExternalRef.Replace(" ", "").StartsWith(customerNameSearchString)) &&
@@ -1033,7 +1030,7 @@ namespace OMSDataService.DataRepositories
                               DeliveryEnd = cd.DeliveryEndDate,
                               DeliveryStartDate = cd.DeliveryStartDate.HasValue ? cd.DeliveryStartDate.Value.ToString("MM/dd/yyyy") : "",
                               DeliveryStart = cd.DeliveryStartDate,
-                              FuturesPrice = cd.ContractTypeID == 1 ? (cd.OfferCashPrice + b.Basis) : cd.OfferFutures,
+                              FuturesPrice = cd.ContractTypeID == 1 ? (cd.OfferCashPrice - b.Basis) : cd.OfferFutures,
                               LocationID = cd.LocationID.HasValue ? cd.LocationID.Value : 0,
                               LocationName = l.LocationName,
                               Quantity = cd.Quantity,

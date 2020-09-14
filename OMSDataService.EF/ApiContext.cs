@@ -61,6 +61,8 @@ namespace OMSDataService.EF
 
         public DbSet<ContractExportStatusType> ContractExportStatusTypes { get; set; }
 
+        public DbSet<BidsheetsHistory> BidsheetsHistory { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema(schema: DBGlobals.SchemaName);

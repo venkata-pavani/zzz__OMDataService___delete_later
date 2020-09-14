@@ -103,8 +103,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetContract(contractId);
-                return Ok(list);
+                var contract = await _repo.GetContract(contractId);
+
+                return Ok(contract);
             }
             catch (Exception ex)
             {
@@ -127,8 +128,9 @@ namespace OMSDataService.Controllers
                     bidsheet = await _bidsheetRepository.GetBidsheetWithFutureValues(bidsheetID.Value);
                 }
 
-                var list = await _repo.GetNewContract(isSalesContract, isOffer, bidsheet, contractTypeID, accountID);
-                return Ok(list);
+                var contract = await _repo.GetNewContract(isSalesContract, isOffer, bidsheet, contractTypeID, accountID);
+
+                return Ok(contract);
             }
             catch (Exception ex)
             {
