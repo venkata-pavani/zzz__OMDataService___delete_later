@@ -7,13 +7,37 @@ namespace OMSDataService.DataInterfaces
 {
     public interface ITypeRepository
     {
+        Task<Location> GetNewLocation();
+
+        Task<Location> GetLocation(int locationID);
+
+        void AddLocation(Location location);
+
+        void UpdateLocation(Location location);
+
         Task<List<Location>> GetLocations(bool sortForDropDownList);
+
+        Task<Commodity> GetNewCommodity();
+
+        Task<Commodity> GetCommodity(int commodityID);
+
+        void AddCommodity(Commodity commodity);
+
+        void UpdateCommodity(Commodity commodity);
 
         Task<List<Commodity>> GetCommodities(bool sortForDropDownList);
 
         Task<List<ContractTransactionType>> GetContractTransactionTypes(bool sortForDropDownList);
 
         Task<List<ContractStatusType>> GetContractStatusTypes(bool sortForDropDownList);
+
+        Task<ContractType> GetNewContractType();
+
+        Task<ContractType> GetContractType(int contractTypeID);
+
+        void AddContractType(ContractType contractType);
+
+        void UpdateContractType(ContractType contractType);
 
         Task<List<ContractType>> GetContractTypes(bool sortForDropDownList);
         
