@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OMSDataService.DataInterfaces;
+using OMSDataService.DomainObjects.Models;
 using Serilog;
 using Serilog.Events;
 using Microsoft.AspNetCore.Authorization;
@@ -25,18 +26,162 @@ namespace OMSDataService.Controllers
             _logger = logger;
         }
 
+        [ActionName("GetNewLocation")]
+        [HttpGet]
+        public async Task<IActionResult> GetNewLocation()
+        {
+            try
+            {
+                return Ok(await _repo.GetNewLocation());
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetNewLocation failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetLocation")]
+        [HttpGet]
+        public async Task<IActionResult> GetLocation(int locationID)
+        {
+            try
+            {
+                return Ok(await _repo.GetLocation(locationID));
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetLocation failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("AddLocation")]
+        [HttpPost]
+        public IActionResult AddLocation([FromBody] Location location)
+        {
+            try
+            {
+                _repo.AddLocation(location);
+
+                return Ok();
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "AddLocation failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("UpdateLocation")]
+        [HttpPost]
+        public IActionResult UpdateLocation([FromBody] Location location)
+        {
+            try
+            {
+                _repo.UpdateLocation(location);
+
+                return Ok();
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "UpdateLocation failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
         [ActionName("GetLocations")]
         [HttpGet]
         public async Task<IActionResult> GetLocations(bool sortForDropDownList)
         {
             try
             {
-                var list = await _repo.GetLocations(sortForDropDownList);
-                return Ok(list);
+                return Ok(await _repo.GetLocations(sortForDropDownList));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetLocations failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetNewCommodity")]
+        [HttpGet]
+        public async Task<IActionResult> GetNewCommodity()
+        {
+            try
+            {
+                return Ok(await _repo.GetNewCommodity());
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetNewCommodity failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetCommodity")]
+        [HttpGet]
+        public async Task<IActionResult> GetCommodity(int commodityID)
+        {
+            try
+            {
+                return Ok(await _repo.GetCommodity(commodityID));
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetCommodity failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("AddCommodity")]
+        [HttpPost]
+        public IActionResult AddCommodity([FromBody] Commodity commodity)
+        {
+            try
+            {
+                _repo.AddCommodity(commodity);
+
+                return Ok();
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "AddCommodity failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("UpdateCommodity")]
+        [HttpPost]
+        public IActionResult UpdateCommodity([FromBody] Commodity commodity)
+        {
+            try
+            {
+                _repo.UpdateCommodity(commodity);
+
+                return Ok();
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "UpdateCommodity failed: {ex.message}");
                 var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
                 return BadRequest(returnResult);
             }
@@ -48,9 +193,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetCommodities(sortForDropDownList);
-                return Ok(list);
+                return Ok(await _repo.GetCommodities(sortForDropDownList));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetCommodities failed: {ex.message}");
@@ -65,9 +210,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetContractTransactionTypes(sortForDropDownList);
-                return Ok(list);
+                return Ok(await _repo.GetContractTransactionTypes(sortForDropDownList));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetContractTransactionTypes failed: {ex.message}");
@@ -82,12 +227,84 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetContractStatusTypes(sortForDropDownList);
-                return Ok(list);
+                return Ok(await _repo.GetContractStatusTypes(sortForDropDownList));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetContractStatusTypes failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetNewContractType")]
+        [HttpGet]
+        public async Task<IActionResult> GetNewContractType()
+        {
+            try
+            {
+                return Ok(await _repo.GetNewContractType());
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetNewContractType failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetContractType")]
+        [HttpGet]
+        public async Task<IActionResult> GetContractType(int contractTypeID)
+        {
+            try
+            {
+                return Ok(await _repo.GetContractType(contractTypeID));
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetContractType failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("AddContractType")]
+        [HttpPost]
+        public IActionResult AddContractType([FromBody] ContractType contractType)
+        {
+            try
+            {
+                _repo.AddContractType(contractType);
+
+                return Ok();
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "AddContractType failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("UpdateContractType")]
+        [HttpPost]
+        public IActionResult UpdateContractType([FromBody] ContractType contractType)
+        {
+            try
+            {
+                _repo.UpdateContractType(contractType);
+
+                return Ok();
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "UpdateContractType failed: {ex.message}");
                 var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
                 return BadRequest(returnResult);
             }
@@ -99,9 +316,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetContractTypes(sortForDropDownList);
-                return Ok(list);
+                return Ok(await _repo.GetContractTypes(sortForDropDownList));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetContractTypes failed: {ex.message}");
@@ -117,9 +334,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetMonths(sortForDropDownList);
-                return Ok(list);
+                return Ok(await _repo.GetMonths(sortForDropDownList));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetMonths failed: {ex.message}");
@@ -134,9 +351,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetOfferDurationTypes(sortForDropDownList);
-                return Ok(list);
+                return Ok(await _repo.GetOfferDurationTypes(sortForDropDownList));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetOfferDurationTypes failed: {ex.message}");
@@ -151,9 +368,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetOfferPriceTypes(sortForDropDownList);
-                return Ok(list);
+                return Ok(await _repo.GetOfferPriceTypes(sortForDropDownList));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetOfferPriceTypes failed: {ex.message}");
@@ -168,9 +385,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetOfferTypes(sortForDropDownList);
-                return Ok(list);
+                return Ok(await _repo.GetOfferTypes(sortForDropDownList));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetOfferTypes failed: {ex.message}");
@@ -185,9 +402,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetUnitsOfMeasure(sortForDropDownList);
-                return Ok(list);
+                return Ok(await _repo.GetUnitsOfMeasure(sortForDropDownList));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetUnitsOfMeasure failed: {ex.message}");
@@ -202,9 +419,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetAccounts(sortForDropDownList);
-                return Ok(list);
+                return Ok(await _repo.GetAccounts(sortForDropDownList));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetAccounts failed: {ex.message}");
@@ -219,9 +436,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.SearchAccounts(accountName, externalRef);
-                return Ok(list);
+                return Ok(await _repo.SearchAccounts(accountName, externalRef));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "SearchAccounts failed: {ex.message}");
@@ -236,9 +453,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetAccountTypes(sortForDropDownList);
-                return Ok(list);
+                return Ok(await _repo.GetAccountTypes(sortForDropDownList));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetAccountTypes failed: {ex.message}");
@@ -253,9 +470,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetAdvisors(sortForDropDownList);
-                return Ok(list);
+                return Ok(await _repo.GetAdvisors(sortForDropDownList));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetAdvisors failed: {ex.message}");
@@ -270,9 +487,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetMarketZones(sortForDropDownList);
-                return Ok(list);
+                return Ok(await _repo.GetMarketZones(sortForDropDownList));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetMarketZones failed: {ex.message}");
@@ -287,9 +504,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetContractPricingStatusTypes(sortForDropDownList);
-                return Ok(list);
+                return Ok(await _repo.GetContractPricingStatusTypes(sortForDropDownList));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetContractPricingStatusTypes failed: {ex.message}");
@@ -304,9 +521,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetOfferStatusTypes(sortForDropDownList);
-                return Ok(list);
+                return Ok(await _repo.GetOfferStatusTypes(sortForDropDownList));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetOfferStatusTypes failed: {ex.message}");
@@ -321,9 +538,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetContractExportStatusTypes(sortForDropDownList);
-                return Ok(list);
+                return Ok(await _repo.GetContractExportStatusTypes(sortForDropDownList));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetContractExportStatusTypes failed: {ex.message}");

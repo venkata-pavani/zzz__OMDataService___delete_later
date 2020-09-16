@@ -21,6 +21,37 @@ namespace OMSDataService.DataRepositories
             _mapper = mapper;
         }
 
+        public async Task<Location> GetNewLocation()
+        {
+            return new Location()
+            {
+                LocationID = 0,
+                SortOrder = 0,
+                IsActive = true
+            };
+        }
+
+        public async Task<Location> GetLocation(int locationID)
+        {
+            return await _context.Locations.Where(l => l.LocationID == locationID).SingleOrDefaultAsync();
+        }
+
+        public void AddLocation(Location location)
+        {
+            location.AddDate = location.ChgDate = DateTime.Now;
+
+            _context.Locations.Add(location);
+            _context.SaveChanges();
+        }
+
+        public void UpdateLocation(Location location)
+        {
+            location.ChgDate = DateTime.Now;
+
+            _context.Entry(location).State = EntityState.Modified;
+            _context.SaveChanges();
+        }
+
         public async Task<List<Location>> GetLocations(bool sortForDropDownList)
         {
             if (sortForDropDownList)
@@ -32,6 +63,37 @@ namespace OMSDataService.DataRepositories
             {
                 return await _context.Locations.OrderBy(l => l.LocationName).ToListAsync();
             }
+        }
+
+        public async Task<Commodity> GetNewCommodity()
+        { 
+            return new Commodity()
+            {
+                CommodityID = 0,
+                SortOrder = 0,
+                IsActive = true
+            };
+        }
+
+        public async Task<Commodity> GetCommodity(int commodityID)
+        {
+            return await _context.Commodities.Where(c => c.CommodityID == commodityID).SingleOrDefaultAsync();
+        }
+
+        public void AddCommodity(Commodity commodity)
+        {
+            commodity.AddDate = commodity.ChgDate = DateTime.Now;
+
+            _context.Commodities.Add(commodity);
+            _context.SaveChanges();
+        }
+
+        public void UpdateCommodity(Commodity commodity)
+        {
+            commodity.ChgDate = DateTime.Now;
+
+            _context.Entry(commodity).State = EntityState.Modified;
+            _context.SaveChanges();
         }
 
         public async Task<List<Commodity>> GetCommodities(bool sortForDropDownList)
@@ -72,6 +134,38 @@ namespace OMSDataService.DataRepositories
                 return await _context.ContractStatusTypes.OrderBy(c => c.Description).ToListAsync();
             }
         }
+
+        public async Task<ContractType> GetNewContractType()
+        {
+            return new ContractType()
+            {
+                ContractTypeID = 0,
+                SortOrder = 0,
+                IsActive = true
+            };
+        }
+
+        public async Task<ContractType> GetContractType(int contractTypeID)
+        {
+            return await _context.ContractTypes.Where(c => c.ContractTypeID == contractTypeID).SingleOrDefaultAsync();
+        }
+
+        public void AddContractType(ContractType contractType)
+        {
+            contractType.AddDate = contractType.ChgDate = DateTime.Now;
+
+            _context.ContractTypes.Add(contractType);
+            _context.SaveChanges();
+        }
+
+        public void UpdateContractType(ContractType contractType)
+        {
+            contractType.ChgDate = DateTime.Now;
+
+            _context.Entry(contractType).State = EntityState.Modified;
+            _context.SaveChanges();
+        }
+
 
         public async Task<List<ContractType>> GetContractTypes(bool sortForDropDownList)
         {
