@@ -389,5 +389,39 @@ namespace OMSDataService.DataRepositories
                 return await _context.ContractExportStatusTypes.OrderBy(o => o.ContractExportStatusTypeName).ToListAsync();
             }
         }
+
+        public async Task<GridLayout> GetNewGridLayout()
+        {
+            return new GridLayout()
+            {
+                GridLayoutID = 0
+            };
+        }
+
+        public async Task<GridLayout> GetGridLayout(int gridLayoutID)
+        {
+            return await _context.GridLayouts.Where(g => g.GridLayoutID == gridLayoutID).SingleOrDefaultAsync();
+        }
+
+        public void AddGridLayout(GridLayout gridLayout)
+        {
+            gridLayout.AddDate = gridLayout.ChgDate = DateTime.Now;
+
+            _context.GridLayouts.Add(gridLayout);
+            _context.SaveChanges();
+        }
+
+        public void UpdateGridLayout(GridLayout gridLayout)
+        {
+            gridLayout.ChgDate = DateTime.Now;
+
+            _context.Entry(gridLayout).State = EntityState.Modified;
+            _context.SaveChanges();
+        }
+
+        public async Task<List<GridLayout>> GetGridLayouts(string gridName)
+        {
+            return await _context.GridLayouts.Where(g => g.GridName == gridName).OrderBy(g => g.LayoutName).ToListAsync();
+        }
     }
 }

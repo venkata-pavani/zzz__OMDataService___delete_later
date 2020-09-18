@@ -11,11 +11,11 @@ namespace OMSDataService.DomainObjects.Models
         public string ContractExportStatusTypeName { get; set; }
         public int LocationID { get; set; }
         public string LocationName { get; set; }
-        public int ContractTypeID { get; set; }
+        public int? ContractTypeID { get; set; }
         public string ContractTypeName { get; set; }
         public string AccountID { get; set; }
         public string AccountName { get; set; }
-        public int CommodityID { get; set; }
+        public int? CommodityID { get; set; }
         public string CommodityName { get; set; }
         public string ContractNumber { get; set; }
         public string ContractDate { get; set; }

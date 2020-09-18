@@ -10,9 +10,9 @@ namespace OMSDataService.DomainObjects.Models
         [Key]
         public int ContractDetailID { get; set; }
         public int ContractID { get; set; }
-        public int ContractTypeID { get; set; }
+        public int? ContractTypeID { get; set; }
         public int? ContractStatusTypeID { get; set; }
-        public int CommodityID { get; set; }
+        public int? CommodityID { get; set; }
         public int? AccountID { get; set; }
         public int? AdvisorID { get; set; }
         public DateTime? ContractDetailDate { get; set; }

@@ -66,5 +66,15 @@ namespace OMSDataService.DataInterfaces
         Task<List<OfferStatusType>> GetOfferStatusTypes(bool sortForDropDownList);
 
         Task<List<ContractExportStatusType>> GetContractExportStatusTypes(bool sortForDropDownList);
+
+        Task<GridLayout> GetNewGridLayout();
+
+        Task<GridLayout> GetGridLayout(int gridLayoutID);
+
+        void AddGridLayout(GridLayout gridLayout);
+
+        void UpdateGridLayout(GridLayout gridLayout);
+
+        Task<List<GridLayout>> GetGridLayouts(string gridName);
     }
 }

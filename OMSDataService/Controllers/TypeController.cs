@@ -548,5 +548,94 @@ namespace OMSDataService.Controllers
                 return BadRequest(returnResult);
             }
         }
+
+        [ActionName("GetNewGridLayout")]
+        [HttpGet]
+        public async Task<IActionResult> GetNewGridLayout()
+        {
+            try
+            {
+                return Ok(await _repo.GetNewGridLayout());
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetNewGridLayout failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetGridLayout")]
+        [HttpGet]
+        public async Task<IActionResult> GetGridLayout(int gridLayoutID)
+        {
+            try
+            {
+                return Ok(await _repo.GetGridLayout(gridLayoutID));
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetGridLayout failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("AddGridLayout")]
+        [HttpPost]
+        public IActionResult AddGridLayout([FromBody] GridLayout gridLayout)
+        {
+            try
+            {
+                _repo.AddGridLayout(gridLayout);
+
+                return Ok();
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "AddGridLayout failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("UpdateGridLayout")]
+        [HttpPost]
+        public IActionResult UpdateGridLayout([FromBody] GridLayout gridLayout)
+        {
+            try
+            {
+                _repo.UpdateGridLayout(gridLayout);
+
+                return Ok();
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "UpdateGridLayout failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetGridLayouts")]
+        [HttpGet]
+        public async Task<IActionResult> GetGridLayouts(string gridName)
+        {
+            try
+            {
+                return Ok(await _repo.GetGridLayouts(gridName));
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetGridLayouts failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
     }
 }
