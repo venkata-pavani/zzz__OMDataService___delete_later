@@ -44,11 +44,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetBidsheetsToRollOfferTo")]
         [HttpGet]
-        public async Task<IActionResult> GetBidsheetsToRollOfferTo(int locationId, int commodityId, int marketZoneId)
+        public async Task<IActionResult> GetBidsheetsToRollOfferTo(int locationId, int commodityId, int marketZoneId, bool useRealTimeQuotes)
         {
             try
             {
-                return Ok(await _repo.GetBidsheetsToRollOfferTo(locationId, commodityId, marketZoneId));
+                return Ok(await _repo.GetBidsheetsToRollOfferTo(locationId, commodityId, marketZoneId, useRealTimeQuotes));
             }
 
             catch (Exception ex)
@@ -78,11 +78,11 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetBidsheetWithFutureValues")]
         [HttpGet]
-        public async Task<IActionResult> GetBidsheetWithFutureValues(int bidsheetId)
+        public async Task<IActionResult> GetBidsheetWithFutureValues(int bidsheetId, bool useRealTimeQuotes)
         {
             try
             {
-                return Ok(await _repo.GetBidsheetWithFutureValues(bidsheetId));
+                return Ok(await _repo.GetBidsheetWithFutureValues(bidsheetId, useRealTimeQuotes));
             }
 
             catch (Exception ex)
@@ -152,11 +152,12 @@ namespace OMSDataService.Controllers
 
         [ActionName("SearchBidsheets")]
         [HttpGet]
-        public async Task<IActionResult> SearchBidsheets(int? locationId, int? commodityId, bool active, bool countHasOffers, bool countHasOffersByAccountOnly, int? accountID)
+        public async Task<IActionResult> SearchBidsheets(int? locationId, int? commodityId, bool active, bool countHasOffers, bool countHasOffersByAccountOnly,
+                                                         int? accountID, bool useRealTimeQuotes)
         {
             try
             {
-                return Ok(await _repo.SearchBidsheets(locationId, commodityId, active, countHasOffers, countHasOffersByAccountOnly, accountID));
+                return Ok(await _repo.SearchBidsheets(locationId, commodityId, active, countHasOffers, countHasOffersByAccountOnly, accountID, useRealTimeQuotes));
             }
 
             catch (Exception ex)

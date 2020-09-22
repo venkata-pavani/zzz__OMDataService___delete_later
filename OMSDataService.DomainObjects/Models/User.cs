@@ -15,6 +15,7 @@ namespace OMSDataService.DomainObjects.Models
         public int? RoleID { get; set; }
         public string Comments { get; set; }
         public DateTime? LastLoginDate { get; set; }
+        public bool? RealTimeQuotes { get; set; }
         public bool? IsDefault { get; set; }
         public int? SortOrder { get; set; }
         public bool? IsActive { get; set; }

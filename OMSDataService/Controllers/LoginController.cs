@@ -14,6 +14,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using OMSDataService.EF;
+using Microsoft.EntityFrameworkCore;
 
 namespace OMSDataService.Controllers
 {
@@ -56,7 +57,8 @@ namespace OMSDataService.Controllers
                             Username = "errol_mac_user",
                             Token = new JwtSecurityTokenHandler().WriteToken(token),
                             TokenExpiration = token.ValidTo,
-                            AdvisorID = 9
+                            AdvisorID = 9,
+                            RealTimeQuotes = false
                         });
                     }
 
@@ -69,7 +71,8 @@ namespace OMSDataService.Controllers
                             Username = "",
                             Token = null,
                             TokenExpiration = null,
-                            AdvisorID = null
+                            AdvisorID = null,
+                            RealTimeQuotes = false
                         });
                     }
                 }
@@ -85,11 +88,17 @@ namespace OMSDataService.Controllers
                         user.Token = new JwtSecurityTokenHandler().WriteToken(token);
                         user.TokenExpiration = token.ValidTo;
 
-                        var dbUser = _context.Users.Where(u => u.UserName == username).SingleOrDefault();
+                        var dbUser = await _context.Users.Where(u => u.UserName == username).SingleOrDefaultAsync();
 
                         if (dbUser != null)
                         {
                             user.AdvisorID = dbUser.AdvisorID;
+                            user.RealTimeQuotes = dbUser.RealTimeQuotes;
+                        }
+
+                        else
+                        {
+                            user.RealTimeQuotes = false;
                         }
                     }
 

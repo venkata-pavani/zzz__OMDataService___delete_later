@@ -116,7 +116,7 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetNewContract")]
         [HttpGet]
-        public async Task<IActionResult> GetNewContract(bool isSalesContract, bool isOffer, int? bidsheetID, int? contractTypeID, int accountID)
+        public async Task<IActionResult> GetNewContract(bool isSalesContract, bool isOffer, int? bidsheetID, int? contractTypeID, int accountID, bool useRealTimeQuotes)
         {
             try
             {
@@ -124,7 +124,7 @@ namespace OMSDataService.Controllers
 
                 if (bidsheetID.HasValue)
                 {
-                    bidsheet = await _bidsheetRepository.GetBidsheetWithFutureValues(bidsheetID.Value);
+                    bidsheet = await _bidsheetRepository.GetBidsheetWithFutureValues(bidsheetID.Value, useRealTimeQuotes);
                 }
 
                 return Ok(await _repo.GetNewContract(isSalesContract, isOffer, bidsheet, contractTypeID, accountID));

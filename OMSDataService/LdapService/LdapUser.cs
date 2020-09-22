@@ -10,5 +10,6 @@ namespace OMSDataService
         public string Token { get; set; }
         public DateTime? TokenExpiration { get; set; }
         public int? AdvisorID { get; set; }
+        public bool? RealTimeQuotes { get; set; }
     }
 }
