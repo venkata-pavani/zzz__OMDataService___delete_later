@@ -232,6 +232,13 @@ namespace OMSDataService.DataRepositories
                 basisOnAddDateTime = now;
             }
 
+            Location location = null;
+
+            if (bidsheet != null)
+            {
+                location = await _context.Locations.Where(l => l.LocationID == bidsheet.LocationID).SingleOrDefaultAsync();
+            }
+
             var dto = new ContractDTO()
             {
                 Contract = new Contract()
@@ -264,7 +271,7 @@ namespace OMSDataService.DataRepositories
                     HedgeMonthID = bidsheet != null ? bidsheet.FutureMonthID : (int?) null,
                     HedgeYear = bidsheet != null ? bidsheet.OptionYear : (int?) null,
                     IsArchived = false,
-                    LocationID = bidsheet != null ? bidsheet.LocationID : (int?) null,
+                    LocationID = location != null ? location.ContractingLocationID : (int?) null,
                     MarketZoneID = bidsheet != null ? bidsheet.MarketZoneID : (int?) null,
                     Offer = isOffer,
                     OfferBasis = (bidsheet != null && isOffer) ? bidsheet.Basis : (decimal?)null,
@@ -295,6 +302,19 @@ namespace OMSDataService.DataRepositories
                 var nowDate = DateTime.Now;
                 var now = new DateTime(nowDate.Year, nowDate.Month, nowDate.Day, 0, 0, 0);
 
+                Month month = null;
+
+                int? year = null;
+
+                if (contract.OptionMonth != null && contract.OptionMonth.Length > 2)
+                {
+                    var monthCode = contract.OptionMonth[1].ToString();
+
+                    month = await _context.Months.Where(m => m.MonthCode == monthCode).SingleOrDefaultAsync();
+
+                    year = int.Parse(DateTime.Now.Year.ToString().Substring(0, 3) + contract.OptionMonth[2].ToString());
+                }
+
                 var dto = new ContractDTO()
                 {
                     Contract = new Contract()
@@ -313,7 +333,11 @@ namespace OMSDataService.DataRepositories
                         ContractDetailOfferDate = now,
                         ContractExportStatusTypeID = 5,
                         ContractTypeID = null,
+                        DeliveryStartDate = contract.DeliveryStart,
+                        DeliveryEndDate = contract.DeliveryEnd,
                         FinalPrice = false,
+                        HedgeMonthID = month != null ? month.MonthID : (int?) null,
+                        HedgeYear = year,
                         IsArchived = false,
                         LocationID = contract.LocationID,
                         MarketZoneID = contract.MarketZoneID,
@@ -353,6 +377,19 @@ namespace OMSDataService.DataRepositories
                 var nowDate = DateTime.Now;
                 var now = new DateTime(nowDate.Year, nowDate.Month, nowDate.Day, 0, 0, 0);
 
+                Month month = null;
+
+                int? year = null;
+
+                if (contract.OptionMonth != null && contract.OptionMonth.Length > 2)
+                {
+                    var monthCode = contract.OptionMonth[1].ToString();
+
+                    month = await _context.Months.Where(m => m.MonthCode == monthCode).SingleOrDefaultAsync();
+
+                    year = int.Parse(DateTime.Now.Year.ToString().Substring(0, 3) + contract.OptionMonth[2].ToString());
+                }
+
                 var dto = new ContractDTO()
                 {
                     Contract = new Contract()
@@ -372,7 +409,11 @@ namespace OMSDataService.DataRepositories
                         ContractExportStatusTypeID = 5,
                         ContractStatusTypeID = 4,
                         ContractTypeID = null,
+                        DeliveryStartDate = contract.DeliveryStart,
+                        DeliveryEndDate = contract.DeliveryEnd,
                         FinalPrice = false,
+                        HedgeMonthID = month != null ? month.MonthID : (int?) null,
+                        HedgeYear = year,
                         IsArchived = false,
                         LocationID = contract.LocationID,
                         MarketZoneID = contract.MarketZoneID,

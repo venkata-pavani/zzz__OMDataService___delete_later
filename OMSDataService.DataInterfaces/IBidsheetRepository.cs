@@ -9,7 +9,7 @@ namespace OMSDataService.DataInterfaces
     {
         Task<List<Bidsheet>> GetBidsheets();
 
-        Task<List<BidsheetSearchResult>> GetBidsheetsForLocationAndCommodity(int locationId, int commodityId);
+        Task<List<BidsheetSearchResult>> GetBidsheetsToRollOfferTo(int locationId, int commodityId, int marketZoneId);
 
         Task<Bidsheet> GetBidsheet(int bidsheetId);
 

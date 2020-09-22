@@ -32,14 +32,15 @@ namespace OMSDataService.DataRepositories
             return list;
         }
 
-        public async Task<List<BidsheetSearchResult>> GetBidsheetsForLocationAndCommodity(int locationId, int commodityId)
+        public async Task<List<BidsheetSearchResult>> GetBidsheetsToRollOfferTo(int locationId, int commodityId, int marketZoneId)
         {
             var bidsheets = await (from b in _context.Bidsheets
                                    join l in _context.Locations on b.LocationID equals l.LocationID
                                    join c in _context.Commodities on b.CommodityID equals c.CommodityID
                                    join m in _context.Months on b.MonthID equals m.MonthID
                                    where b.IsActive &&
-                                   b.LocationID == locationId &&
+                                   //b.LocationID == locationId &&
+                                   l.MarketZoneID == marketZoneId &&
                                    b.CommodityID == commodityId
                                    orderby b.DeliveryBeginDate, b.DeliveryEndDate
                                    select new BidsheetSearchResult

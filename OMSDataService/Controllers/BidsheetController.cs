@@ -42,18 +42,18 @@ namespace OMSDataService.Controllers
             }
         }
 
-        [ActionName("GetBidsheetsForLocationAndCommodity")]
+        [ActionName("GetBidsheetsToRollOfferTo")]
         [HttpGet]
-        public async Task<IActionResult> GetBidsheetsForLocationAndCommodity(int locationId, int commodityId)
+        public async Task<IActionResult> GetBidsheetsToRollOfferTo(int locationId, int commodityId, int marketZoneId)
         {
             try
             {
-                var list = await _repo.GetBidsheetsForLocationAndCommodity(locationId, commodityId);
+                var list = await _repo.GetBidsheetsToRollOfferTo(locationId, commodityId, marketZoneId);
                 return Ok(list);
             }
             catch (Exception ex)
             {
-                _logger.Write(LogEventLevel.Error, ex, "GetBidsheetsForLocationAndCommodity failed: {ex.message}");
+                _logger.Write(LogEventLevel.Error, ex, "GetBidsheetsToRollOfferTo failed: {ex.message}");
                 var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
                 return BadRequest(returnResult);
             }

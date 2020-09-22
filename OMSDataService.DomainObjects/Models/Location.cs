@@ -26,6 +26,7 @@ namespace OMSDataService.DomainObjects.Models
         public string Note { get; set; }
         public bool? ContractingActive { get; set; }
         public bool? IsUsingContractSeqNo { get; set; }
+        public int? ContractingLocationID { get; set; }
         public int? MarketZoneID { get; set; }
         public string ExternalRef { get; set; }
         public string ExternalRefName { get; set; }
