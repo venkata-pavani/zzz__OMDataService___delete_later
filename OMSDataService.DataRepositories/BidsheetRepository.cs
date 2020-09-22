@@ -25,11 +25,7 @@ namespace OMSDataService.DataRepositories
 
         public async Task<List<Bidsheet>> GetBidsheets()
         {
-            var list = await _context.Bidsheets
-                .OrderByDescending(x => x.BidsheetID)
-                    .ToListAsync();          
-
-            return list;
+            return await _context.Bidsheets.OrderByDescending(x => x.BidsheetID).ToListAsync();
         }
 
         public async Task<List<BidsheetSearchResult>> GetBidsheetsToRollOfferTo(int locationId, int commodityId, int marketZoneId)
@@ -187,9 +183,7 @@ namespace OMSDataService.DataRepositories
 
         public async Task<Bidsheet> GetBidsheet(int bidsheetId)
         {
-            var item = await _context.Bidsheets.FirstOrDefaultAsync(c => c.BidsheetID == bidsheetId);  
-
-            return item;
+            return await _context.Bidsheets.FirstOrDefaultAsync(c => c.BidsheetID == bidsheetId);
         }
 
         public async Task<Bidsheet> GetNewBidsheet()
@@ -265,7 +259,11 @@ namespace OMSDataService.DataRepositories
                                        CommoditySymbol = c.Symbol + m.MonthCode + b.OptionYear.ToString().Substring(3, 1)
                                    }).ToListAsync();
 
-            var url = "https://ondemand.websol.barchart.com/getQuote.json?apikey=061bdbf8ef8efcf5da6e335be86fa8de&symbols=";
+            //Delayed: ccd36c3b3b15a63e13f83a080f407d88
+            //Realtime: dd83bb0594f928db3f15afdc5c5b8077
+
+            //var url = "https://ondemand.websol.barchart.com/getQuote.json?apikey=061bdbf8ef8efcf5da6e335be86fa8de&symbols=";
+            var url = "https://ondemand.websol.barchart.com/getQuote.json?apikey=dd83bb0594f928db3f15afdc5c5b8077&symbols=";
 
             var symbolCount = 0;
 

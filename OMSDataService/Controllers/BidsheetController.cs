@@ -31,9 +31,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetBidsheets();
-                return Ok(list);
+                return Ok(await _repo.GetBidsheets());
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetBidsheets failed: {ex.message}");
@@ -48,9 +48,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetBidsheetsToRollOfferTo(locationId, commodityId, marketZoneId);
-                return Ok(list);
+                return Ok(await _repo.GetBidsheetsToRollOfferTo(locationId, commodityId, marketZoneId));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetBidsheetsToRollOfferTo failed: {ex.message}");
@@ -65,9 +65,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetBidsheet(bidsheetId);
-                return Ok(list);
+                return Ok(await _repo.GetBidsheet(bidsheetId));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetBidsheet failed: {ex.message}");
@@ -82,9 +82,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetBidsheetWithFutureValues(bidsheetId);
-                return Ok(list);
+                return Ok(await _repo.GetBidsheetWithFutureValues(bidsheetId));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetBidsheetWithFutureValues failed: {ex.message}");
@@ -103,6 +103,7 @@ namespace OMSDataService.Controllers
 
                 return Ok();
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "UpdateBidsheet failed: {ex.message}");
@@ -121,6 +122,7 @@ namespace OMSDataService.Controllers
 
                 return Ok(bidsheet);
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetNewBidsheet failed: {ex.message}");
@@ -139,6 +141,7 @@ namespace OMSDataService.Controllers
 
                 return Ok();
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "AddBidsheet failed: {ex.message}");
@@ -153,9 +156,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.SearchBidsheets(locationId, commodityId, active, countHasOffers, countHasOffersByAccountOnly, accountID);
-                return Ok(list);
+                return Ok(await _repo.SearchBidsheets(locationId, commodityId, active, countHasOffers, countHasOffersByAccountOnly, accountID));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "SearchBidsheets failed: {ex.message}");
@@ -170,9 +173,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.SearchBidsheetsArchive(locationId, commodityId, archiveStartDate, archiveEndDate);
-                return Ok(list);
+                return Ok(await _repo.SearchBidsheetsArchive(locationId, commodityId, archiveStartDate, archiveEndDate));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "SearchBidsheetsArchive failed: {ex.message}");
