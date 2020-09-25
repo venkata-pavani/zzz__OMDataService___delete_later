@@ -259,6 +259,45 @@ namespace OMSDataService.DataRepositories
             }
         }
 
+        [Obsolete]
+        public async Task<Customer> GetCustomer(string externalRef)
+        {
+            var customers = await _context.Query<Customer>().FromSqlRaw("Execute dbo.GetCustomer @ExternalRef = {0}", externalRef).ToListAsync();
+
+            if (customers.Count > 0)
+            {
+                return customers[0];
+            }
+
+            else
+            {
+                return new Customer();
+            }
+        }
+
+        public async Task<AccountSearchResult> GetAccount(int accountID)
+        {
+            return await (from a in _context.Accounts
+                          join s in _context.States on a.StateID equals s.StateID
+                          where a.AccountID == accountID
+                          select new AccountSearchResult
+                          {
+                              AccountID = a.AccountID,
+                              AccountName = a.AccountName,
+                              Address1 = a.Address1,
+                              Address2 = a.Address2,
+                              City = a.City,
+                              ExternalRef = a.ExternalRef,
+                              ExternalRefName = a.ExternalRefName,
+                              Fax = a.Fax,
+                              Phone1 = a.Phone1,
+                              Phone2 = a.Phone2,
+                              State = s.StateName,
+                              WebAddress = a.WebAddress,
+                              Zip = a.Zip
+                          }).SingleOrDefaultAsync();
+        }
+
         public async Task<List<AccountSearchResult>> SearchAccounts(string accountName, string externalRef)
         {
             var accountNameSearchString = !string.IsNullOrEmpty(accountName) ? accountName.Replace(" ", "") : "";

@@ -23,7 +23,7 @@ namespace OMSDataService.DomainObjects.Models
         public decimal open { get; set; }
         public decimal high { get; set; }
         public decimal low { get; set; }
-        public decimal close { get; set; }
+        public decimal? close { get; set; }
         public decimal numTrades { get; set; }
         public decimal dollarVolume { get; set; }
         public string flag { get; set; }

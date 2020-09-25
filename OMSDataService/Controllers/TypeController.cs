@@ -430,6 +430,40 @@ namespace OMSDataService.Controllers
             }
         }
 
+        [ActionName("GetCustomer")]
+        [HttpGet]
+        public async Task<IActionResult> GetCustomer(string externalRef)
+        {
+            try
+            {
+                return Ok(await _repo.GetCustomer(externalRef));
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetCustomer failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetAccount")]
+        [HttpGet]
+        public async Task<IActionResult> GetAccount(int accountID)
+        {
+            try
+            {
+                return Ok(await _repo.GetAccount(accountID));
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetAccount failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
         [ActionName("SearchAccounts")]
         [HttpGet]
         public async Task<IActionResult> SearchAccounts(string accountName, string externalRef)

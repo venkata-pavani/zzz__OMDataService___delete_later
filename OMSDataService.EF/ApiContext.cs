@@ -77,6 +77,8 @@ namespace OMSDataService.EF
 
             modelBuilder.Entity<ContractAmendment>().HasNoKey();
 
+            modelBuilder.Entity<Customer>().HasNoKey();
+
             base.OnModelCreating(modelBuilder);
         }
     }
