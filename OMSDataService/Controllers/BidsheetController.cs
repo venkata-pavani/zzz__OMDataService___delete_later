@@ -19,6 +19,7 @@ namespace OMSDataService.Controllers
     {
         private IBidsheetRepository _repo;
         private readonly ILogger _logger;
+
         public BidsheetController(IBidsheetRepository repo, ILogger logger)
         {
              _repo = repo;

@@ -413,74 +413,6 @@ namespace OMSDataService.Controllers
             }
         }
 
-        [ActionName("GetAccounts")]
-        [HttpGet]
-        public async Task<IActionResult> GetAccounts(bool sortForDropDownList)
-        {
-            try
-            {
-                return Ok(await _repo.GetAccounts(sortForDropDownList));
-            }
-
-            catch (Exception ex)
-            {
-                _logger.Write(LogEventLevel.Error, ex, "GetAccounts failed: {ex.message}");
-                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
-                return BadRequest(returnResult);
-            }
-        }
-
-        [ActionName("GetCustomer")]
-        [HttpGet]
-        public async Task<IActionResult> GetCustomer(string externalRef)
-        {
-            try
-            {
-                return Ok(await _repo.GetCustomer(externalRef));
-            }
-
-            catch (Exception ex)
-            {
-                _logger.Write(LogEventLevel.Error, ex, "GetCustomer failed: {ex.message}");
-                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
-                return BadRequest(returnResult);
-            }
-        }
-
-        [ActionName("GetAccount")]
-        [HttpGet]
-        public async Task<IActionResult> GetAccount(int accountID)
-        {
-            try
-            {
-                return Ok(await _repo.GetAccount(accountID));
-            }
-
-            catch (Exception ex)
-            {
-                _logger.Write(LogEventLevel.Error, ex, "GetAccount failed: {ex.message}");
-                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
-                return BadRequest(returnResult);
-            }
-        }
-
-        [ActionName("SearchAccounts")]
-        [HttpGet]
-        public async Task<IActionResult> SearchAccounts(string accountName, string externalRef)
-        {
-            try
-            {
-                return Ok(await _repo.SearchAccounts(accountName, externalRef));
-            }
-
-            catch (Exception ex)
-            {
-                _logger.Write(LogEventLevel.Error, ex, "SearchAccounts failed: {ex.message}");
-                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
-                return BadRequest(returnResult);
-            }
-        }
-
         [ActionName("GetAccountTypes")]
         [HttpGet]
         public async Task<IActionResult> GetAccountTypes(bool sortForDropDownList)
@@ -667,6 +599,57 @@ namespace OMSDataService.Controllers
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetGridLayouts failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetNoteActivityTypes")]
+        [HttpGet]
+        public async Task<IActionResult> GetNoteActivityTypes(bool sortForDropDownList)
+        {
+            try
+            {
+                return Ok(await _repo.GetNoteActivityTypes(sortForDropDownList));
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetNoteActivityTypes failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetNotePriorityTypes")]
+        [HttpGet]
+        public async Task<IActionResult> GetNotePriorityTypes(bool sortForDropDownList)
+        {
+            try
+            {
+                return Ok(await _repo.GetNotePriorityTypes(sortForDropDownList));
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetNotePriorityTypes failed: {ex.message}");
+                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                return BadRequest(returnResult);
+            }
+        }
+
+        [ActionName("GetNoteStatusTypes")]
+        [HttpGet]
+        public async Task<IActionResult> GetNoteStatusTypes(bool sortForDropDownList)
+        {
+            try
+            {
+                return Ok(await _repo.GetNoteStatusTypes(sortForDropDownList));
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Write(LogEventLevel.Error, ex, "GetNoteStatusTypes failed: {ex.message}");
                 var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
                 return BadRequest(returnResult);
             }

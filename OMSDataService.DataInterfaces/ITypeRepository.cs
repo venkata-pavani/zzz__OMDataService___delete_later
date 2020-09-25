@@ -51,14 +51,6 @@ namespace OMSDataService.DataInterfaces
 
         Task<List<UnitOfMeasure>> GetUnitsOfMeasure(bool sortForDropDownList);
 
-        Task<List<Account>> GetAccounts(bool sortForDropDownList);
-
-        Task<List<AccountSearchResult>> SearchAccounts(string accountName, string externalRef);
-
-        Task<Customer> GetCustomer(string externalRef);
-
-        Task<AccountSearchResult> GetAccount(int accountID);
-
         Task<List<AccountType>> GetAccountTypes(bool sortForDropDownList);
 
         Task<List<Advisor>> GetAdvisors(bool sortForDropDownList);
@@ -80,5 +72,11 @@ namespace OMSDataService.DataInterfaces
         void UpdateGridLayout(GridLayout gridLayout);
 
         Task<List<GridLayout>> GetGridLayouts(string gridName);
+
+        Task<List<NotesActivityType>> GetNoteActivityTypes(bool sortForDropDownList);
+
+        Task<List<NotesPriorityType>> GetNotePriorityTypes(bool sortForDropDownList);
+
+        Task<List<NotesStatusType>> GetNoteStatusTypes(bool sortForDropDownList);
     }
 }

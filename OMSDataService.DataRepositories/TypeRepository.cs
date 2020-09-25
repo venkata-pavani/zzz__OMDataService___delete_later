@@ -246,111 +246,6 @@ namespace OMSDataService.DataRepositories
             }
         }
 
-        public async Task<List<Account>> GetAccounts(bool sortForDropDownList)
-        {
-            if (sortForDropDownList)
-            {
-                return await _context.Accounts.OrderBy(a=> a.SortOrder).ThenBy(a => a.AccountName).ToListAsync();
-            }
-
-            else
-            {
-                return await _context.Accounts.OrderBy(a => a.AccountName).ToListAsync();
-            }
-        }
-
-        [Obsolete]
-        public async Task<Customer> GetCustomer(string externalRef)
-        {
-            var customers = await _context.Query<Customer>().FromSqlRaw("Execute dbo.GetCustomer @ExternalRef = {0}", externalRef).ToListAsync();
-
-            if (customers.Count > 0)
-            {
-                return customers[0];
-            }
-
-            else
-            {
-                return new Customer();
-            }
-        }
-
-        public async Task<AccountSearchResult> GetAccount(int accountID)
-        {
-            return await (from a in _context.Accounts
-                          join s in _context.States on a.StateID equals s.StateID
-                          where a.AccountID == accountID
-                          select new AccountSearchResult
-                          {
-                              AccountID = a.AccountID,
-                              AccountName = a.AccountName,
-                              Address1 = a.Address1,
-                              Address2 = a.Address2,
-                              City = a.City,
-                              ExternalRef = a.ExternalRef,
-                              ExternalRefName = a.ExternalRefName,
-                              Fax = a.Fax,
-                              Phone1 = a.Phone1,
-                              Phone2 = a.Phone2,
-                              State = s.StateName,
-                              WebAddress = a.WebAddress,
-                              Zip = a.Zip
-                          }).SingleOrDefaultAsync();
-        }
-
-        public async Task<List<AccountSearchResult>> SearchAccounts(string accountName, string externalRef)
-        {
-            var accountNameSearchString = !string.IsNullOrEmpty(accountName) ? accountName.Replace(" ", "") : "";
-            var externalRefSearchString = !string.IsNullOrEmpty(externalRef) ? externalRef.Replace(" ", "") : "";
-
-            var accounts = await (from a in _context.Accounts
-                                  join s in _context.States on a.StateID equals s.StateID
-                                  where (string.IsNullOrEmpty(accountName) || a.AccountName.Replace(" ", "").StartsWith(accountNameSearchString)) &&
-                                        (string.IsNullOrEmpty(externalRef) || a.ExternalRef.Replace(" ", "").StartsWith(externalRefSearchString))
-                                  select new AccountSearchResult
-                                  {
-                                      AccountID = a.AccountID,
-                                      AccountName = a.AccountName,
-                                      Address1 = a.Address1,
-                                      Address2 = a.Address2,
-                                      City = a.City,
-                                      ExternalRef = a.ExternalRef,
-                                      ExternalRefName = a.ExternalRefName,
-                                      Fax = a.Fax,
-                                      Phone1 = a.Phone1,
-                                      Phone2 = a.Phone2,
-                                      State = s.StateName,
-                                      WebAddress = a.WebAddress,
-                                      Zip = a.Zip
-                                  }).OrderBy(a => a.AccountName).ToListAsync();
-
-            if (accounts.Count == 0)
-            {
-                accounts = await (from a in _context.Accounts
-                                  join s in _context.States on a.StateID equals s.StateID
-                                  where (string.IsNullOrEmpty(accountName) || a.AccountName.Replace(" ", "").Contains(accountNameSearchString)) &&
-                                        (string.IsNullOrEmpty(externalRef) || a.ExternalRef.Replace(" ", "").Contains(externalRefSearchString))
-                                  select new AccountSearchResult
-                                  {
-                                      AccountID = a.AccountID,
-                                      AccountName = a.AccountName,
-                                      Address1 = a.Address1,
-                                      Address2 = a.Address2,
-                                      City = a.City,
-                                      ExternalRef = a.ExternalRef,
-                                      ExternalRefName = a.ExternalRefName,
-                                      Fax = a.Fax,
-                                      Phone1 = a.Phone1,
-                                      Phone2 = a.Phone2,
-                                      State = s.StateName,
-                                      WebAddress = a.WebAddress,
-                                      Zip = a.Zip
-                                  }).OrderBy(a => a.AccountName).ToListAsync();
-            }
-
-            return accounts;
-        }
-
         public async Task<List<AccountType>> GetAccountTypes(bool sortForDropDownList)
         {
             if (sortForDropDownList)
@@ -461,6 +356,45 @@ namespace OMSDataService.DataRepositories
         public async Task<List<GridLayout>> GetGridLayouts(string gridName)
         {
             return await _context.GridLayouts.Where(g => g.GridName == gridName).OrderBy(g => g.LayoutName).ToListAsync();
+        }
+
+        public async Task<List<NotesActivityType>> GetNoteActivityTypes(bool sortForDropDownList)
+        {
+            if (sortForDropDownList)
+            {
+                return await _context.NotesActivityTypes.OrderBy(n => n.SortOrder).ThenBy(n => n.NotesActivityTypeName).ToListAsync();
+            }
+
+            else
+            {
+                return await _context.NotesActivityTypes.OrderBy(n => n.NotesActivityTypeName).ToListAsync();
+            }
+        }
+
+        public async Task<List<NotesPriorityType>> GetNotePriorityTypes(bool sortForDropDownList)
+        {
+            if (sortForDropDownList)
+            {
+                return await _context.NotesPriorityTypes.OrderBy(n => n.SortOrder).ThenBy(n => n.NotesPriorityTypeName).ToListAsync();
+            }
+
+            else
+            {
+                return await _context.NotesPriorityTypes.OrderBy(n => n.NotesPriorityTypeName).ToListAsync();
+            }
+        }
+
+        public async Task<List<NotesStatusType>> GetNoteStatusTypes(bool sortForDropDownList)
+        {
+            if (sortForDropDownList)
+            {
+                return await _context.NotesStatusTypes.OrderBy(n => n.SortOrder).ThenBy(n => n.NotesStatusTypeName).ToListAsync();
+            }
+
+            else
+            {
+                return await _context.NotesStatusTypes.OrderBy(n => n.NotesStatusTypeName).ToListAsync();
+            }
         }
     }
 }
