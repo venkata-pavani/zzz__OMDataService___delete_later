@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Text.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace OMSDataService.DataRepositories
 {
@@ -16,23 +17,21 @@ namespace OMSDataService.DataRepositories
     {
         private readonly IMapper _mapper;
         private ApiContext _context;
-        
-        public BidsheetRepository(ApiContext context, IMapper mapper)
+        private IConfiguration _configuration;
+
+        public BidsheetRepository(ApiContext context, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
+            _configuration = configuration;
         }
 
         public async Task<List<Bidsheet>> GetBidsheets()
         {
-            var list = await _context.Bidsheets
-                .OrderByDescending(x => x.BidsheetID)
-                    .ToListAsync();          
-
-            return list;
+            return await _context.Bidsheets.OrderByDescending(x => x.BidsheetID).ToListAsync();
         }
 
-        public async Task<List<BidsheetSearchResult>> GetBidsheetsToRollOfferTo(int locationId, int commodityId, int marketZoneId)
+        public async Task<List<BidsheetSearchResult>> GetBidsheetsToRollOfferTo(int locationId, int commodityId, int marketZoneId, bool useRealTimeQuotes)
         {
             var bidsheets = await (from b in _context.Bidsheets
                                    join l in _context.Locations on b.LocationID equals l.LocationID
@@ -67,7 +66,17 @@ namespace OMSDataService.DataRepositories
                                        CommoditySymbol = c.Symbol + m.MonthCode + b.OptionYear.ToString().Substring(3, 1)
                                    }).ToListAsync();
 
-            var url = "https://ondemand.websol.barchart.com/getQuote.json?apikey=061bdbf8ef8efcf5da6e335be86fa8de&symbols=";
+            var url = "";
+
+            if (useRealTimeQuotes)
+            {
+                url = _configuration.GetValue<string>("BarChart_RealTimeQuotes_URL");
+            }
+
+            else
+            {
+                url = _configuration.GetValue<string>("BarChart_DelayedQuotes_URL");
+            }
 
             var symbolCount = 0;
 
@@ -121,7 +130,7 @@ namespace OMSDataService.DataRepositories
             return bidsheets;
         }
 
-        public async Task<BidsheetSearchResult> GetBidsheetWithFutureValues(int bidsheetID)
+        public async Task<BidsheetSearchResult> GetBidsheetWithFutureValues(int bidsheetID, bool useRealTimeQuotes)
         {
             var bidsheet = await (from b in _context.Bidsheets
                                   join l in _context.Locations on b.LocationID equals l.LocationID
@@ -154,7 +163,17 @@ namespace OMSDataService.DataRepositories
 
             if (bidsheet != null && !string.IsNullOrEmpty(bidsheet.Symbol))
             {
-                var url = "https://ondemand.websol.barchart.com/getQuote.json?apikey=061bdbf8ef8efcf5da6e335be86fa8de&symbols=";
+                var url = "";
+
+                if (useRealTimeQuotes)
+                {
+                    url = _configuration.GetValue<string>("BarChart_RealTimeQuotes_URL");
+                }
+
+                else
+                {
+                    url = _configuration.GetValue<string>("BarChart_DelayedQuotes_URL");
+                }
 
                 bidsheet.BarchartSymbol = bidsheet.Symbol + bidsheet.OptionMonthCode + bidsheet.OptionYear.ToString().Remove(0, 2);
 
@@ -187,9 +206,7 @@ namespace OMSDataService.DataRepositories
 
         public async Task<Bidsheet> GetBidsheet(int bidsheetId)
         {
-            var item = await _context.Bidsheets.FirstOrDefaultAsync(c => c.BidsheetID == bidsheetId);  
-
-            return item;
+            return await _context.Bidsheets.FirstOrDefaultAsync(c => c.BidsheetID == bidsheetId);
         }
 
         public async Task<Bidsheet> GetNewBidsheet()
@@ -231,7 +248,8 @@ namespace OMSDataService.DataRepositories
             _context.SaveChanges();
         }
 
-        public async Task<List<BidsheetSearchResult>> SearchBidsheets(int? locationId, int? commodityId, bool active, bool countHasOffers, bool countHasOffersByAccountOnly, int? accountID)
+        public async Task<List<BidsheetSearchResult>> SearchBidsheets(int? locationId, int? commodityId, bool active, bool countHasOffers, bool countHasOffersByAccountOnly,
+                                                                      int? accountID, bool useRealTimeQuotes)
         {
             var bidsheets = await (from b in _context.Bidsheets
                                    join l in _context.Locations on b.LocationID equals l.LocationID
@@ -265,7 +283,17 @@ namespace OMSDataService.DataRepositories
                                        CommoditySymbol = c.Symbol + m.MonthCode + b.OptionYear.ToString().Substring(3, 1)
                                    }).ToListAsync();
 
-            var url = "https://ondemand.websol.barchart.com/getQuote.json?apikey=061bdbf8ef8efcf5da6e335be86fa8de&symbols=";
+            var url = "";
+
+            if (useRealTimeQuotes)
+            {
+                url = _configuration.GetValue<string>("BarChart_RealTimeQuotes_URL");
+            }
+
+            else
+            {
+                url = _configuration.GetValue<string>("BarChart_DelayedQuotes_URL");
+            }
 
             var symbolCount = 0;
 

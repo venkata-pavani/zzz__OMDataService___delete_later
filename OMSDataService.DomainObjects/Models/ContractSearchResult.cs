@@ -63,10 +63,6 @@ namespace OMSDataService.DomainObjects.Models
         public string AdditionalContractNotes { get; set; }
         public bool Printed { get; set; }
         public string MarketZoneName { get; set; }
-        public decimal? AppliedQuantity { get; set; }
-        public decimal? RemainingQuantity { get; set; }
-        public decimal? SettledQuantity { get; set; }
-        public decimal? UnsettledQuantity { get; set; }
         public string AdvisorName { get; set; }
         public string ContractTransactionType { get; set; }
         public bool HasOffers { get; set; }
@@ -79,7 +75,20 @@ namespace OMSDataService.DomainObjects.Models
         public int? MarketZoneID { get; set; }
         public int? AdvisorID { get; set; }
         public int? ContractTransactionTypeID { get; set; }
-        
+        public decimal? AppliedQuantity { get; set; }
+        public decimal? RemainingQuantity { get; set; }
+        public decimal? SettledQuantity { get; set; }
+        public decimal? UnsettledQuantity { get; set; }
+        public decimal? ActualAppliedQuantity { get; set; }
+        public decimal? AllocatedQuantity { get; set; }
+        public decimal? AvailableQuantity { get; set; }
+        public decimal? EstimatedAppliedQuantity { get; set; }
+        public double? LoadoutQuantity { get; set; }
+        public decimal? ScheduledQuantity { get; set; }
+        public decimal? ScheduledLessLoadoutQuantity { get; set; }
+        public decimal? ScheduledLoads { get; set; }
+        public decimal? WashedCancelledQuantity { get; set; }
+
         [NotMapped]
         public List<ContractGraphData> AppliedRemainingGraphData { get; set; }
 

@@ -64,9 +64,15 @@ namespace OMSDataService.EF
         public DbSet<BidsheetsHistory> BidsheetsHistory { get; set; }
 
         public DbSet<GridLayout> GridLayouts { get; set; }
-        public DbSet<TickHistory> TickHistoryFutures  { get; set; }
-         
-         
+
+        public DbSet<Note> Notes { get; set; }
+
+        public DbSet<NotesActivityType> NotesActivityTypes { get; set; }
+
+        public DbSet<NotesPriorityType> NotesPriorityTypes { get; set; }
+
+        public DbSet<NotesStatusType> NotesStatusTypes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema(schema: DBGlobals.SchemaName);
@@ -78,6 +84,10 @@ namespace OMSDataService.EF
             modelBuilder.Entity<ContractPricing>().HasNoKey();
 
             modelBuilder.Entity<ContractAmendment>().HasNoKey();
+
+            modelBuilder.Entity<Customer>().HasNoKey();
+
+            modelBuilder.Entity<NoteSearchResult>().HasNoKey();
 
             base.OnModelCreating(modelBuilder);
         }

@@ -35,9 +35,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetOffers(accountId);
-                return Ok(list);
+                return Ok(await _repo.GetOffers(accountId));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetOffers failed: {ex.message}");
@@ -52,9 +52,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetOffersOnContract(contractNumber);
-                return Ok(list);
+                return Ok(await _repo.GetOffersOnContract(contractNumber));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetOffersOnContract failed: {ex.message}");
@@ -69,9 +69,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetOffersOnBidsheet(bidsheetID, getOffersByAccountOnly, accountID);
-                return Ok(list);
+                return Ok(await _repo.GetOffersOnBidsheet(bidsheetID, getOffersByAccountOnly, accountID));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetOffersOnBidsheet failed: {ex.message}");
@@ -86,9 +86,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetContracts(accountExternalRef);
-                return Ok(list);
+                return Ok(await _repo.GetContracts(accountExternalRef));
             }
+
             catch (Exception ex)
             { 
                 _logger.Write(LogEventLevel.Error, ex, "GetContracts failed: {ex.message}");
@@ -103,10 +103,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var contract = await _repo.GetContract(contractId);
-
-                return Ok(contract);
+                return Ok(await _repo.GetContract(contractId));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetContract failed: {ex.message}");
@@ -117,7 +116,7 @@ namespace OMSDataService.Controllers
 
         [ActionName("GetNewContract")]
         [HttpGet]
-        public async Task<IActionResult> GetNewContract(bool isSalesContract, bool isOffer, int? bidsheetID, int? contractTypeID, int accountID)
+        public async Task<IActionResult> GetNewContract(bool isSalesContract, bool isOffer, int? bidsheetID, int? contractTypeID, int accountID, bool useRealTimeQuotes)
         {
             try
             {
@@ -125,13 +124,12 @@ namespace OMSDataService.Controllers
 
                 if (bidsheetID.HasValue)
                 {
-                    bidsheet = await _bidsheetRepository.GetBidsheetWithFutureValues(bidsheetID.Value);
+                    bidsheet = await _bidsheetRepository.GetBidsheetWithFutureValues(bidsheetID.Value, useRealTimeQuotes);
                 }
 
-                var contract = await _repo.GetNewContract(isSalesContract, isOffer, bidsheet, contractTypeID, accountID);
-
-                return Ok(contract);
+                return Ok(await _repo.GetNewContract(isSalesContract, isOffer, bidsheet, contractTypeID, accountID));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetNewContract failed: {ex.message}");
@@ -146,9 +144,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetNewOfferFromContract(contractNumber);
-                return Ok(list);
+                return Ok(await _repo.GetNewOfferFromContract(contractNumber));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetNewOfferFromContract failed: {ex.message}");
@@ -163,9 +161,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetNewPricingFromContract(contractNumber);
-                return Ok(list);
+                return Ok(await _repo.GetNewPricingFromContract(contractNumber));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetNewPricingFromContract failed: {ex.message}");
@@ -180,9 +178,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetNewOfferClone(contractID);
-                return Ok(list);
+                return Ok(await _repo.GetNewOfferClone(contractID));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetNewOfferClone failed: {ex.message}");
@@ -197,9 +195,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetNewContractClone(contractID);
-                return Ok(list);
+                return Ok(await _repo.GetNewContractClone(contractID));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetNewContractClone failed: {ex.message}");
@@ -214,10 +212,9 @@ namespace OMSDataService.Controllers
         {
             try
             { 
-                var result = await _repo.AddContract(item["contract"].ToObject<Contract>(), item["contractDetail"].ToObject<ContractDetail>());
-
-                return Ok(result);
+                return Ok(await _repo.AddContract(item["contract"].ToObject<Contract>(), item["contractDetail"].ToObject<ContractDetail>()));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "AddContract failed: {ex.message}");
@@ -236,6 +233,7 @@ namespace OMSDataService.Controllers
 
                 return Ok();
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "UpdateContract failed: {ex.message}");
@@ -254,6 +252,7 @@ namespace OMSDataService.Controllers
 
                 return Ok();
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "DeleteContract failed: {ex.message}");
@@ -272,6 +271,7 @@ namespace OMSDataService.Controllers
 
                 return Ok();
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "ConvertOfferToContract failed: {ex.message}");
@@ -290,6 +290,7 @@ namespace OMSDataService.Controllers
 
                 return Ok();
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "RollOffer failed: {ex.message}");
@@ -308,12 +309,12 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.SearchContracts(contractTransactionTypeExternalRef, locationExternalRef, commodityExternalRef, commoditySymbol, customerName,
-                                                       marketZoneExternalRef, contractTypeExternalRef, contractStatusTypeExternalRef, advisorExternalRef,
-                                                       contractStartDate, contractEndDate, deliveryBeginStartDate, deliveryBeginEndDate, deliveryEndStartDate, deliveryEndEndDate,
-                                                       contractPricingStatusTypeExternalRef);
-                return Ok(list);
+                return Ok(await _repo.SearchContracts(contractTransactionTypeExternalRef, locationExternalRef, commodityExternalRef, commoditySymbol, customerName,
+                                                      marketZoneExternalRef, contractTypeExternalRef, contractStatusTypeExternalRef, advisorExternalRef,
+                                                      contractStartDate, contractEndDate, deliveryBeginStartDate, deliveryBeginEndDate, deliveryEndStartDate, deliveryEndEndDate,
+                                                      contractPricingStatusTypeExternalRef));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "SearchContracts failed: {ex.message}");
@@ -328,9 +329,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetContractPricings(contractNumber);
-                return Ok(list);
+                return Ok(await _repo.GetContractPricings(contractNumber));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetContractPricings failed: {ex.message}");
@@ -345,9 +346,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetContractAmendments(contractNumber);
-                return Ok(list);
+                return Ok(await _repo.GetContractAmendments(contractNumber));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetContractAmendments failed: {ex.message}");
@@ -364,10 +365,10 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.SearchOffers(contractTransactionTypeID, locationID, commodityID, commoditySymbol, customerName, contractTypeID, offerStatusTypeID, marketZoneID,
-                                                    advisorID, offerStartDate, offerEndDate, deliveryBeginStartDate, deliveryBeginEndDate, deliveryEndStartDate, deliveryEndEndDate);
-                return Ok(list);
+                return Ok(await _repo.SearchOffers(contractTransactionTypeID, locationID, commodityID, commoditySymbol, customerName, contractTypeID, offerStatusTypeID, marketZoneID,
+                                                   advisorID, offerStartDate, offerEndDate, deliveryBeginStartDate, deliveryBeginEndDate, deliveryEndStartDate, deliveryEndEndDate));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "SearchOffers failed: {ex.message}");
@@ -382,9 +383,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.GetOffersAndContracts(accountId);
-                return Ok(list);
+                return Ok(await _repo.GetOffersAndContracts(accountId));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "GetOffersAndContracts failed: {ex.message}");
@@ -402,11 +403,11 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.SearchOffersAndContracts(contractTransactionTypeID, locationID, commodityID, commoditySymbol, customerName, contractTypeID, marketZoneID,
-                                                                advisorID, createdStartDate, createdEndDate, deliveryBeginStartDate, deliveryBeginEndDate, deliveryEndStartDate,
-                                                                deliveryEndEndDate);
-                return Ok(list);
+                return Ok(await _repo.SearchOffersAndContracts(contractTransactionTypeID, locationID, commodityID, commoditySymbol, customerName, contractTypeID, marketZoneID,
+                                                               advisorID, createdStartDate, createdEndDate, deliveryBeginStartDate, deliveryBeginEndDate, deliveryEndStartDate,
+                                                               deliveryEndEndDate));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "SearchOffersAndContracts failed: {ex.message}");
@@ -421,9 +422,9 @@ namespace OMSDataService.Controllers
         {
             try
             {
-                var list = await _repo.SearchPositionManagerOffers(commodityID, commoditySymbol, customerName, marketZoneID, advisorID);
-                return Ok(list);
+                return Ok(await _repo.SearchPositionManagerOffers(commodityID, commoditySymbol, customerName, marketZoneID, advisorID));
             }
+
             catch (Exception ex)
             {
                 _logger.Write(LogEventLevel.Error, ex, "SearchPositionManagerOffers failed: {ex.message}");

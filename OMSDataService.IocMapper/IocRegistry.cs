@@ -30,8 +30,7 @@ namespace OMSDataService.IocMapper
             builder.RegisterType<TypeRepository>().As<ITypeRepository>().InstancePerLifetimeScope();
             builder.RegisterType<ContractRepository>().As<IContractRepository>().InstancePerLifetimeScope();
             builder.RegisterType<BidsheetRepository>().As<IBidsheetRepository>().InstancePerLifetimeScope();
-            builder.RegisterType<HelperRepository>().As<IHelperRepository>().InstancePerLifetimeScope();
-
+            builder.RegisterType<AccountRepository>().As<IAccountRepository>().InstancePerLifetimeScope();
 
 
             builder.Register<ILogger>((c, p) =>
