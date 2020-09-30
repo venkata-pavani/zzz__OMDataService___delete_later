@@ -6,6 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.1.8" />
     <PackageReference Include="Quartz" Version="3.1.0" />
@@ -13,6 +15,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OMSDataService.DataInterfaces\OMSDataService.DataInterfaces.csproj" />
+    <ProjectReference Include="..\OMSDataService.DataRepositories\OMSDataService.DataRepositories.csproj" />
     <ProjectReference Include="..\OMSDataService.DomainObjects\OMSDataService.DomainObjects.csproj" />
+    <ProjectReference Include="..\OMSDataService.EF\OMSDataService.EF.csproj" />
+    <ProjectReference Include="..\OMSDataService.EntityMapper\OMSDataService.EntityMapper.csproj" />
+    <ProjectReference Include="..\OMSDataService.IocMapper\OMSDataService.IocMapper.csproj" />
+    <ProjectReference Include="..\OMSDataService\OMSDataService.csproj" />
   </ItemGroup>
 </Project>

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OMDataService.OfferHitWorkerService.JobClasses;
+using OMSDataService.DataInterfaces;
 using Quartz;
 using Quartz.Impl;
 
@@ -17,17 +18,20 @@ namespace OMDataService.OfferHitWorkerService
         private StdSchedulerFactory _schedulerFactory;
         private CancellationToken _stopppingToken;
         private IScheduler _scheduler;
+        private IHelperRepository _helper;
 
 
         public Worker(ILogger<Worker> logger)
         {
             _logger = logger;
+            
         }
 
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
             // DO YOUR STUFF HERE
-            await base.StartAsync(cancellationToken);
+            //await base.StartAsync(cancellationToken);
+            await StartJobs();
         }
 
         public override async Task StopAsync(CancellationToken cancellationToken)
@@ -54,6 +58,23 @@ namespace OMDataService.OfferHitWorkerService
             _scheduler = await _schedulerFactory.GetScheduler();
             await _scheduler.Start();
 
+
+            var jobOfferCancel = JobBuilder.Create<JobClasses.GetTickValues>()
+    .WithIdentity("jobOfferCancel")
+    .Build();
+
+            var triggerOfferCancel = TriggerBuilder.Create()
+                   .WithIdentity("cancelOfferTrigger")
+                   .StartNow()
+                   .ForJob("jobOfferCancel")
+                   .WithSchedule(SimpleScheduleBuilder.RepeatMinutelyForever())
+                    .WithSchedule(CronScheduleBuilder.CronSchedule("0 0/2 17-18 * * ?"))  //cronSchedule(""))
+                   .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(15, 10)) // execute job daily at 3:00
+                   .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(19, 16)) // execute job daily at 3:00
+                   .Build();
+
+            _scheduler.ScheduleJob(jobOfferCancel, triggerOfferCancel);
+
             IJobDetail tickValueJob = JobBuilder.Create<GetTickValues>()
                 .WithIdentity("GetTickValueJob", "group")
                 .Build();
@@ -61,8 +82,10 @@ namespace OMDataService.OfferHitWorkerService
             ITrigger tickValueTrigger = TriggerBuilder.Create()
                 .WithIdentity("getTickValues", "group")
                 .StartNow()
+                
                 .WithSimpleSchedule(x => x
-                    .WithIntervalInSeconds(10)
+                    .WithIntervalInSeconds(1)
+
                     .RepeatForever())
             .Build();
 

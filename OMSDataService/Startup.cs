@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OMSDataService.EF;
 using OMSDataService.EntityMapper;
-using OMSDataService.IocMapper;
+//using OMSDataService.IocMapper;
 using OMSDataService.DomainObjects.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.OpenApi.Models;
+using OMSDataService.IocMapper;
 
 namespace OMSDataService
 {

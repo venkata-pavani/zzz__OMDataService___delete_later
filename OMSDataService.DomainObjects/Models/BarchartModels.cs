@@ -2,10 +2,36 @@
 
 namespace OMSDataService.DomainObjects.Models
 {
+
+
+    public class BarChartHistoryResult
+    {
+        public BarchartResponseStatus status { get; set; }
+        public BarchartTickResponse[] results { get; set; }
+    }
+      
     public class BarchartResponseStatus
     {
         public int code { get; set; }
         public string message { get; set; }
+    }
+
+    public class BarchartTickResponse
+    {
+        public string symbol { get; set; }
+        public DateTime timestamp { get; set; }
+        public string tradingDay { get; set; }
+        public string sessionCode { get; set; }
+        public float tickPrice { get; set; }
+        public int tickSize { get; set; }
+    }
+
+
+       public class BarchartSymbol
+    {
+        public string symbol { get; set; }
+        public string monthCode { get; set; }
+        public string hedgeYear { get; set; }
     }
 
     public class BarchartGetQuoteItem

@@ -64,7 +64,9 @@ namespace OMSDataService.EF
         public DbSet<BidsheetsHistory> BidsheetsHistory { get; set; }
 
         public DbSet<GridLayout> GridLayouts { get; set; }
-
+        public DbSet<TickHistory> TickHistoryFutures  { get; set; }
+         
+         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema(schema: DBGlobals.SchemaName);
