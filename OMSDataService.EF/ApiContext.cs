@@ -73,6 +73,8 @@ namespace OMSDataService.EF
 
         public DbSet<NotesStatusType> NotesStatusTypes { get; set; }
 
+        public DbSet<TickHistory> TickHistoryFutures { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema(schema: DBGlobals.SchemaName);
