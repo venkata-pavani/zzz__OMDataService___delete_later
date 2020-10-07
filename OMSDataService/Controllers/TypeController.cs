@@ -557,7 +557,7 @@ namespace OMSDataService.Controllers
             {
                 _repo.AddGridLayout(gridLayout);
 
-                return Ok();
+                return Ok(gridLayout);
             }
 
             catch (Exception ex)
@@ -576,7 +576,7 @@ namespace OMSDataService.Controllers
             {
                 _repo.UpdateGridLayout(gridLayout);
 
-                return Ok();
+                return Ok(gridLayout);
             }
 
             catch (Exception ex)
