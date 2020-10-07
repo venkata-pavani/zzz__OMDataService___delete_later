@@ -1044,7 +1044,8 @@ namespace OMSDataService.DataRepositories
                           join mo in _context.Months on cd.HedgeMonthID equals mo.MonthID
                           join b in _context.Bidsheets on cd.BidsheetID equals b.BidsheetID
                           where cd.Offer.Value == true && !c.Deleted &&
-                                (cd.ContractTypeID == 1 || cd.ContractTypeID == 3) &&
+                                //(cd.ContractTypeID == 1 || cd.ContractTypeID == 3) &&
+                                (cd.OfferPriceTypeID == 2 || cd.OfferPriceTypeID == 3) &&
                                 (cd.OfferStatusTypeID == 1 || cd.OfferStatusTypeID == 5) &&
                                 c.ContractTransactionTypeID == 1 && 
                                 (!commodityID.HasValue || cd.CommodityID == commodityID.Value) &&
