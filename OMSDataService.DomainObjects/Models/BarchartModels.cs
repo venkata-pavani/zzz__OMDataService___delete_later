@@ -22,7 +22,7 @@ namespace OMSDataService.DomainObjects.Models
         public DateTime timestamp { get; set; }
         public string tradingDay { get; set; }
         public string sessionCode { get; set; }
-        public float tickPrice { get; set; }
+        public decimal tickPrice { get; set; }
         public int tickSize { get; set; }
     }
 
@@ -32,6 +32,7 @@ namespace OMSDataService.DomainObjects.Models
         public string symbol { get; set; }
         public string monthCode { get; set; }
         public string hedgeYear { get; set; }
+        public int commodityId { get; set; }
     }
 
     public class BarchartGetQuoteItem

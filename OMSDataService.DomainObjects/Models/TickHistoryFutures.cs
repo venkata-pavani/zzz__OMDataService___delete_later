@@ -6,7 +6,7 @@ using System.Text;
 
 namespace OMSDataService.DomainObjects.Models
 {
-    public class TickHistory
+    public class TickHistoryFutures
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -14,6 +14,8 @@ namespace OMSDataService.DomainObjects.Models
         public string Symbol { get; set; }
         public DateTime TickDateTime { get; set; }
         public DateTime TradingDay { get; set; }
-        public float TickPrice { get; set; }
+        public decimal TickPrice { get; set; }
+        public int CommodityId { get; set; }
     }  
-}
+} 
+ 

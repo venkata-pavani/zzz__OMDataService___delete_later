@@ -59,21 +59,21 @@ namespace OMDataService.OfferHitWorkerService
             await _scheduler.Start();
 
 
-            var jobOfferCancel = JobBuilder.Create<JobClasses.GetTickValues>()
-    .WithIdentity("jobOfferCancel")
-    .Build();
+            //var jobOfferHit = JobBuilder.Create<JobClasses.GetTickValues>()
+            //.WithIdentity("jobOfferHit")
+            //.Build();
 
-            var triggerOfferCancel = TriggerBuilder.Create()
-                   .WithIdentity("cancelOfferTrigger")
-                   .StartNow()
-                   .ForJob("jobOfferCancel")
-                   .WithSchedule(SimpleScheduleBuilder.RepeatMinutelyForever())
-                    .WithSchedule(CronScheduleBuilder.CronSchedule("0 0/2 17-18 * * ?"))  //cronSchedule(""))
-                   .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(15, 10)) // execute job daily at 3:00
-                   .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(19, 16)) // execute job daily at 3:00
-                   .Build();
+            //var triggerOfferHit = TriggerBuilder.Create()
+            //       .WithIdentity("hitOfferTrigger")
+            //       .StartNow()
+            //       .ForJob("jobOfferHit")
+            //       .WithSchedule(SimpleScheduleBuilder.RepeatMinutelyForever(2))
+            //        //.WithSchedule(CronScheduleBuilder.CronSchedule("0 0/2 17-18 * * ?"))  //cronSchedule(""))
+            //       //.WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(15, 10)) // execute job daily at 3:00
+            //       //.WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(19, 16)) // execute job daily at 3:00
+            //       .Build();
 
-            _scheduler.ScheduleJob(jobOfferCancel, triggerOfferCancel);
+            //_scheduler.ScheduleJob(jobOfferHit, triggerOfferHit);
 
             IJobDetail tickValueJob = JobBuilder.Create<GetTickValues>()
                 .WithIdentity("GetTickValueJob", "group")
@@ -84,27 +84,42 @@ namespace OMDataService.OfferHitWorkerService
                 .StartNow()
                 
                 .WithSimpleSchedule(x => x
-                    .WithIntervalInSeconds(1)
+                    .WithIntervalInMinutes(2)
 
                     .RepeatForever())
             .Build();
 
 
-            IJobDetail offerHitJob = JobBuilder.Create<OfferHitProcessing>()
-               .WithIdentity("processOfferHitJob", "group")
-               .Build();
+            IJobDetail emailJob = JobBuilder.Create<SendEmails>()
+              .WithIdentity("sendEmailJob", "group")
+              .Build();
 
-            ITrigger offerHitTrigger = TriggerBuilder.Create()
-                .WithIdentity("processOffersHit", "group")
+            ITrigger emailTrigger = TriggerBuilder.Create()
+                .WithIdentity("sendEmailTrigger", "group")
                 .StartNow()
+
                 .WithSimpleSchedule(x => x
-                    .WithIntervalInSeconds(20)
+                     .WithIntervalInMinutes(1)
+
                     .RepeatForever())
             .Build();
+
+
+            //IJobDetail offerHitJob = JobBuilder.Create<OfferHitProcessing>()
+            //   .WithIdentity("processOfferHitJob", "group")
+            //   .Build();
+
+            //ITrigger offerHitTrigger = TriggerBuilder.Create()
+            //    .WithIdentity("processOffersHit", "group")
+            //    .StartNow()
+            //    .WithSimpleSchedule(x => x
+            //        .WithIntervalInSeconds(20)
+            //        .RepeatForever())
+            //.Build();
 
 
             await _scheduler.ScheduleJob(tickValueJob, tickValueTrigger, _stopppingToken);
-            await _scheduler.ScheduleJob(offerHitJob, offerHitTrigger, _stopppingToken);
+            await _scheduler.ScheduleJob(emailJob, emailTrigger, _stopppingToken);
         }
 
     public override void Dispose()

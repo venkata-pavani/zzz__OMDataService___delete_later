@@ -8,6 +8,7 @@ namespace OMSDataService.DataInterfaces
     public interface IHelperRepository
     {
 
-        Task<List<ContractDetail>> GetTicksForOffers();
+        Task<List<TickHistoryFutures>> GetTicksForOffers();
+        Task<List<Emails>> SendOfferEmailItems();
     }
 }
