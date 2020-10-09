@@ -358,6 +358,32 @@ namespace OMSDataService.DataRepositories
             return await _context.GridLayouts.Where(g => g.GridName == gridName).OrderBy(g => g.LayoutName).ToListAsync();
         }
 
+        public async Task<GridLayout> GetDefaultGridLayout(string gridName)
+        {
+            return await _context.GridLayouts.Where(g => g.GridName == gridName && g.IsDefaultLayout).SingleOrDefaultAsync();
+        }
+
+        public void SetDefaultGridLayout(int gridLayoutID)
+        {
+            var layout = _context.GridLayouts.Where(g => g.GridLayoutID == gridLayoutID).SingleOrDefault();
+
+            if (layout != null)
+            {
+                var layouts = _context.GridLayouts.Where(g => g.GridName == layout.GridName).ToList();
+
+                foreach (var l in layouts)
+                {
+                    l.IsDefaultLayout = false;
+
+                    _context.Entry(l).State = EntityState.Modified;
+                }
+
+                layout.IsDefaultLayout = true;
+
+                _context.SaveChanges();
+            }
+        }
+
         public async Task<List<NotesActivityType>> GetNoteActivityTypes(bool sortForDropDownList)
         {
             if (sortForDropDownList)
