@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using OMSDataService.DataInterfaces;
@@ -46,17 +44,17 @@ namespace OMSDataService.DataRepositories
 
             var runProcess = true;
 
-            if ((now > start && now < end))
+            if ((now > start) && (now < end))
             {
                 runProcess = false;
             }
 
-            if ((now > startPM && now < endPM))
+            if ((now > startPM) && (now < endPM))
             {
                 runProcess = false;
             }
 
-            if (runProcess == false)
+            if (!runProcess)
             {
                 return tickList;
             }
@@ -67,8 +65,7 @@ namespace OMSDataService.DataRepositories
             SqlParameter param5;
             SqlParameter param1;
 
-            var tickDateStartTime = DateTime.Now.AddMinutes(-12);
-            var tickDateStart = DateTime.Now.AddMinutes(-12).ToString("yyyyMMddhhmmss");
+            var tickDateStart = DateTime.Now.AddMinutes(-10);
 
 
 
@@ -76,9 +73,7 @@ namespace OMSDataService.DataRepositories
             var offerSymbols = (from cd in _context.ContractDetails
                                 join c in _context.Commodities on cd.CommodityID equals c.CommodityID
                                 join m in _context.Months on cd.HedgeMonthID equals m.MonthID
-                                join ct in _context.ContractTypes on cd.ContractTypeID equals ct.ContractTypeID
-                                where cd.Offer == true && cd.OfferGoodUntilDate >= DateTime.Now
-                                && cd.OfferStatusTypeID == 1 && (ct.PriceContract || ct.FuturesContract)
+                                where cd.Offer == true && cd.OfferGoodUntilDate >= DateTime.Now && cd.OfferStatusTypeID == 1 && (cd.ContractTypeID == 1 || cd.ContractTypeID == 3)
                                 select new BarchartSymbol
                                 {
                                     symbol = c.Symbol + m.MonthCode + cd.HedgeYear.ToString().Substring(2, 2),
@@ -94,48 +89,41 @@ namespace OMSDataService.DataRepositories
             {
                 var url = "https://ondemand.websol.barchart.com/getHistory.json?apikey=061bdbf8ef8efcf5da6e335be86fa8de&symbol=";
                 var tickSymbol = "Z" + o.symbol; // + o.monthCode + o.hedgeYear;
-                var tickDateEnd = DateTime.Now.AddMinutes(-10).ToString("yyyyMMddhhmmss");
+                var tickDateEnd = DateTime.Now.ToString("yyyyMMddhhmmss");
                 url = url + tickSymbol + "&type=ticks&startDate=" + tickDateStart + "&endDate=" + tickDateEnd;
                 using (var httpClient = new HttpClient())
                 {
 
                     using (var response = await httpClient.GetAsync(url))
                     {
-                        if (response.IsSuccessStatusCode && !response.StatusCode.Equals(StatusCodes.Status204NoContent))
+                        var apiResponse = await response.Content.ReadAsStringAsync();
+                        var result = JsonSerializer.Deserialize(apiResponse, typeof(BarChartHistoryResult)) as BarChartHistoryResult;
+                        foreach (var r in result.results)
                         {
-                            var apiResponse = await response.Content.ReadAsStringAsync();
-                            if (apiResponse.Contains("No Content"))
-                            {
-                                return tickList;
-                            }
-
-                            var result = JsonSerializer.Deserialize(apiResponse, typeof(BarChartHistoryResult)) as BarChartHistoryResult;
-                            foreach (var r in result.results)
-                            {
-                                TickHistoryFutures tickHistory = new TickHistoryFutures();
-                                tickHistory.Symbol = r.symbol;
-                                tickHistory.TickDateTime = r.timestamp;
-                                tickHistory.TickPrice = r.tickPrice;
-                                tickHistory.CommodityId = o.commodityId;
-                                tickHistory.TradingDay = Convert.ToDateTime(r.tradingDay);
+                            TickHistoryFutures tickHistory = new TickHistoryFutures();
+                            tickHistory.Symbol = r.symbol;
+                            tickHistory.TickDateTime = r.timestamp;
+                            tickHistory.TickPrice = r.tickPrice;
+                            tickHistory.CommodityId = o.commodityId;
+                            tickHistory.TradingDay = Convert.ToDateTime(r.tradingDay);
 
 
-                                param2 = new SqlParameter("Symbol", tickHistory.Symbol);
-                                param3 = new SqlParameter("TickPrice", tickHistory.TickPrice);
-                                param4 = new SqlParameter("TickDateTime", tickHistory.TickDateTime);
-                                param5 = new SqlParameter("TradeDate", tickHistory.TradingDay);
-                                param1 = new SqlParameter("CommodityId", o.commodityId);
+                            param2 = new SqlParameter("Symbol", tickHistory.Symbol);
+                            param3 = new SqlParameter("TickPrice", tickHistory.TickPrice);
+                            param4 = new SqlParameter("TickDateTime", tickHistory.TickDateTime);
+                            param5 = new SqlParameter("TradeDate", tickHistory.TradingDay);
+                            param1 = new SqlParameter("CommodityId", o.commodityId);
 
 
-                                var ticketResult = _context.TickHistoryFutures.FromSqlRaw("TickHistoryFutures_Insert @Symbol, @TickPrice, @TickDateTime, @TradeDate, @CommodityID ", param2, param3, param4, param5, param1).ToList();
+                            var ticketResult = _context.TickHistoryFutures.FromSqlRaw("TickHistoryFutures_Insert @Symbol, @TickPrice, @TickDateTime, @TradeDate, @CommodityID ", param2, param3, param4, param5, param1).ToList();
 
-                            }
+
                         }
                     }
                 }
             }
 
-            MarkOffersHit(tickDateStartTime);
+            MarkOffersHit(tickDateStart);
 
             return tickList;
         }
@@ -144,9 +132,9 @@ namespace OMSDataService.DataRepositories
 
         private void MarkOffersHit(DateTime tickDateStart)
         {
-            string sqlFormattedDate = tickDateStart.ToString("yyyy-MM-dd HH:mm:ss");
+
             SqlParameter param1;
-            param1 = new SqlParameter("RequestTime", sqlFormattedDate);
+            param1 = new SqlParameter("TickDateTime", tickDateStart);
 
 
             var ticketResult = _context.TickHistoryFutures.FromSqlRaw("MarkOffersHit @RequestTime ", param1).ToList();
@@ -179,10 +167,12 @@ namespace OMSDataService.DataRepositories
 
         public async Task<List<Emails>> SendOfferEmailItems()
         {
-           
-          var emailList = _context.Emails.Where(x => x.Sent == false).ToList();
+            var emailList = new List<Emails>();
+            var systemDefaults = new SystemDefaults();
+            systemDefaults = _context.SystemDefaults.FirstOrDefault();
 
-            foreach (var e in emailList)
+            emailList = _context.Emails.Where(x => x.Sent.Equals(false)).ToList();
+            foreach(var e in emailList)
             {
                 if (e.EmailType == 2)
                 {
@@ -199,16 +189,15 @@ namespace OMSDataService.DataRepositories
                 if (e.EmailType == 1)
                 {
 
-                    var apiKey = "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";//Environment.GetEnvironmentVariable("NAME_OF_THE_ENVIRONMENT_VARIABLE_FOR_YOUR_SENDGRID_KEY");
+                    var apiKey = Environment.GetEnvironmentVariable("NAME_OF_THE_ENVIRONMENT_VARIABLE_FOR_YOUR_SENDGRID_KEY");
                     var client = new SendGridClient(apiKey);
-                    var from = new EmailAddress("paige@notrs.com");
+                    var from = new EmailAddress(e.FromAddress);
                     var subject = e.Subject;
-                    var to = new EmailAddress("darron@notrs.com");
+                    var to = new EmailAddress(e.ToAddress);
                     var plainTextContent = e.EmailText;
                     var htmlContent = e.EmailText;
                     var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
                     var response = await client.SendEmailAsync(msg);
-                    var update = UpdateOfferEmail(e);
 
                 }
 
@@ -216,16 +205,6 @@ namespace OMSDataService.DataRepositories
 
 
             return emailList;
-        }
-
-        private bool UpdateOfferEmail(Emails email)
-        {
-           
-            email.Sent = true;
-            _context.SaveChanges();
-
-            return true;
-
         }
     }
 }
