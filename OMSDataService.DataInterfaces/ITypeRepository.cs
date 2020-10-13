@@ -73,6 +73,10 @@ namespace OMSDataService.DataInterfaces
 
         Task<List<GridLayout>> GetGridLayouts(string gridName);
 
+        Task<GridLayout> GetDefaultGridLayout(string gridName);
+
+        void SetDefaultGridLayout(int gridLayoutID);
+
         Task<List<NotesActivityType>> GetNoteActivityTypes(bool sortForDropDownList);
 
         Task<List<NotesPriorityType>> GetNotePriorityTypes(bool sortForDropDownList);
