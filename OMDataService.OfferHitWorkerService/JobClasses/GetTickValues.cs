@@ -25,10 +25,11 @@ namespace OMDataService.OfferHitWorkerService.JobClasses
         //private IHelperRepository _repo;
         private ApiContext _context;
         private readonly IMapper _mapper;
+        private ILogger<Worker> _logger;
         //private OMSDataService.EF.ApiContext context;
 
         private HelperRepository repo;
-
+         
 
         //public GetTickValues(IHelperRepository repo, ILogger<Worker> logger)
         //{
@@ -47,11 +48,14 @@ namespace OMDataService.OfferHitWorkerService.JobClasses
             repo = new HelperRepository(_context, _mapper);
             try
             {
+                _logger.LogInformation("Getting Ticks");
+
                 var getTicks = await repo.GetTicksForOffers();
             }
             catch(Exception ex)
             {
-                System.Diagnostics.Debug.Print(ex.ToString());
+
+                _logger.LogInformation(ex.Message.ToString());
             }
 
         }

@@ -84,7 +84,7 @@ namespace OMDataService.OfferHitWorkerService
                 .StartNow()
                 
                 .WithSimpleSchedule(x => x
-                    .WithIntervalInMinutes(2)
+                    .WithIntervalInSeconds(10)
 
                     .RepeatForever())
             .Build();

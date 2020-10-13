@@ -22,6 +22,8 @@ namespace OMDataService.OfferHitWorkerService.JobClasses
         private readonly IMapper _mapper;
 
         private HelperRepository repo;
+        private ILogger<Worker> _logger;
+
 
         public SendEmails()
         {
@@ -39,7 +41,7 @@ namespace OMDataService.OfferHitWorkerService.JobClasses
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.Print(ex.ToString());
+                _logger.LogInformation(ex.Message.ToString());
             }
 
         }

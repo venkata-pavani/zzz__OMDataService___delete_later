@@ -16,7 +16,7 @@ namespace OMSDataService.DomainObjects.Models
         public string ToAddress { get; set; }
         public DateTime AddDate { get; set; }
         public bool Sent { get; set; }
-        public int PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; }
 
          
     }
