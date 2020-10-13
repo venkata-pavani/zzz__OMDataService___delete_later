@@ -88,7 +88,7 @@ namespace OMSDataService.DomainObjects.Models
         public decimal? ScheduledLessLoadoutQuantity { get; set; }
         public decimal? ScheduledLoads { get; set; }
         public decimal? WashedCancelledQuantity { get; set; }
-        public double? MzAdj { get; set; }
+        public decimal? MzAdj { get; set; }
 
         [NotMapped]
         public List<ContractGraphData> AppliedRemainingGraphData { get; set; }

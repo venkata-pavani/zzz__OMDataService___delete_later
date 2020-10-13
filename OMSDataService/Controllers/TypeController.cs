@@ -604,42 +604,6 @@ namespace OMSDataService.Controllers
             }
         }
 
-        [ActionName("GetDefaultGridLayout")]
-        [HttpGet]
-        public async Task<IActionResult> GetDefaultGridLayout(string gridName)
-        {
-            try
-            {
-                return Ok(await _repo.GetDefaultGridLayout(gridName));
-            }
-
-            catch (Exception ex)
-            {
-                _logger.Write(LogEventLevel.Error, ex, "GetDefaultGridLayout failed: {ex.message}");
-                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
-                return BadRequest(returnResult);
-            }
-        }
-
-        [ActionName("SetDefaultGridLayout")]
-        [HttpGet]
-        public IActionResult SetDefaultGridLayout(int gridLayoutID)
-        {
-            try
-            {
-                _repo.SetDefaultGridLayout(gridLayoutID);
-
-                return Ok();
-            }
-
-            catch (Exception ex)
-            {
-                _logger.Write(LogEventLevel.Error, ex, "SetDefaultGridLayout failed: {ex.message}");
-                var returnResult = ex.InnerException?.InnerException?.Message ?? ex.Message;
-                return BadRequest(returnResult);
-            }
-        }
-
         [ActionName("GetNoteActivityTypes")]
         [HttpGet]
         public async Task<IActionResult> GetNoteActivityTypes(bool sortForDropDownList)
