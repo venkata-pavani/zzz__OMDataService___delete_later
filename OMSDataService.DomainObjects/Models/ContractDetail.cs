@@ -63,7 +63,7 @@ namespace OMSDataService.DomainObjects.Models
         public DateTime? FuturesOnInsertDateTime { get; set; }
         public decimal? BasisOnAdd { get; set; }
         public DateTime? BasisOnAddDateTime { get; set; }
-        public decimal? BasisOnInsert { get; set; }
+        public decimal? BasisOnInsert { get; set; } 
         public DateTime? BasisOnInsertDateTime { get; set; }
         public int? AdvisorReviewID { get; set; }
         public DateTime? AdvisorReviewDateTime { get; set; }
@@ -71,5 +71,14 @@ namespace OMSDataService.DomainObjects.Models
         public DateTime? AdvisorManagerReviewDateTime { get; set; }
         public bool? WasOffer { get; set; }
         public bool Deleted { get; set; }
+        public decimal? OfferHitBasis { get; set; }
+        public decimal? OfferHitTickValue { get; set; }
+        public DateTime? OfferHitDate { get; set; }
+        public TimeSpan? OfferHitTime { get; set; }
+
+
+
+
+
     }
 }
